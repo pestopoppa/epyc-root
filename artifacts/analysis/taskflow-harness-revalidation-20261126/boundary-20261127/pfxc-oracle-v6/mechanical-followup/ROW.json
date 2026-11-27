@@ -1,0 +1,37 @@
+{
+  "case": "PFXC-A3",
+  "backend": "gpu",
+  "thinking": true,
+  "profile": "on-coding",
+  "sampling": {
+    "temperature": 0.6,
+    "top_p": 0.95,
+    "top_k": 20,
+    "min_p": 0.0,
+    "presence_penalty": 0.0,
+    "repeat_penalty": 1.0,
+    "seed": 223355
+  },
+  "slot": 3,
+  "cohort": 0,
+  "request_cap": 32768,
+  "generated_ceiling": 120000,
+  "wall_s": 1800,
+  "id": "gpu-PFXC-A3-on-coding-post-review-mechanical-3",
+  "feedback_class": "post-review deterministic mechanical repair",
+  "extra_feedback_ordinal": 3,
+  "native_protocol_cap2_result_retained": true,
+  "extra_paid_semantic_guidance_rounds": 0,
+  "claim_minimum_guidance": false,
+  "resume": {
+    "initial_row": "gpu-PFXC-A3-on-coding",
+    "prior": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-on-coding-guidance-2",
+    "prior_result_sha256": "1153e80178eac64b9cb359d82844733c9a19b390b3ad66a586b47ff8c695ea74",
+    "prior_session_sha256": "1163f5d52913578fc009d194a4d68e04b5c298f74e6f8e7cac982a679c3ac446",
+    "prior_state_sha256": "fa23e5204e748d82b3b6e3938970490aeda6a6e4d76b069ace0ea84aa469e8e0",
+    "feedback": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/pfxc-oracle-v6/mechanical-followup/FEEDBACK.md",
+    "feedback_sha256": "5290e9d0c52cb88053bbeed59dd4f2050f7bfe3c2d6bfa56f9e341369d965f6e",
+    "ordinal": 3,
+    "exception_class": "additional-verifier-only-post-review-mechanical"
+  }
+}

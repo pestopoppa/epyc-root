@@ -1,0 +1,7 @@
+{
+  "earlier_heading_only_checker_sha256": "11b4de0bb4286c974ba3b15fee063ff57488148fd24b4b8df3c4d95a4ad2a8dc",
+  "final_checker_sha256": "9e6583fbebba2c82e89a3f4332128d44d3ccec43147a3f83910a1e2fce8a40d6",
+  "reason": "CPU standard standalone bold Comparison label followed by bullets; support its following block with exact logical field boundaries",
+  "receipts_reissued_with_final_checker_sha256": true,
+  "raw_results_unchanged": true
+}

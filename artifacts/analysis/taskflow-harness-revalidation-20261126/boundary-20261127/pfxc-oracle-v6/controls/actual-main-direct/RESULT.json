@@ -1,0 +1,22 @@
+{
+  "candidate_sha256": "6ef8f152a8888f6548a99f8182878e996080a6d31742346b8ca223286c6ae258",
+  "id": "actual-main-direct",
+  "receipts": {
+    "v5": {
+      "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+      "diagnostic": "",
+      "expected_rc": 0,
+      "rc": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2"
+    },
+    "v6": {
+      "checker_sha256": "a5d5d9ea2d06ccddf0ed70d9ed635a8d53e5c8b3db857e0917c05bdf10898089",
+      "diagnostic": "",
+      "expected_rc": 0,
+      "rc": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2"
+    }
+  }
+}

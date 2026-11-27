@@ -1,0 +1,47 @@
+{
+  "case": "NARIQ-LIBTRELLIS-MAP-1",
+  "arm": "guidance",
+  "ordinal": 1,
+  "requested_model": "gpt-6.1-sol",
+  "requested_effort": "low",
+  "execution": {
+    "rc": 0,
+    "wall_s": 98.833671,
+    "cli_version": "codex-cli 0.172.0",
+    "tool_audit_required": true
+  },
+  "jsonl": {
+    "fresh_thread_count": 1,
+    "thread_id": "01a21ac9-cebf-7681-99a6-a16fe80aa06a",
+    "completed_turn_count": 1,
+    "malformed_records": 0,
+    "errors": 0,
+    "usage": {
+      "input_tokens": 165840,
+      "cached_input_tokens": 118400,
+      "output_tokens": 827,
+      "reasoning_output_tokens": 11,
+      "uncached_input_tokens": 47440
+    },
+    "command_count": 6,
+    "item_types": [
+      "agent_message",
+      "command_execution",
+      "web_search"
+    ],
+    "commentary_overhead_chars": 433,
+    "final_message_chars": 800,
+    "outside_scope_review_flags": []
+  },
+  "changed_by_strong_turn": [],
+  "final_changes": [
+    "docs/research/exl3-4-gfx90a-libtrellis-design.md"
+  ],
+  "out_of_scope_changes": [],
+  "path_scope_pass": true,
+  "patch_sha256": "d2997c0fa8dc53aad732415c51580b3c70ae25b21a0651ab57fa8ebc99bb1e88",
+  "retained_runtime_artifacts": {},
+  "oracle": null,
+  "human_tool_and_answer_blinding_review": "pending",
+  "reasoning_accounting": "missing explicit reasoning tokens remain null; output includes them when reported"
+}

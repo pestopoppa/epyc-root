@@ -1,0 +1,13 @@
+{
+  "id": "cpu-PAW-5-off-recommended-numa-resume-1",
+  "rc": 1,
+  "oracle_sha256": "558b3a881aa866a9b60726128406600cd01908b0c8abb00c763552ce7b763b16",
+  "candidate_patch_sha256": "bf970443d3153d5008d4bd89e800cded665fc658992372ecd5d1a26df0950fad",
+  "cpu_affinity": "180-183",
+  "only_contained_affinity_adapted": false,
+  "raw_results_preserved": true,
+  "source_recommendation": "reject",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "09f5ea9f405601e171bc460210809052d304451db6cfb1040a45b6eb4cafeb6e",
+  "model_calls": 0
+}

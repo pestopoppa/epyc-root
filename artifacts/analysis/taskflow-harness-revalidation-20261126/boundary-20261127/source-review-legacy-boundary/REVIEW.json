@@ -1,0 +1,156 @@
+{
+  "legacy_package": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison",
+  "model_calls": 0,
+  "original_scores_preserved": true,
+  "purpose": "source-only review and commands for the owning session",
+  "rows": {
+    "cpu-MM-5-off-recommended": {
+      "candidate_patch_sha256": "5b69ed980a01f978230546533dd0a77e1e57420cd641264740a38465c8cf4dbc",
+      "case": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/MM-5/case.json",
+      "changed_files": {
+        "src/vision/analyzers/vl_describe.py": {
+          "bytes": 25616,
+          "executable": false,
+          "sha256": "3966d1c0eef9926831ea31fdf1ec9fc24fbf21b7ea9dcb88b46b48f314f31bfc"
+        },
+        "tests/unit/test_vl_describe_resize.py": {
+          "bytes": 7149,
+          "executable": false,
+          "sha256": "5e37272c06e14a7f76a6fe396bf0cb66b4dcada5e458ea568ca5c8c523c9195d"
+        }
+      },
+      "id": "cpu-MM-5-off-recommended",
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-MM-5-off-recommended/JOB.json": "03faee8ad4339bcd933f36f47a5c71db7503a9caefa55dc11e3a78ad31f8aeff",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-MM-5-off-recommended/RESULT.json": "3b055caa26f24fbba0f8ae342b6bbbab77e61eb74bb5359b3999ccd9d0765a48",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-MM-5-off-recommended/grade-lane/src/vision/analyzers/vl_describe.py": "3966d1c0eef9926831ea31fdf1ec9fc24fbf21b7ea9dcb88b46b48f314f31bfc",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-MM-5-off-recommended/grade-lane/tests/unit/test_vl_describe_resize.py": "5e37272c06e14a7f76a6fe396bf0cb66b4dcada5e458ea568ca5c8c523c9195d",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-MM-5-off-recommended/worker/candidate/candidate.patch": "5b69ed980a01f978230546533dd0a77e1e57420cd641264740a38465c8cf4dbc",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-MM-5-off-recommended/worker/receipt.json": "87db108de50dbe4d6191639619e4849067b439090a749645aaa0ff1dfb969078",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/MM-5/case.json": "08d950e7bfe1447adbd9f0fe124f1bfcf0b34cf5b6199e6c80b7049474f4a655",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/MM-5/evaluator-support/tu_grader_isolation.py": "6da203e37f636fe2d094f4742bbef5816daf2af04add8b5bf150fa3843891de5",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/MM-5/evaluator-support/vision_contract.py": "ebf06226092574fd21faeb026624618074308a82fa5307cbe488861482215cbb",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/MM-5/oracle.py": "90eafed6401a1a1e744376fb849af4a551372cb26f787e4265e6fcfa9a967745",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/MM-5/task-env.json": "65abb3f4db8cc69ac0a53eca561fa9bc71fbb92dc832ff913f16d125e5289cc2"
+      },
+      "kind": "python",
+      "lane": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-MM-5-off-recommended/grade-lane",
+      "oracle": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/MM-5/oracle.py",
+      "raw_status": "awaiting_source_review",
+      "reasons": [
+        "Reject. The brief conditions resizing on w*h exceeding max_pixels and requires raw bytes otherwise. Candidate encode_image_for_vl enters its resize path for every non-None cap at src/vision/analyzers/vl_describe.py:96–103. Its test for an already-under-cap image checks decoded grid/dimensions and never compares original bytes.",
+        "If caps below one 28x28 patch are supported by the API, the final loop cannot satisfy such a cap because both sides are clamped to 28. This is an additional input-validation concern and does not determine the review."
+      ],
+      "source_recommendation": "reject"
+    },
+    "cpu-PAW-5-off-recommended-numa-resume-1": {
+      "candidate_patch_sha256": "bf970443d3153d5008d4bd89e800cded665fc658992372ecd5d1a26df0950fad",
+      "case": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/packets/PAW-5/case.json",
+      "changed_files": {
+        "docs/reference/harness-candidates/paw-5-compile-once-candidates.md": {
+          "bytes": 10869,
+          "executable": false,
+          "sha256": "506db508599080eb7b155165d58ef3f84c9d4c22e4b449556f945e5904fdfa0f"
+        }
+      },
+      "id": "cpu-PAW-5-off-recommended-numa-resume-1",
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/packets/PAW-5/case.json": "cea78594e1ef7aa1588351dddd51c7224f76f7d7d2144512064d1c9d5bc38e41",
+        "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/packets/PAW-5/oracle-format-v3.py": "558b3a881aa866a9b60726128406600cd01908b0c8abb00c763552ce7b763b16",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-PAW-5-off-recommended-numa-resume-1/ORACLE.stderr.log": "09f5ea9f405601e171bc460210809052d304451db6cfb1040a45b6eb4cafeb6e",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-PAW-5-off-recommended-numa-resume-1/RESULT.json": "1c28ec8b83e34244e0c13345cf8a8533e662593d20d4fb4b7f553f936b76db3c",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-PAW-5-off-recommended-numa-resume-1/independent/candidate.patch": "bf970443d3153d5008d4bd89e800cded665fc658992372ecd5d1a26df0950fad",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-PAW-5-off-recommended-numa-resume-1/independent/work/docs/reference/harness-candidates/paw-5-compile-once-candidates.md": "506db508599080eb7b155165d58ef3f84c9d4c22e4b449556f945e5904fdfa0f"
+      },
+      "kind": "markdown",
+      "lane": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-PAW-5-off-recommended-numa-resume-1/independent/work",
+      "oracle": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/packets/PAW-5/oracle-format-v3.py",
+      "raw_status": "oracle_fail",
+      "reasons": [
+        "Reject on source fidelity and semantic scope. Raw v3 failed Comparison because its three labels introduce bullet bodies. A scratch-only layout normalization moved each existing first bullet onto its label line and the exact same checker passed, establishing a layout confound separate from the substantive review.",
+        "Candidate 1 describes six known error categories and the FW-1 F1 fallback as current. At APP 332ceb2e14d16f2031bd17b1f7c839ce8276a24b, src/graph/error_classifier.py:12–36 branches across seven named categories before UNKNOWN, and src/graph/nodes.py uses seven _classify_error call sites. FW-1 is historical design context under the owner brief.",
+        "Candidate 2's pruning seam matches the staged context_arm_ab.py:162–172. Candidate 3 hands explicit deterministic routing policy, including the final_schema_validation feature gate in repl_executor.py:711, to a learned predicate. The brief requires identifying a semantic decision separately from deterministic behavior."
+      ],
+      "source_recommendation": "reject"
+    },
+    "gpu-MM-5-off-common-on-sampling": {
+      "candidate_patch_sha256": "a62cb7476c519b0ece04a00e35093d2f1ff7e9874eea8d042cb6d89af194b17f",
+      "case": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/MM-5/case.json",
+      "changed_files": {
+        "src/vision/analyzers/vl_describe.py": {
+          "bytes": 25150,
+          "executable": false,
+          "sha256": "64d1e88c0925759378f8541ed8f407f2c1cd68e2920590df4184eaade2744057"
+        },
+        "tests/unit/test_vl_describe_resize.py": {
+          "bytes": 7436,
+          "executable": false,
+          "sha256": "92c1299a1b6f068ceeee7f12c7b8016c3132832ca772674874842464502dadbe"
+        }
+      },
+      "id": "gpu-MM-5-off-common-on-sampling",
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-MM-5-off-common-on-sampling/JOB.json": "3939b0eda3a52b5145d571b18b5b96eca1671e898e5476b95eb9f8070361536b",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-MM-5-off-common-on-sampling/RESULT.json": "5813820a8dfcf7789a1aed47397ec0e972a96bf347220f166bab3ec6873e9458",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-MM-5-off-common-on-sampling/grade-lane/src/vision/analyzers/vl_describe.py": "64d1e88c0925759378f8541ed8f407f2c1cd68e2920590df4184eaade2744057",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-MM-5-off-common-on-sampling/grade-lane/tests/unit/test_vl_describe_resize.py": "92c1299a1b6f068ceeee7f12c7b8016c3132832ca772674874842464502dadbe",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-MM-5-off-common-on-sampling/worker/candidate/candidate.patch": "a62cb7476c519b0ece04a00e35093d2f1ff7e9874eea8d042cb6d89af194b17f",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-MM-5-off-common-on-sampling/worker/receipt.json": "0d13470f6075095c318daceb2e30a5290fe70b8f8d335f9e986b9e89cce8c50f",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/MM-5/case.json": "08d950e7bfe1447adbd9f0fe124f1bfcf0b34cf5b6199e6c80b7049474f4a655",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/MM-5/evaluator-support/tu_grader_isolation.py": "6da203e37f636fe2d094f4742bbef5816daf2af04add8b5bf150fa3843891de5",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/MM-5/evaluator-support/vision_contract.py": "ebf06226092574fd21faeb026624618074308a82fa5307cbe488861482215cbb",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/MM-5/oracle.py": "90eafed6401a1a1e744376fb849af4a551372cb26f787e4265e6fcfa9a967745",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/MM-5/task-env.json": "65abb3f4db8cc69ac0a53eca561fa9bc71fbb92dc832ff913f16d125e5289cc2"
+      },
+      "kind": "python",
+      "lane": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-MM-5-off-common-on-sampling/grade-lane",
+      "oracle": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/MM-5/oracle.py",
+      "raw_status": "awaiting_source_review",
+      "reasons": [
+        "Reject the aspect-ratio handling for feasible tall inputs. The brief requires PIL resizing while keeping aspect ratio, rounding to the 28-pixel grid, and re-enforcing the cap for both orientations. For 100x4000 at cap 7840 the candidate clamps to 28x560, then its width-only loop and height fallback produce 28x28 at src/vision/analyzers/vl_describe.py:90–115. The feasible 28x280 preserves substantially more of the original portrait geometry while meeting the exact same cap and patch grid.",
+        "Default and already-under-cap paths preserve raw bytes, and the recorder uses its existing notes parameter. The verifier's tighter cap=784 requires a square, so its acceptance alone cannot establish aspect-ratio handling at other feasible budgets.",
+        "Caps below 784 cannot be fulfilled by a resized image on this grid. The code emits a 784-pixel image in such cases, but the intended supported input domain for smaller caps was not explicitly pinned. The source rejection uses the feasible 7840-pixel case."
+      ],
+      "source_recommendation": "reject"
+    },
+    "gpu-TU-GR-1-off-common-on-sampling": {
+      "candidate_patch_sha256": "a0f2772e539762d40426c5bdb2c121ad181bc4de7a4bacbde3e76dca58c20de5",
+      "case": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/TU-GR-1/case.json",
+      "changed_files": {
+        "scripts/autopilot/evals/dtap/harness/isolation.py": {
+          "bytes": 5445,
+          "executable": false,
+          "sha256": "92af49a8b74f742bf2a0dac3c1694da1a0bc907508a6c6d894f2e6c7f2648edc"
+        },
+        "scripts/autopilot/evals/dtap/tests/test_grader_isolation.py": {
+          "bytes": 4951,
+          "executable": false,
+          "sha256": "036460b106d8944bd18b1de53106fb72b983ed9ab00d2c3eb953605175ad8b79"
+        }
+      },
+      "id": "gpu-TU-GR-1-off-common-on-sampling",
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-TU-GR-1-off-common-on-sampling/JOB.json": "95c58bafed96bf40eaa177427d94bd186d77ed447428495b16ca0863bab0948c",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-TU-GR-1-off-common-on-sampling/RESULT.json": "9ef8dd08bb07c3bf1d0b0bae80e02d761177e1aef18e4a0d0c6b118ca371acb3",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-TU-GR-1-off-common-on-sampling/grade-lane/scripts/autopilot/evals/dtap/harness/isolation.py": "92af49a8b74f742bf2a0dac3c1694da1a0bc907508a6c6d894f2e6c7f2648edc",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-TU-GR-1-off-common-on-sampling/grade-lane/scripts/autopilot/evals/dtap/tests/test_grader_isolation.py": "036460b106d8944bd18b1de53106fb72b983ed9ab00d2c3eb953605175ad8b79",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-TU-GR-1-off-common-on-sampling/worker/candidate/candidate.patch": "a0f2772e539762d40426c5bdb2c121ad181bc4de7a4bacbde3e76dca58c20de5",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-TU-GR-1-off-common-on-sampling/worker/receipt.json": "2e5d8568f0262a4c65c5d4c582f2cc94aa2152708d339eeb57b6d86c5a0d24ec",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/TU-GR-1/case.json": "d7a455b74aa99393979341d60bae2d5f62a2b2edfd623425c952561dfe4f2aba",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/TU-GR-1/evaluator-support/tu_grader_isolation.py": "6da203e37f636fe2d094f4742bbef5816daf2af04add8b5bf150fa3843891de5",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/TU-GR-1/evaluator-support/vision_contract.py": "ebf06226092574fd21faeb026624618074308a82fa5307cbe488861482215cbb",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/TU-GR-1/oracle.py": "8385fe0c79b0726a0b5f4d7f5ace1b7c9cf9779445a96b1733087907560b62c2",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/TU-GR-1/task-env.json": "65abb3f4db8cc69ac0a53eca561fa9bc71fbb92dc832ff913f16d125e5289cc2"
+      },
+      "kind": "python",
+      "lane": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-TU-GR-1-off-common-on-sampling/grade-lane",
+      "oracle": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/TU-GR-1/oracle.py",
+      "raw_status": "awaiting_source_review",
+      "reasons": [
+        "Reject. The brief permits a skip only for explicit permission refusal setting up the user namespace. tests/test_grader_isolation.py:112–122 skips any failed child's permission text, including mount-stage permission failure, which the trusted mount-permission-refusal control explicitly requires to fail.",
+        "The brief requires failure for missing or malformed child stdout and preserves launcher/probe failure separately from inaccessible grader material. harness/isolation.py:120–143 returns a false-access dict with None errno for rc0 empty stdout and accepts parseable JSON without checking a nonzero child rc. assert_grader_unreachable only examines open_ok/listdir_ok, so the no-output dict can pass for denial."
+      ],
+      "source_recommendation": "reject"
+    }
+  }
+}

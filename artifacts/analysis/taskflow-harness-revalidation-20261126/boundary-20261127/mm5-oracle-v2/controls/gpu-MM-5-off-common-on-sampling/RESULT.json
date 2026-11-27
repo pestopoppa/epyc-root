@@ -1,0 +1,13 @@
+{
+  "diagnostic": [
+    "AssertionError: source (100, 4000), cap 7840: encoded dimensions (28, 28) lose source orientation"
+  ],
+  "id": "gpu-MM-5-off-common-on-sampling",
+  "lane": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-MM-5-off-common-on-sampling/grade-lane",
+  "original_oracle_rc_retained": 0,
+  "preserved_runtime_artifacts": [],
+  "source_sha256": "64d1e88c0925759378f8541ed8f407f2c1cd68e2920590df4184eaade2744057",
+  "stderr_sha256": "7464a9b094e3b3f9dfa406b18149f615bd6831210ae193c0b867ef09fd899e19",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "v2_rc": 1
+}

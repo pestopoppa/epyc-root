@@ -1,0 +1,9 @@
+{
+  "native_correction_ordinal": 0,
+  "backend": "cpu",
+  "resource_continuation_is_not_semantic_guidance": true,
+  "CONTINUATION_sha256": "006b8a4e900ff4eff176f5fa250d51bbd2e2a1d2c433264c2795f749bd7f6d90",
+  "PROMPT_sha256": "be85476e3b87d8ffe5eac73b839188ca07746a6b552f1854dd2bd89dea05678c",
+  "neutral_restart_text": "Resume the same task from your existing private workspace and session. The controller interrupted the previous turn for a CPU serving-placement repair. Continue the original pinned brief and its existing scopes and checks. No additional task guidance is available.\n",
+  "structural_receipt_sha256": "2a217b0a7e0214a48a4a5c2c2548c4af0039589a2d33b2a2a73399f9455deed0"
+}

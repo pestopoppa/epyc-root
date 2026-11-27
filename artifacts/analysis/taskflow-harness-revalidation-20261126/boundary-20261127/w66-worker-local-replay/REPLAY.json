@@ -1,0 +1,153 @@
+{
+  "runs": [
+    {
+      "label": "baseline",
+      "source_unit": "gpu-DS41-W-66-off-common-on-sampling",
+      "source_candidate": false,
+      "candidate_sha256": "ec49d2f0607335d2a68c2522a9eee81fa379eb2e9d1d3f522af4e30c35096d83",
+      "checks": [
+        {
+          "kind": "original-acceptance",
+          "command": "python3 -m pytest -q scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py scripts/kernel_rnd/autokernel/loop/test_serial_run.py::test_actual_cpu_post_keep_resume_rebinds_original_launch_without_recalibration",
+          "rc": 1,
+          "wall_s": 5.921062865993008,
+          "stdout_sha256": "862b05dae7198487ccef8b92b9da41ea8878a17de2b4567032d48ff7c592877f",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "kind": "runtime-call-untruncated",
+          "command": "python3 -m pytest -xvs scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py::test_runtime_keep_then_source_reuses_actual_recipe_and_fresh_source_floor",
+          "rc": 1,
+          "wall_s": 2.9222097469028085,
+          "stdout_sha256": "27cbc8587519c7c1d44c6e1d968acb8f2216e472f2dae00698cd69189b937a5a",
+          "stderr_sha256": "fefae9880bc97cf626f6b87e8f35825211d3cf7d8c5a177dc1d392786ef59ccc"
+        },
+        {
+          "kind": "serial-call-untruncated",
+          "command": "python3 -m pytest -xvs scripts/kernel_rnd/autokernel/loop/test_serial_run.py::test_actual_cpu_post_keep_resume_rebinds_original_launch_without_recalibration",
+          "rc": 0,
+          "wall_s": 3.830881271045655,
+          "stdout_sha256": "602b23b62b85ab61138ae2a8c82e2e537673208689100b22c0feb008ca22da8b",
+          "stderr_sha256": "9d998f22ce439097af6fd91ee349524a276da5edcfb82a31cf0d8095a9cf4745"
+        },
+        {
+          "kind": "canonical-independent-oracle",
+          "command": "export PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONDONTWRITEBYTECODE=1; exec python3 /case/.taskflow-refs/.independent-oracle.py --pytest /tmp/independent-pytest",
+          "rc": 1,
+          "stdout_sha256": "dff17fd9cd764a0c62a2219273bce4581d624eb8574afcb0b15540feb81fcacc",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "stock_container": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/w66-worker-local-replay/runs/baseline/sandbox/CONTAINER.json",
+      "owned_container_removed": true,
+      "provider_upstream_port": 1,
+      "no_model_endpoint_supplied": true,
+      "model_prompt_or_session_calls": 0,
+      "actual_stock_readonly_refs_and_gitsetup": true
+    },
+    {
+      "label": "off-common-final",
+      "source_unit": "gpu-DS41-W-66-off-common-on-sampling",
+      "source_candidate": true,
+      "candidate_sha256": "bd2462c5af8f7ca9a1404c501a4ca2d3369500ce2c666264cf18c53251eefd67",
+      "checks": [
+        {
+          "kind": "original-acceptance",
+          "command": "python3 -m pytest -q scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py scripts/kernel_rnd/autokernel/loop/test_serial_run.py::test_actual_cpu_post_keep_resume_rebinds_original_launch_without_recalibration",
+          "rc": 0,
+          "wall_s": 5.89732616301626,
+          "stdout_sha256": "a80cee8220ecc38db0d8f4c3c9a4c9950d246d5ed7169e9e191617413ff807fc",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "kind": "runtime-call-untruncated",
+          "command": "python3 -m pytest -xvs scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py::test_runtime_keep_then_source_reuses_actual_recipe_and_fresh_source_floor",
+          "rc": 0,
+          "wall_s": 3.321134804049507,
+          "stdout_sha256": "54400a7fef98368897ae6a56a77cf705ebdb6dc602d902df31dd94ca7863205d",
+          "stderr_sha256": "3951034d8df1e40dc7f807302fae46c427a9e049e8a4c5c32cfe1d4023ca0005"
+        },
+        {
+          "kind": "serial-call-untruncated",
+          "command": "python3 -m pytest -xvs scripts/kernel_rnd/autokernel/loop/test_serial_run.py::test_actual_cpu_post_keep_resume_rebinds_original_launch_without_recalibration",
+          "rc": 0,
+          "wall_s": 4.15392581699416,
+          "stdout_sha256": "cb7940e38697c62aa565f31cd81e9918a4ab3486a1c01065096b54a54e770116",
+          "stderr_sha256": "49982bf4b561286b2c2c6a228ea698249ccf2c5d1603f1f700d4530c0a2fb248"
+        },
+        {
+          "kind": "canonical-independent-oracle",
+          "command": "export PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONDONTWRITEBYTECODE=1; exec python3 /case/.taskflow-refs/.independent-oracle.py --pytest /tmp/independent-pytest",
+          "rc": 0,
+          "stdout_sha256": "b44f011eac8728be40c643fbb72202d9b1197229a5a3ea5600fd917f29edad81",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "stock_container": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/w66-worker-local-replay/runs/off-common-final/sandbox/CONTAINER.json",
+      "owned_container_removed": true,
+      "provider_upstream_port": 1,
+      "no_model_endpoint_supplied": true,
+      "model_prompt_or_session_calls": 0,
+      "actual_stock_readonly_refs_and_gitsetup": true
+    },
+    {
+      "label": "off-recommended-final",
+      "source_unit": "gpu-DS41-W-66-off-recommended",
+      "source_candidate": true,
+      "candidate_sha256": "65a8295c05ddaad38a0a04e2acb0af4bd49aa8a756ffbdcee9ee630db0f0e639",
+      "checks": [
+        {
+          "kind": "original-acceptance",
+          "command": "python3 -m pytest -q scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py scripts/kernel_rnd/autokernel/loop/test_serial_run.py::test_actual_cpu_post_keep_resume_rebinds_original_launch_without_recalibration",
+          "rc": 1,
+          "wall_s": 5.194503203034401,
+          "stdout_sha256": "bd53509bb83118ca90b5cf872105f1fc42eb84df465ad60bec0d60b21b274397",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "kind": "runtime-call-untruncated",
+          "command": "python3 -m pytest -xvs scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py::test_runtime_keep_then_source_reuses_actual_recipe_and_fresh_source_floor",
+          "rc": 1,
+          "wall_s": 3.529202026082203,
+          "stdout_sha256": "029cdf9466106996e9adf7befc5de02954e056de59dcc172ea1b6db27fd877c4",
+          "stderr_sha256": "fefae9880bc97cf626f6b87e8f35825211d3cf7d8c5a177dc1d392786ef59ccc"
+        },
+        {
+          "kind": "serial-call-untruncated",
+          "command": "python3 -m pytest -xvs scripts/kernel_rnd/autokernel/loop/test_serial_run.py::test_actual_cpu_post_keep_resume_rebinds_original_launch_without_recalibration",
+          "rc": 0,
+          "wall_s": 4.250841977074742,
+          "stdout_sha256": "624ca77e6609c4353b8824180941d3c7298eb23e185fca7ad5b1d727181bbb01",
+          "stderr_sha256": "a705b8f85f38288a1963d5b85d1082d13737befb0dcfa2b771ec5e55f1ae79d9"
+        },
+        {
+          "kind": "canonical-independent-oracle",
+          "command": "export PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONDONTWRITEBYTECODE=1; exec python3 /case/.taskflow-refs/.independent-oracle.py --pytest /tmp/independent-pytest",
+          "rc": 1,
+          "stdout_sha256": "09e4659aed95dabdfc2fbac01f6e09ebb11d0369fec354bcd1ef53abf4007f16",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "stock_container": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/w66-worker-local-replay/runs/off-recommended-final/sandbox/CONTAINER.json",
+      "owned_container_removed": true,
+      "provider_upstream_port": 1,
+      "no_model_endpoint_supplied": true,
+      "model_prompt_or_session_calls": 0,
+      "actual_stock_readonly_refs_and_gitsetup": true
+    }
+  ],
+  "original_inputs_sha256": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/packets/DS41-W-66/case.json": "8c0d052352d737a273153ede8ffc5501fa345ec401b5979f1ff13214e6a58a27",
+    "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/packets/DS41-W-66/oracle.py": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+    "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/packets/DS41-W-66/baseline/scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py": "ec49d2f0607335d2a68c2522a9eee81fa379eb2e9d1d3f522af4e30c35096d83",
+    "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-DS41-W-66-off-common-on-sampling/RESULT.json": "48a6344585d9b345d396919205dc89c2857d3f694c62336d6cabce0aa8345d06",
+    "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-DS41-W-66-off-common-on-sampling/OPEN-CODE-SESSION.json": "c64423a0cddba89516fc26c406499e4d2880a0a091ebafba745c9908a02368c8",
+    "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-DS41-W-66-off-common-on-sampling/independent/work/scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py": "bd2462c5af8f7ca9a1404c501a4ca2d3369500ce2c666264cf18c53251eefd67",
+    "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-DS41-W-66-off-recommended/RESULT.json": "40f8077a933237dddca5a2fc202be9f8b416ce0d4542d3cd80c20c0006a735e0",
+    "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-DS41-W-66-off-recommended/OPEN-CODE-SESSION.json": "30761736ea56089152e62f50277f244af578bc2dca39aeab82907c507d423733",
+    "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-DS41-W-66-off-recommended/independent/work/scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py": "65a8295c05ddaad38a0a04e2acb0af4bd49aa8a756ffbdcee9ee630db0f0e639"
+  },
+  "source_unchanged": true,
+  "model_calls": 0,
+  "canonical_or_live_edits": false
+}

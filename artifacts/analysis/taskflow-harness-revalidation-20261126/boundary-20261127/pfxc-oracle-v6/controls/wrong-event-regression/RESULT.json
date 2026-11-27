@@ -1,0 +1,22 @@
+{
+  "candidate_sha256": "7bef03d6047bd7a9b8c82d5dc330061fae68c3d900794437af44a1408834809f",
+  "id": "wrong-event-regression",
+  "receipts": {
+    "v5": {
+      "checker_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+      "diagnostic": "event 1: size 329.658 MiB, expected 329.659 MiB",
+      "expected_rc": 1,
+      "rc": 1,
+      "stderr_sha256": "68d6c407acfc489bba153901e0ace8c1f434b2e0ffd063d7db2f73fca964fb89",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "v6": {
+      "checker_sha256": "a5d5d9ea2d06ccddf0ed70d9ed635a8d53e5c8b3db857e0917c05bdf10898089",
+      "diagnostic": "event 1: size 329.658 MiB, expected 329.659 MiB",
+      "expected_rc": 1,
+      "rc": 1,
+      "stderr_sha256": "68d6c407acfc489bba153901e0ace8c1f434b2e0ffd063d7db2f73fca964fb89",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

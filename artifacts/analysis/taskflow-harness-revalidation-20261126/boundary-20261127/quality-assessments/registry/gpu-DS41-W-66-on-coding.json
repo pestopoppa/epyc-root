@@ -1,0 +1,8 @@
+{
+  "candidate_patch_sha256": "62c3fde23c88c9d1cb8eb2d6ce60a662296dc60cfeba97119cd46f70a1b131de",
+  "decision": "accepted",
+  "source_review": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/quality-assessments/gpu-DS41-W-66-on-coding.json",
+  "source_review_sha256": "2a6afc12c4bd6c56d46332536fb3c2bb92147db85fd0583d334608a74896e698",
+  "normal_completion": true,
+  "review_cost_class": "unisolated manager review, not free or included in paid CLI execution vectors"
+}

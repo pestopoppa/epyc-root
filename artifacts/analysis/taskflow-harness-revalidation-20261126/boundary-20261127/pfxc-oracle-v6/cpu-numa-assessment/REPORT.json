@@ -1,0 +1,31 @@
+{
+  "unit": "cpu-PFXC-A3-off-recommended-numa-resume-1",
+  "result_sha256": "f6cf45931a76924816aca598ee90e40f12de8e380adaa32af71d9efcf8e51c08",
+  "candidate_patch_sha256": "efac66df6e8156f754ac8b12d6a8900c09258656cc4870cb5350486094e1123a",
+  "candidate_sha256": "47b09d264a212f86cd6944671e0bb742e35a59b2933823b030521af440f9606d",
+  "raw_status": "oracle_pass",
+  "raw_oracle": {
+    "rc": 0,
+    "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+    "acceptance_version": "original",
+    "original_oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+    "stdout_sha256": "a3e07692eeabc2c4c33e435198b691f8997f66ddc473414683503708cb2124c0",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "semantic_review_required": true
+  },
+  "reassessment_version": "pfxc.recipe-hyperlink.v6",
+  "reassessment_oracle_sha256": "a5d5d9ea2d06ccddf0ed70d9ed635a8d53e5c8b3db857e0917c05bdf10898089",
+  "rc": 0,
+  "diagnostic": "",
+  "stdout_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "raw_scores_unchanged": true,
+  "original_inputs_sha256": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-PFXC-A3-off-recommended-numa-resume-1/RESULT.json": "f6cf45931a76924816aca598ee90e40f12de8e380adaa32af71d9efcf8e51c08",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-PFXC-A3-off-recommended-numa-resume-1/independent/work/docs/research/qwen3.6-35b-a3b-q8-gpu-mtp-cache-sizing.md": "47b09d264a212f86cd6944671e0bb742e35a59b2933823b030521af440f9606d",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-PFXC-A3-off-recommended-numa-resume-1/independent/work/artifacts/serving-recipes/qwen3.6-35b-a3b-q8-gpu-mtp.json": "d3a3cf4f935a00dd9b020ea409f52a26caedfe3cf2325f636ae7c4edd5cf302b",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-PFXC-A3-off-recommended-numa-resume-1/independent/candidate.patch": "efac66df6e8156f754ac8b12d6a8900c09258656cc4870cb5350486094e1123a"
+  },
+  "semantics": "requires independent semantic review; structural pass is not semantic acceptance",
+  "model_calls": 0
+}

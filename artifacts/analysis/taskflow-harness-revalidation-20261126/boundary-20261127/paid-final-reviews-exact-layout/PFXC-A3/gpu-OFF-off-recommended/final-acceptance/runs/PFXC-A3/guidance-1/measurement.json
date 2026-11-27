@@ -1,0 +1,46 @@
+{
+  "case": "PFXC-A3",
+  "arm": "guidance",
+  "ordinal": 1,
+  "requested_model": "gpt-6.1-sol",
+  "requested_effort": "low",
+  "execution": {
+    "rc": 0,
+    "wall_s": 89.734293,
+    "cli_version": "codex-cli 0.172.0",
+    "tool_audit_required": true
+  },
+  "jsonl": {
+    "fresh_thread_count": 1,
+    "thread_id": "01a21aa8-2f26-7c13-8cd3-2fe9b8f732a9",
+    "completed_turn_count": 1,
+    "malformed_records": 0,
+    "errors": 0,
+    "usage": {
+      "input_tokens": 115858,
+      "cached_input_tokens": 96128,
+      "output_tokens": 936,
+      "reasoning_output_tokens": 47,
+      "uncached_input_tokens": 19730
+    },
+    "command_count": 5,
+    "item_types": [
+      "agent_message",
+      "command_execution"
+    ],
+    "commentary_overhead_chars": 118,
+    "final_message_chars": 602,
+    "outside_scope_review_flags": []
+  },
+  "changed_by_strong_turn": [],
+  "final_changes": [
+    "docs/research/qwen3.6-35b-a3b-q8-gpu-mtp-cache-sizing.md"
+  ],
+  "out_of_scope_changes": [],
+  "path_scope_pass": true,
+  "patch_sha256": "3d6cc5ba41d924bf8c2b21f99fca9af568326b0a3d653aadacba8d590668a632",
+  "retained_runtime_artifacts": {},
+  "oracle": null,
+  "human_tool_and_answer_blinding_review": "pending",
+  "reasoning_accounting": "missing explicit reasoning tokens remain null; output includes them when reported"
+}

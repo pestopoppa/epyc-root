@@ -1,0 +1,13 @@
+{
+  "diagnostic": [
+    "ImportError: cannot import name 'encode_image_for_vl' from 'src.vision.analyzers.vl_describe' (/case/src/vision/analyzers/vl_describe.py)"
+  ],
+  "id": "original-baseline",
+  "lane": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/MM-5/baseline",
+  "original_oracle_rc_retained": 1,
+  "preserved_runtime_artifacts": [],
+  "source_sha256": "29f96ef634f040581ea9894920fe270a060f6be8562fc2c80cb5c600a4a9214a",
+  "stderr_sha256": "be5bd2974eeb52f2eae132bcf86d8657884f1a49f62fd83cac91f5d642e7cb3a",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "v2_rc": 1
+}

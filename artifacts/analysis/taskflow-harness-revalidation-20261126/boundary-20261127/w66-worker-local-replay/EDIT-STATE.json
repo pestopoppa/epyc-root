@@ -1,0 +1,46 @@
+[
+  {
+    "unit": "gpu-DS41-W-66-off-common-on-sampling",
+    "edits": [
+      {
+        "completed_ms": 1795740340967,
+        "tool_id": "npcPloEOxwwVulTtisqWEesxG87eQdRY",
+        "target_sha256": "dd82b8b80f7ec0f4d4ca0296096787ef5b2ea949a08e2abb81406d687a2dd41a"
+      },
+      {
+        "completed_ms": 1795740422619,
+        "tool_id": "iBtBCm7DRWo24Iu2cX3xWaZqvCVoOxeH",
+        "target_sha256": "bd2462c5af8f7ca9a1404c501a4ca2d3369500ce2c666264cf18c53251eefd67"
+      }
+    ],
+    "reconstruction_matches_final": true,
+    "final_sha256": "bd2462c5af8f7ca9a1404c501a4ca2d3369500ce2c666264cf18c53251eefd67"
+  },
+  {
+    "unit": "gpu-DS41-W-66-off-recommended",
+    "edits": [
+      {
+        "completed_ms": 1795742446884,
+        "tool_id": "8oRpKUuqgwhw18c4bBl2mIXjHIneCLOF",
+        "target_sha256": "d1b2b842662f71b86303b44fe366b88a31934a90afecb3359ac5ca816f872ce3"
+      },
+      {
+        "completed_ms": 1795742458059,
+        "tool_id": "teSTyyvh62r0QvewRa0zA45nZfiNndlq",
+        "target_sha256": "82fbea46a71b3e910e1c858fb28531aef78e9765f2c9c280e60d5ce0939e853e"
+      },
+      {
+        "completed_ms": 1795742548397,
+        "tool_id": "nFBiaDzalmLTuX2p1wC7RnBz0bYuLFml",
+        "target_sha256": "d8bdb916230cdc93f0d4e2ae831355d36b6ac5f949863093b9cea0d29bee1c96"
+      },
+      {
+        "completed_ms": 1795742589892,
+        "tool_id": "rFU1kqMvkIM2a3IBEryFexre15SrfMVE",
+        "target_sha256": "65a8295c05ddaad38a0a04e2acb0af4bd49aa8a756ffbdcee9ee630db0f0e639"
+      }
+    ],
+    "reconstruction_matches_final": true,
+    "final_sha256": "65a8295c05ddaad38a0a04e2acb0af4bd49aa8a756ffbdcee9ee630db0f0e639"
+  }
+]

@@ -1,0 +1,85 @@
+{
+  "schema": "epyc.main-comparison.plan.v1",
+  "case": "PFXC-A3",
+  "arm": "guidance",
+  "ordinal": 1,
+  "model": "gpt-6.1-sol",
+  "reasoning_effort": "low",
+  "provider": "openai",
+  "fresh_session": true,
+  "expected_cli_version": "codex-cli 0.172.0",
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--json",
+    "--ephemeral",
+    "--ignore-user-config",
+    "--ignore-rules",
+    "--skip-git-repo-check",
+    "--sandbox",
+    "danger-full-access",
+    "-C",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/reviews/PFXC-A3/cpu-OFF-off-recommended/final-acceptance/runs/PFXC-A3/guidance-1/lane",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"low\"",
+    "-c",
+    "model_provider=\"openai\"",
+    "-c",
+    "project_doc_max_bytes=0",
+    "-c",
+    "mcp_servers={}",
+    "-"
+  ],
+  "task_scope": "Inspect and provide feedback only",
+  "filesystem_boundary": "private staged working directory with audited instruction-scoped access",
+  "reasoning_usage": "capture explicit CLI usage when exposed, otherwise report unavailable",
+  "max_wall_s": 900,
+  "command_affinity": "84-87",
+  "resource_class": "remote model, local control shell only",
+  "outside_worker_oracle": [
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/reviews/PFXC-A3/cpu-OFF-off-recommended/final-acceptance/cases/PFXC-A3/oracle.py",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/reviews/PFXC-A3/cpu-OFF-off-recommended/final-acceptance/runs/PFXC-A3/guidance-1/lane"
+  ],
+  "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+  "prompt_sha256": "42424eb893d5b2e4cef42066f236a8ce6b0af869afbd0166c26a1303e1aeea23",
+  "before_files": {
+    ".taskflow-refs/epyc-root@9cd1c942a3ad9edce34ba42b8eaf796156e8be72/handoffs/active/kernel-champion-and-promotion.md": {
+      "sha256": "6212a31c7077ed6186307c60daddaf34c6303b094782fb3a982799d799fe8395",
+      "bytes": 868556,
+      "executable": false
+    },
+    ".taskflow-refs/external/pfxc/pfxc-source-excerpts.txt": {
+      "sha256": "68f3d17552f7dceca7a676311e5f10b46bb2b601673edd064cdb7f18b698d1b2",
+      "bytes": 7985,
+      "executable": false
+    },
+    "artifacts/serving-recipes/qwen3.6-35b-a3b-q8-gpu-mtp.json": {
+      "sha256": "d3a3cf4f935a00dd9b020ea409f52a26caedfe3cf2325f636ae7c4edd5cf302b",
+      "bytes": 549,
+      "executable": false
+    },
+    "docs/research/qwen3.6-35b-a3b-q8-gpu-mtp-cache-sizing.md": {
+      "sha256": "47b09d264a212f86cd6944671e0bb742e35a59b2933823b030521af440f9606d",
+      "bytes": 6934,
+      "executable": false
+    }
+  },
+  "received_local_proposal": [
+    "docs/research/qwen3.6-35b-a3b-q8-gpu-mtp-cache-sizing.md"
+  ],
+  "feedback_sha256": "84302cfb477023488eeb1d5352cdeb91a36558d449f6851a658db873fd51447d",
+  "live_calls": "await_native_harness_readiness_and_main_approval",
+  "review_kind": "final-acceptance",
+  "mode": "cpu-OFF-off-recommended",
+  "native_ordinal": 0,
+  "native_correction_ceiling": 2,
+  "allowed_next_native_correction": null,
+  "assistance_role": "paid-independent-final-acceptance",
+  "source_native_result_sha256": "f6cf45931a76924816aca598ee90e40f12de8e380adaa32af71d9efcf8e51c08",
+  "candidate_input_patch_sha256": "efac66df6e8156f754ac8b12d6a8900c09258656cc4870cb5350486094e1123a",
+  "candidate_scope": "read-only exact staged proposal"
+}

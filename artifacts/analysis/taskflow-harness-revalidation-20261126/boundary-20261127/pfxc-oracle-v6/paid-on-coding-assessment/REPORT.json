@@ -1,0 +1,31 @@
+{
+  "unit": "gpu-PFXC-A3-on-coding-guidance-2",
+  "result_sha256": "1153e80178eac64b9cb359d82844733c9a19b390b3ad66a586b47ff8c695ea74",
+  "candidate_patch_sha256": "3315a44a7c9622c014664b369e0549dd255ca5b2c5c4a79c30174f70b0e326ae",
+  "candidate_sha256": "b880754cc6aa083d33833c48c64df26f4489590920ed1f27f7cac1f88f7a09c1",
+  "raw_status": "oracle_fail",
+  "raw_oracle": {
+    "rc": 1,
+    "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+    "acceptance_version": "original",
+    "original_oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "dbce1c80ddae9d931f30e41d7189bed7855bf2afc06481bab2e7072b46eb901c",
+    "semantic_review_required": true
+  },
+  "reassessment_version": "pfxc.recipe-hyperlink.v6",
+  "reassessment_oracle_sha256": "a5d5d9ea2d06ccddf0ed70d9ed635a8d53e5c8b3db857e0917c05bdf10898089",
+  "rc": 1,
+  "diagnostic": "required recipe hyperlink target does not resolve to the supplied pinned canonical recipe",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "03c0e4d1419749e5d28b8dabbf7d961c2e5774a78a750c167890267238ce1731",
+  "raw_scores_unchanged": true,
+  "original_inputs_sha256": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-on-coding-guidance-2/RESULT.json": "1153e80178eac64b9cb359d82844733c9a19b390b3ad66a586b47ff8c695ea74",
+    "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-on-coding-guidance-2/independent/work/docs/research/qwen3.6-35b-a3b-q8-gpu-mtp-cache-sizing.md": "b880754cc6aa083d33833c48c64df26f4489590920ed1f27f7cac1f88f7a09c1",
+    "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-on-coding-guidance-2/independent/work/artifacts/serving-recipes/qwen3.6-35b-a3b-q8-gpu-mtp.json": "d3a3cf4f935a00dd9b020ea409f52a26caedfe3cf2325f636ae7c4edd5cf302b",
+    "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-on-coding-guidance-2/independent/candidate.patch": "3315a44a7c9622c014664b369e0549dd255ca5b2c5c4a79c30174f70b0e326ae"
+  },
+  "semantics": "requires independent semantic review; structural pass is not semantic acceptance",
+  "model_calls": 0
+}

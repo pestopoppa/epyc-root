@@ -1,0 +1,83 @@
+{
+  "owner": {
+    "pid": 1016652,
+    "ppid": 89061,
+    "start_ticks": 160922939,
+    "cmdline_sha256": "3e09d378b14fab503b2043c1f11756c54d0b7a62902b80aad0535db3f49e0a79"
+  },
+  "controller": {
+    "pid": 1016657,
+    "ppid": 1016652,
+    "start_ticks": 160922944,
+    "cmdline_sha256": "d5acc142f6893f5986fe58d87bff87f5c59239da3797f2aaffcc6112fd71944a"
+  },
+  "server": {
+    "pid": 1016973,
+    "ppid": 1016657,
+    "start_ticks": 160923084,
+    "cmdline_sha256": "9e5554f12362913f3a53fb67170db79327a14b0a1ed3965fee27427782548877"
+  },
+  "port": 35357,
+  "server_executable_sha256": "0e2bdb4c70f64fbf78791dd805aed37702324c02ef8d45d1f686c68ddf61cf4e",
+  "gpu_identity_receipt_sha256": "3ab7735b923c50b424b7241a1d11629c017c9a8ac55b83cce18d834e14a36e80",
+  "gpu_identity": {
+    "version": [
+      "version: 10748 (ce6fcbbde)",
+      "built with GNU 15.2.0 for Linux x86_64"
+    ],
+    "devices": [
+      "Available devices:",
+      "  ROCm0: AMD Instinct MI210 (65520 MiB, 65432 MiB free)"
+    ],
+    "mi210_listed": true
+  },
+  "source_sha": "ce6fcbbde1ee58f165283fbfe74910f47bb2efba",
+  "actual_gpu_residency": true,
+  "slot3_observations": [
+    {
+      "observed_at": 1795743567.5980434,
+      "slot": 3,
+      "is_processing": false,
+      "id_task": 16254
+    },
+    {
+      "observed_at": 1795743569.803521,
+      "slot": 3,
+      "is_processing": false,
+      "id_task": 16254
+    }
+  ],
+  "all_existing_pfx_rows_terminal": {
+    "gpu-PFXC-A3-on-coding": {
+      "result_sha256": "dcd6094da1e0adc3e7b8091345f01657043ddadd5b3264016a19b1fc040b84d0",
+      "terminal_at": 1795739497.9913204,
+      "status": "oracle_fail"
+    },
+    "gpu-PFXC-A3-on-coding-guidance-1": {
+      "result_sha256": "72872481899b94a684b31c0f5632d5f09f204fea93e3c05d0b36bc448fb68deb",
+      "terminal_at": 1795740994.0303314,
+      "status": "oracle_fail"
+    },
+    "gpu-PFXC-A3-on-coding-guidance-2": {
+      "result_sha256": "1153e80178eac64b9cb359d82844733c9a19b390b3ad66a586b47ff8c695ea74",
+      "terminal_at": 1795741687.2497091,
+      "status": "oracle_fail"
+    },
+    "gpu-PFXC-A3-off-recommended": {
+      "result_sha256": "921324e3758430728c250a47e07a924c70f747087b6bfbad3047341ae206acc0",
+      "terminal_at": 1795740369.3146117,
+      "status": "oracle_fail"
+    },
+    "gpu-PFXC-A3-off-recommended-guidance-1": {
+      "result_sha256": "415e308f3b01dcf639557971a8c9c2019f5aa7122f749e9d0aa9dba73c98f312",
+      "terminal_at": 1795741112.2524846,
+      "status": "oracle_pass"
+    },
+    "gpu-PFXC-A3-off-recommended-guidance-2": {
+      "result_sha256": "a5f563337239afa86fcd8006f1fecde0c0880ba9f8d51fadd4d3031e6c28b816",
+      "terminal_at": 1795742004.5459034,
+      "status": "oracle_pass"
+    }
+  },
+  "not_a_live_grant": "Re-probe at dispatch. These observations reserve no slot and extend no coordinator lifetime."
+}

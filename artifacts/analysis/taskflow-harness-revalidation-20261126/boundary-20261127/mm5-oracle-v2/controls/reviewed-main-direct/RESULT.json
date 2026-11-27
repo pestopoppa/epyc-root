@@ -1,0 +1,17 @@
+{
+  "diagnostic": null,
+  "id": "reviewed-main-direct",
+  "lane": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/MM-5/direct-1/lane",
+  "original_oracle_rc_retained": null,
+  "preserved_runtime_artifacts": [
+    ".pytest_cache/.gitignore",
+    ".pytest_cache/CACHEDIR.TAG",
+    ".pytest_cache/README.md",
+    ".pytest_cache/v/cache/nodeids",
+    ".pytest_cache/v/cache/stepwise"
+  ],
+  "source_sha256": "ced7ba6f65bb9f76ddbcc3991ffa5e09063411371d7bc21d9010d503ddba4c2c",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "faf7a91232cdc4d2560647d81ff5d00c4579fefd8665fb7326e2726306137805",
+  "v2_rc": 0
+}

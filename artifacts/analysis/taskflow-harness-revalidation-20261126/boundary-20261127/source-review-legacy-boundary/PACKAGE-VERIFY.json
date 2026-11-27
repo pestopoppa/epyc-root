@@ -1,0 +1,10 @@
+{
+  "verified": true,
+  "cases": [
+    "TU-GR-1",
+    "MM-5"
+  ],
+  "dependencies": 4155,
+  "seal_sha256": "9b1586f7759831364eefd98f7a1cf35df0d066a96c587675acd571b3628b06e3",
+  "model_calls": 0
+}

@@ -1,0 +1,95 @@
+{
+  "schema": "epyc.main-comparison.plan.v1",
+  "case": "NARIQ-LIBTRELLIS-MAP-1",
+  "arm": "guidance",
+  "ordinal": 1,
+  "model": "gpt-6.1-sol",
+  "reasoning_effort": "low",
+  "provider": "openai",
+  "fresh_session": true,
+  "expected_cli_version": "codex-cli 0.172.0",
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--json",
+    "--ephemeral",
+    "--ignore-user-config",
+    "--ignore-rules",
+    "--skip-git-repo-check",
+    "--sandbox",
+    "danger-full-access",
+    "-C",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/reviews/NARIQ-LIBTRELLIS-MAP-1/gpu-OFF-off-recommended/initial-diagnosis/runs/NARIQ-LIBTRELLIS-MAP-1/guidance-1/lane",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"low\"",
+    "-c",
+    "model_provider=\"openai\"",
+    "-c",
+    "project_doc_max_bytes=0",
+    "-c",
+    "mcp_servers={}",
+    "-"
+  ],
+  "task_scope": "Inspect and provide feedback only",
+  "filesystem_boundary": "private staged working directory with audited instruction-scoped access",
+  "reasoning_usage": "capture explicit CLI usage when exposed, otherwise report unavailable",
+  "max_wall_s": 900,
+  "command_affinity": "84-87",
+  "resource_class": "remote model, local control shell only",
+  "outside_worker_oracle": [
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/reviews/NARIQ-LIBTRELLIS-MAP-1/gpu-OFF-off-recommended/initial-diagnosis/cases/NARIQ-LIBTRELLIS-MAP-1/oracle.py",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/reviews/NARIQ-LIBTRELLIS-MAP-1/gpu-OFF-off-recommended/initial-diagnosis/runs/NARIQ-LIBTRELLIS-MAP-1/guidance-1/lane"
+  ],
+  "oracle_sha256": "7dfb632558142af85b2d2395a17781bf81f7aa16899f73a91b2bdb9b698ff795",
+  "prompt_sha256": "a3b75b8e0beca861d6ce6510092afe7f847397f66e00438bd029b42db706ca53",
+  "before_files": {
+    ".taskflow-refs/epyc-root@9cd1c942a3ad9edce34ba42b8eaf796156e8be72/research/deep-dives/intake-kspec-20261120/intake-2733.md": {
+      "sha256": "567a6ef22784a6dd187d7d266ddd0c90b128c67b95b7c83123b8a0b77366346f",
+      "bytes": 2731,
+      "executable": false
+    },
+    ".taskflow-refs/external/nariq-upstream/libtrellis-excerpts.txt": {
+      "sha256": "1e4a584b083b7bd695697f05444d72597b71f69e5467504074bfb0d0250b645d",
+      "bytes": 12049,
+      "executable": false
+    },
+    "docs/research/exl3-4-gfx90a-libtrellis-design.md": {
+      "sha256": "799de97f18641bab8a7ec27623928d87d4556f30a28c23e6b7735fc5cee5d5e0",
+      "bytes": 19630,
+      "executable": false
+    },
+    "scripts/kernel_rnd/exl3_gfx90a/README.md": {
+      "sha256": "30f1e45829de64c253db03c7454cd99ff6c4a69baecfde4d6cc0d687ec4de2d0",
+      "bytes": 11178,
+      "executable": false
+    },
+    "scripts/kernel_rnd/exl3_gfx90a/kernels.hip": {
+      "sha256": "180f1a37f634bd1f69e7777b9735410e92511dc583a55a9d80152c8747356d0e",
+      "bytes": 22125,
+      "executable": false
+    },
+    "scripts/kernel_rnd/exl3_gfx90a/test_runtime.hip": {
+      "sha256": "2733ea92d08c0231ba056e1e48c467c55ac8efa9b70a5571e2135923704bc744",
+      "bytes": 23980,
+      "executable": false
+    }
+  },
+  "received_local_proposal": [
+    "docs/research/exl3-4-gfx90a-libtrellis-design.md"
+  ],
+  "feedback_sha256": "874c557122dc24c1cc5a7879594c176739f2d22a1f14913c75d5183efd1cd2ff",
+  "live_calls": "await_native_harness_readiness_and_main_approval",
+  "review_kind": "initial-diagnosis",
+  "mode": "gpu-OFF-off-recommended",
+  "native_ordinal": 1,
+  "native_correction_ceiling": 2,
+  "allowed_next_native_correction": 2,
+  "assistance_role": "paid-independent-initial-diagnosis",
+  "source_native_result_sha256": "b4bbff603113537ad5e12a6d844a499897823d5b6959f2aa01c2c9c597ac7b8b",
+  "candidate_input_patch_sha256": "01874b3e01197e119407530c5d9b45aa9ec3bc27d2b7133ebeb3d44a9dbe131d",
+  "candidate_scope": "read-only exact staged proposal"
+}

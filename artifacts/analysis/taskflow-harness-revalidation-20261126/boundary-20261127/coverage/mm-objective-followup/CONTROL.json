@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "native_model_calls": 0,
+  "exact_actual_checker_receipts": 2,
+  "live_owner_and_idle_slots_verified": true,
+  "session_ids_restored_offline": {
+    "cpu": "ses_de5742666ffeK3ye95N9B9Ieor",
+    "gpu": "ses_de53dae52ffewe4XuP6IyfpIUj"
+  },
+  "same_provider_config_and_slot": true,
+  "no_source_snippets_in_feedback": true,
+  "plan_sha256": "8638e54c4da0d808017b1d802592d8f19ad09bbf93f4e8fb2a70e8c27e9eece4"
+}

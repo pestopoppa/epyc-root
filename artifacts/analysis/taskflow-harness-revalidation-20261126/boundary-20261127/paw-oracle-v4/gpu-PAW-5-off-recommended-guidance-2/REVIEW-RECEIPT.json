@@ -1,0 +1,13 @@
+{
+  "unit": "gpu-PAW-5-off-recommended-guidance-2",
+  "checker_sha256": "9e6583fbebba2c82e89a3f4332128d44d3ccec43147a3f83910a1e2fce8a40d6",
+  "candidate_doc_sha256": "8ae5744ec7741a7ad1c610d2c9e0fa36e3e307a4a2a17fe7ef4b0f38155f42cd",
+  "raw_result_sha256": "996f4084fb52a15ba12edc3ce258f216ca639be26779ecdf46a8b25335aebd5a",
+  "raw_result_preserved": true,
+  "rc": 0,
+  "candidate_unchanged": true,
+  "scope": "structure/provenance only; semantic main review separate",
+  "candidate_sha256": "8ae5744ec7741a7ad1c610d2c9e0fa36e3e307a4a2a17fe7ef4b0f38155f42cd",
+  "source_receipt_sha256": "a5daad5091708da67cc848fda496a908b7579634b09adc97323f0a2c9b77d3de",
+  "checker_version": "paw5.markdown-fields.v4"
+}

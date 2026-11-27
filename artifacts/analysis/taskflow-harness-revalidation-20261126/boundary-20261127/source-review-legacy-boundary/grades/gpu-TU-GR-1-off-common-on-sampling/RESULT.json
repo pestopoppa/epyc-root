@@ -1,0 +1,13 @@
+{
+  "id": "gpu-TU-GR-1-off-common-on-sampling",
+  "rc": 1,
+  "oracle_sha256": "8385fe0c79b0726a0b5f4d7f5ace1b7c9cf9779445a96b1733087907560b62c2",
+  "candidate_patch_sha256": "a0f2772e539762d40426c5bdb2c121ad181bc4de7a4bacbde3e76dca58c20de5",
+  "cpu_affinity": "180-183",
+  "only_contained_affinity_adapted": true,
+  "raw_results_preserved": true,
+  "source_recommendation": "reject",
+  "stdout_sha256": "2269095132a425335b57ae5d67b5c5a9a7870805a157998a0b2d612fef6ae4b1",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "model_calls": 0
+}

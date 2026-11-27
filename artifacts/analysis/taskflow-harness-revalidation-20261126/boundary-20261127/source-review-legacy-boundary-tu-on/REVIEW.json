@@ -1,0 +1,57 @@
+{
+  "legacy_package": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison",
+  "model_calls": 0,
+  "original_scores_preserved": true,
+  "purpose": "Additive source review for the terminal GPU TU ON candidate. Owning session executes the unchanged grader.",
+  "rows": {
+    "gpu-TU-GR-1-on-coding": {
+      "candidate_patch_sha256": "dbe4bb97513f162b197d9169146c27ce2813d54896e03a59b6be1de976ff0ebf",
+      "case": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/TU-GR-1/case.json",
+      "changed_files": {
+        "scripts/autopilot/evals/dtap/harness/isolation.py": {
+          "bytes": 4339,
+          "executable": false,
+          "sha256": "9330b7e46d23d873bcb833f16f45e1b10673a75ce2978d36b9426f7e39391fd2"
+        },
+        "scripts/autopilot/evals/dtap/tests/test_grader_isolation.py": {
+          "bytes": 7857,
+          "executable": false,
+          "sha256": "4452353a319ba766dbaca2d69d1e092eddba1ac4c8557041db7c42c21ab7caee"
+        }
+      },
+      "id": "gpu-TU-GR-1-on-coding",
+      "input_sha256": {
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-TU-GR-1-on-coding/JOB.json": "d8825401f2ff6193b6ccce3238c5cc118805946ebb8976ddee75ff7ebd00ab34",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-TU-GR-1-on-coding/RESULT.json": "652e43a6a7114f4f16ca83cf1e7dc40d2830b0ccbd5a30d071cfbec767da670f",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-TU-GR-1-on-coding/grade-lane/scripts/autopilot/evals/dtap/harness/isolation.py": "9330b7e46d23d873bcb833f16f45e1b10673a75ce2978d36b9426f7e39391fd2",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-TU-GR-1-on-coding/grade-lane/scripts/autopilot/evals/dtap/tests/test_grader_isolation.py": "4452353a319ba766dbaca2d69d1e092eddba1ac4c8557041db7c42c21ab7caee",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-TU-GR-1-on-coding/worker/candidate/candidate.patch": "dbe4bb97513f162b197d9169146c27ce2813d54896e03a59b6be1de976ff0ebf",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-TU-GR-1-on-coding/worker/receipt.json": "03a5d6637d8bd75b587eae09e25814b426c87d1c63598dc4d83676700da5c719",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/DEPENDENCIES.json": "1b5b4a2b378fa1cc1be7ec8d23be8b90789a3d7cdb72619ebd275676859271a4",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/PACKAGE-SEAL.json": "9b1586f7759831364eefd98f7a1cf35df0d066a96c587675acd571b3628b06e3",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/TU-GR-1/case.json": "d7a455b74aa99393979341d60bae2d5f62a2b2edfd623425c952561dfe4f2aba",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/TU-GR-1/evaluator-support/tu_grader_isolation.py": "6da203e37f636fe2d094f4742bbef5816daf2af04add8b5bf150fa3843891de5",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/TU-GR-1/evaluator-support/vision_contract.py": "ebf06226092574fd21faeb026624618074308a82fa5307cbe488861482215cbb",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/TU-GR-1/oracle.py": "8385fe0c79b0726a0b5f4d7f5ace1b7c9cf9779445a96b1733087907560b62c2",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/TU-GR-1/task-env.json": "65abb3f4db8cc69ac0a53eca561fa9bc71fbb92dc832ff913f16d125e5289cc2",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/prepare.py": "9bd8e09ab2d3adb4cf44f1ed0a9c68eaacfa8dee6cbeb3d713266fc8b3b5b341",
+        "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/source-review-legacy-boundary-tu-on/grade_saved.py": "2a9372024b24a43c979750dbcedec54d0e9758525cf47bb6968ce29119a269e9"
+      },
+      "kind": "python",
+      "lane": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-TU-GR-1-on-coding/grade-lane",
+      "oracle": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/cases/TU-GR-1/oracle.py",
+      "raw_status": "awaiting_source_review",
+      "reasons": [
+        "The brief allows skipping only when user namespace setup is explicitly permission-refused. tests/test_grader_isolation.py:132–139 skips any failed launch containing permission text, including the sealed mount-stage refusal that must fail.",
+        "The brief requires the child to demonstrate access refusal using ENOENT or EACCES. tests/test_grader_isolation.py:155–169 accepts any non-null open errno and leaves listdir errno unchecked. The sealed wrong-access-errno control supplies EROFS."
+      ],
+      "safe_for_contained_model_free_oracle": true,
+      "safety_review": [
+        "Reviewed all candidate module bytes. Top-level code defines imports, fixtures and functions. Probe and mount subprocesses are bounded, use argv, and target the generated scratch fixture; the shell command uses positional parameters. There are no network calls or production mount paths.",
+        "The full grade lane matches the sealed baseline plus the exact two reviewed paths. Existing evaluator containment, image and oracle semantics are preserved. The prior wrapper adapts contained grading CPU affinity to SMT 180–183."
+      ],
+      "source_recommendation": "reject",
+      "terminal_at": 1795745812.4308832
+    }
+  }
+}

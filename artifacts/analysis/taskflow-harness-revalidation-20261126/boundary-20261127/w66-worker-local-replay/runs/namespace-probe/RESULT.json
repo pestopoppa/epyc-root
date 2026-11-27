@@ -1,0 +1,13 @@
+{
+  "probe": {
+    "scripts_name": "scripts.kernel_rnd.autokernel.loop.phase_journal",
+    "pytest_name": "autokernel.loop.phase_journal",
+    "scripts_file": "/case/scripts/kernel_rnd/autokernel/loop/phase_journal.py",
+    "pytest_file": "/case/scripts/kernel_rnd/autokernel/loop/phase_journal.py",
+    "same_module": false,
+    "same_class": false
+  },
+  "owned_container_removed": true,
+  "model_calls": 0,
+  "no_pytest_or_candidate_edit": true
+}

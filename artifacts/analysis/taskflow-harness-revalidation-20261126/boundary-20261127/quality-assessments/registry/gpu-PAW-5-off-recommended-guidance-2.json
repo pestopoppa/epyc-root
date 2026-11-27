@@ -1,0 +1,18 @@
+{
+  "candidate_patch_sha256": "82f48ec155a79bf5ebfae8680809737b841fc5b09aa3eb7e715936ef36e3eddd",
+  "decision": "rejected",
+  "source_review": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/reviews/PAW-5/gpu-OFF-off-recommended/final-acceptance/runs/PAW-5/guidance-1/assistance-accounting.json",
+  "source_review_sha256": "e3d51757da7753016083085ec7524f5a7818f62d97addfc5cb1fb4301ad4f68b",
+  "raw_native_status": "oracle_fail",
+  "raw_oracle": {
+    "rc": 1,
+    "oracle_sha256": "558b3a881aa866a9b60726128406600cd01908b0c8abb00c763552ce7b763b16",
+    "acceptance_version": "paw5.markdown-fields.v3",
+    "original_oracle_sha256": "6dd16d323f32d159cf9522878d6d1003623bd2b3841548ecc4597e382e557b3b",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "54da3fc2fe4cf39debb557bd724d294717d0d126dadcf331a9605e7194d74cc2",
+    "semantic_review_required": true
+  },
+  "qualification": "V4 structural reassessment passes unchanged candidate; full paid semantic review rejects substantive contract errors; main command/source audit confirms JSON invalid-output/contract defects.",
+  "feedback_lineage": "ON consumed genuine missing-seam diagnostic; OFF consumed placement-confounded missing-pin diagnostic and requires clean replay."
+}

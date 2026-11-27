@@ -1,0 +1,33 @@
+{
+  "case": "PAW-5",
+  "mode": "gpu-OFF-off-recommended",
+  "review_kind": "final-acceptance",
+  "native_ordinal": 2,
+  "native_correction_ceiling": 2,
+  "allowed_next_native_correction": null,
+  "review_seal_sha256": "7f914a54d79fabb2536d61d0c4b7d86f76386e5cafd7d90da3ff22cd771f9664",
+  "model": "gpt-6.1-sol",
+  "effort": "low",
+  "execution": {
+    "rc": 0,
+    "wall_s": 86.494084,
+    "cli_version": "codex-cli 0.172.0",
+    "tool_audit_required": true
+  },
+  "usage": {
+    "input_tokens": 112396,
+    "cached_input_tokens": 90752,
+    "output_tokens": 737,
+    "reasoning_output_tokens": 15,
+    "uncached_input_tokens": 21644
+  },
+  "candidate_unmodified_by_review": true,
+  "path_scope_pass": true,
+  "semantic_review_advisory": "REJECT",
+  "structural_pass_implies_semantic_acceptance": false,
+  "final_acceptance_review_adds_paid_main_cost": true,
+  "accounting_role": "paid-A3B-assistance",
+  "manager_setup_review_costs": "not isolated by this execution vector; neither zero nor included",
+  "events_sha256": "8d6875091b066f1f1bb5fc036fd989235adef58db5398e4ec561078ab87ee225",
+  "measurement_sha256": "57a9bfebb480c23f4951ae7cd79b3e2f10f94c8fc805338fb70aee931530a3c8"
+}

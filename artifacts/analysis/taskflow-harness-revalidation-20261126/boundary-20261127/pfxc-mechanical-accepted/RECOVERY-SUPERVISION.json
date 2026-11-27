@@ -1,0 +1,10 @@
+{
+  "pid": 3743840,
+  "returncode": 0,
+  "reason": null,
+  "elapsed_s": 103.343,
+  "force_kill": false,
+  "owned_container": "ws58-a3b-stock-ecbb381cf3",
+  "removed_verified": true,
+  "slot_reusable": true
+}

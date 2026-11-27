@@ -1,0 +1,7 @@
+PAW v4 accepts standard Markdown field headings with following paragraphs or nonempty tables. The unchanged paid ON2 and OFF2 candidate documents and CPU NUMA resume pass structural/provenance validation. Raw oracle outcomes and candidate bytes are preserved; these receipts do not assert semantic acceptance.
+
+The migration retains the v3 inline colon/period/bold spellings and unchanged requirements for 1–3 named candidates, PAW-1/PAW-2 prerequisites, a pinned source revision, a reviewed loop seam per candidate, and exclusion of JSON repair. A bounded Markdown field parser recognizes each exact ATX or standalone inline field label and reads its following block only until the next heading of equal or shallower level. It rejects empty headings, absent labels, and tables with no nonempty data row. This addresses an existing task-field formatting false rejection rather than adding a new content criterion.
+
+`verify.py` passes 31 controls: all 15 former controls plus heading paragraph/table/colon formats, standalone bold labels followed by bullets, and empty/absent/table negatives for all three fields. `CONTROLS.json` binds their exact bytes and checker SHA. `REASSESSMENT.json` binds each unchanged candidate and preserved raw RESULT. No model calls, canonical edits, or commits occurred.
+
+Next: main review the substantive candidate choices independently and integrate v4's structural reassessment while retaining original raw results.

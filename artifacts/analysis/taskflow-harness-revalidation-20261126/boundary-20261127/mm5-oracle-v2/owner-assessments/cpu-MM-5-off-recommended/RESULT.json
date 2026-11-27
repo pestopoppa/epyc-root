@@ -1,0 +1,27 @@
+{
+  "id": "cpu-MM-5-off-recommended",
+  "rc": 1,
+  "candidate_patch_sha256": "5b69ed980a01f978230546533dd0a77e1e57420cd641264740a38465c8cf4dbc",
+  "checked_candidate_files": {
+    "src/vision/analyzers/vl_describe.py": {
+      "bytes": 25616,
+      "executable": false,
+      "sha256": "3966d1c0eef9926831ea31fdf1ec9fc24fbf21b7ea9dcb88b46b48f314f31bfc"
+    },
+    "tests/unit/test_vl_describe_resize.py": {
+      "bytes": 7149,
+      "executable": false,
+      "sha256": "5e37272c06e14a7f76a6fe396bf0cb66b4dcada5e458ea568ca5c8c523c9195d"
+    }
+  },
+  "checker_version": "mm5.image-contract.v2",
+  "oracle_sha256": "6619c29e02b97122137357b410da8968344fcf55aa01033a61e55dc611804099",
+  "contract_sha256": "c08d80d2cd4c50599465c75687cc17ea83ebe5632d3ce768b970cc358da48bdd",
+  "source_control_sha256": "8b60c8d3492b51cef7e3a1a1151f62bd92a0f97a8487d12c06407699179b4976",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "63f9c98e0353b61ef6fbe8ab144638defeb9c64c6819f2c243ed1300b2ca742b",
+  "started_at": 1795746380.4732234,
+  "terminal_at": 1795746384.5872595,
+  "raw_scores_preserved": true,
+  "model_calls": 0
+}

@@ -1,0 +1,11 @@
+{
+  "main_audited_tool_commands": true,
+  "candidate_unchanged": true,
+  "decision": "ACCEPT",
+  "independent_tests": "2 passed",
+  "resource_intervention": "coverage/review-affinity-diagnostic/INTERVENTION-owned-review-affinity.json",
+  "qualification": "Original commands pinned84-87 were starved while CPU96 native work ran. Main moved only captured owned review CLI/test descendants to180-183 at1795746428.2579856. Full measured review wall/token costs retained; no subtraction or minimum-review-cost claim.",
+  "main_manager_and_prior_manual_review_cost": "unisolated, additional, not zero",
+  "resource_intervention_sha256": "d194939df4b9640c56e0493a92ef6ebec7f6ea3e8875db3176981c0c37551740",
+  "path_qualification": "Curated equivalent byte-identical intervention receipt under a readable stable artifact name."
+}

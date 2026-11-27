@@ -1,0 +1,13 @@
+{
+  "id": "gpu-MM-5-off-common-on-sampling",
+  "rc": 0,
+  "oracle_sha256": "90eafed6401a1a1e744376fb849af4a551372cb26f787e4265e6fcfa9a967745",
+  "candidate_patch_sha256": "a62cb7476c519b0ece04a00e35093d2f1ff7e9874eea8d042cb6d89af194b17f",
+  "cpu_affinity": "180-183",
+  "only_contained_affinity_adapted": true,
+  "raw_results_preserved": true,
+  "source_recommendation": "reject",
+  "stdout_sha256": "ad1546ceacfae3aec47dd930e43c10cecc58600050398c84e30e6d66601e9b04",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "model_calls": 0
+}

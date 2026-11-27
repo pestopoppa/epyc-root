@@ -1,0 +1,12 @@
+{
+  "sha256": {
+    "DISPATCH-PLAN.json": "24cc389e328be3dfb363a161ddf5bda5acfcc6d89ae1fa4cd85e29c02ad894e2",
+    "PREPARATION-SNAPSHOT.json": "c7a9ce304b86c120aa62a3e144dc05f113f5e849de1adc1f80628457d391fb4f",
+    "FEEDBACK.md": "5290e9d0c52cb88053bbeed59dd4f2050f7bfe3c2d6bfa56f9e341369d965f6e",
+    "ROW.json": "2820f7bd747e1bcd120f4e6894567bd2699937a4363934f257351fca4b7af32d"
+  },
+  "v6_oracle_sha256": "a5d5d9ea2d06ccddf0ed70d9ed635a8d53e5c8b3db857e0917c05bdf10898089",
+  "prior_state_sha256": "fa23e5204e748d82b3b6e3938970490aeda6a6e4d76b069ace0ea84aa469e8e0",
+  "third_feedback_exception_explicit": true,
+  "no_model_calls": true
+}

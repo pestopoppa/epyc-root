@@ -1,0 +1,13 @@
+{
+  "diagnostic": [
+    "AssertionError: under-cap image at cap 30000: encoded bytes differ from the original"
+  ],
+  "id": "cpu-MM-5-off-recommended",
+  "lane": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units/cpu-MM-5-off-recommended/grade-lane",
+  "original_oracle_rc_retained": 0,
+  "preserved_runtime_artifacts": [],
+  "source_sha256": "3966d1c0eef9926831ea31fdf1ec9fc24fbf21b7ea9dcb88b46b48f314f31bfc",
+  "stderr_sha256": "63f9c98e0353b61ef6fbe8ab144638defeb9c64c6819f2c243ed1300b2ca742b",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "v2_rc": 1
+}

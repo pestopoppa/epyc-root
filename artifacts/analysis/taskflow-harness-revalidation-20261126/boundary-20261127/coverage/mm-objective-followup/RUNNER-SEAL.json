@@ -1,0 +1,13 @@
+{
+  "schema": "legacy-mm-objective-followup-seal.v2",
+  "source_tu_callback_manifest_sha256": "fda73aada5a1eb20ec0c10e5809adbe04fcb5550572646cc60e2aa77606a50d3",
+  "source_slot3_callback_manifest_sha256": "b4e9a10f04507dbdeb2c11e86a5150feb415a70bd9098661dcd377e1b41cb372",
+  "mm5_v2_source_control_sha256": "8b60c8d3492b51cef7e3a1a1151f62bd92a0f97a8487d12c06407699179b4976",
+  "sha256": {
+    "follow.py": "ff542002dc1064f65ef726102395ab54c3b1150108d5a37a9a863efe15ab042d",
+    "control.py": "474db5273b5dd473b635806bb8379f2977f4a14e6f78c2a64a14c84a64e6d2cb",
+    "README.md": "877a2934200a1ed9ca258267fc0bbae047a7f2c85db7b64f2a5be9e6d51a4266",
+    "CONTROL.json": "d3ec24c0927c34bc9b62ff32956bc418bc70e2a4bd37c4ffd12b727bed8e665d",
+    "MM-OBJECTIVE-PLAN.json": "8638e54c4da0d808017b1d802592d8f19ad09bbf93f4e8fb2a70e8c27e9eece4"
+  }
+}

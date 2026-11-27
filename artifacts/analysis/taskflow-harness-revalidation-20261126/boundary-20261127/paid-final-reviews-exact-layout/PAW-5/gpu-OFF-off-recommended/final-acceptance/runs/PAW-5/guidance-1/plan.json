@@ -1,0 +1,90 @@
+{
+  "schema": "epyc.main-comparison.plan.v1",
+  "case": "PAW-5",
+  "arm": "guidance",
+  "ordinal": 1,
+  "model": "gpt-6.1-sol",
+  "reasoning_effort": "low",
+  "provider": "openai",
+  "fresh_session": true,
+  "expected_cli_version": "codex-cli 0.172.0",
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--json",
+    "--ephemeral",
+    "--ignore-user-config",
+    "--ignore-rules",
+    "--skip-git-repo-check",
+    "--sandbox",
+    "danger-full-access",
+    "-C",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/reviews/PAW-5/gpu-OFF-off-recommended/final-acceptance/runs/PAW-5/guidance-1/lane",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"low\"",
+    "-c",
+    "model_provider=\"openai\"",
+    "-c",
+    "project_doc_max_bytes=0",
+    "-c",
+    "mcp_servers={}",
+    "-"
+  ],
+  "task_scope": "Inspect and provide feedback only",
+  "filesystem_boundary": "private staged working directory with audited instruction-scoped access",
+  "reasoning_usage": "capture explicit CLI usage when exposed, otherwise report unavailable",
+  "max_wall_s": 900,
+  "command_affinity": "84-87",
+  "resource_class": "remote model, local control shell only",
+  "outside_worker_oracle": [
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/reviews/PAW-5/gpu-OFF-off-recommended/final-acceptance/cases/PAW-5/oracle.py",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/reviews/PAW-5/gpu-OFF-off-recommended/final-acceptance/runs/PAW-5/guidance-1/lane"
+  ],
+  "oracle_sha256": "6dd16d323f32d159cf9522878d6d1003623bd2b3841548ecc4597e382e557b3b",
+  "prompt_sha256": "5ba7bace9f0001c60d3a92d7614376e56f29e15f93e78ab32c33d1e0e5432489",
+  "before_files": {
+    ".taskflow-refs/epyc-inference-research@dd090a874c22be58e09b18fc1fc86da7b46b1d85/scripts/kernel_rnd/autokernel/loop/loop.py": {
+      "sha256": "199d5137f3340b4882f444d0bee776fd0e29f8b18ca35f15c5904080b998f163",
+      "bytes": 131124,
+      "executable": false
+    },
+    ".taskflow-refs/epyc-orchestrator@332ceb2e14d16f2031bd17b1f7c839ce8276a24b/src/api/routes/chat_pipeline/repl_executor.py": {
+      "sha256": "7fa8daa1b983b0cc1d2929bb14f6a75c85beece5564ca42ccf99ea739227cceb",
+      "bytes": 50702,
+      "executable": false
+    },
+    ".taskflow-refs/epyc-orchestrator@332ceb2e14d16f2031bd17b1f7c839ce8276a24b/src/graph/context_arm_ab.py": {
+      "sha256": "9047e8f3a90f7840dc1aaf445297006a48796a70dc8c110404797114c83344da",
+      "bytes": 13468,
+      "executable": false
+    },
+    "docs/reference/harness-candidates/paw-5-compile-once-candidates.md": {
+      "sha256": "8ae5744ec7741a7ad1c610d2c9e0fa36e3e307a4a2a17fe7ef4b0f38155f42cd",
+      "bytes": 17206,
+      "executable": false
+    },
+    "handoffs/completed/fuzzy-workflow-authoring-gui.md": {
+      "sha256": "1fba00ec506f907b8224260746b816dc441e03609870035870d8136152754ebe",
+      "bytes": 23847,
+      "executable": false
+    }
+  },
+  "received_local_proposal": [
+    "docs/reference/harness-candidates/paw-5-compile-once-candidates.md"
+  ],
+  "feedback_sha256": "440a185cce15752481af901cf305f91e850d41cb4d9c8d1388448d6fa48ba649",
+  "live_calls": "await_native_harness_readiness_and_main_approval",
+  "review_kind": "final-acceptance",
+  "mode": "gpu-OFF-off-recommended",
+  "native_ordinal": 2,
+  "native_correction_ceiling": 2,
+  "allowed_next_native_correction": null,
+  "assistance_role": "paid-independent-final-acceptance",
+  "source_native_result_sha256": "996f4084fb52a15ba12edc3ce258f216ca639be26779ecdf46a8b25335aebd5a",
+  "candidate_input_patch_sha256": "82f48ec155a79bf5ebfae8680809737b841fc5b09aa3eb7e715936ef36e3eddd",
+  "candidate_scope": "read-only exact staged proposal"
+}

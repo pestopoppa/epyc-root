@@ -1,0 +1,866 @@
+[
+  {
+    "original_path": "mm5-oracle-v2/FIRST-VALIDATION.log",
+    "stored_path": "mm5-oracle-v2/FIRST-VALIDATION.log.gz",
+    "original_sha256": "2dcce1f980a8752a5981802451825704d44bbf40f4c39eb0adfb4435dfd2cac6",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "mm5-oracle-v2/CONTROL.log",
+    "stored_path": "mm5-oracle-v2/CONTROL.log.gz",
+    "original_sha256": "cc26eb0768b1ed73a345f4d4a7f2307ee2bb2b5739afa487796cbc35fb4461c5",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/namespace-probe.stdout.log",
+    "stored_path": "w66-worker-local-replay/namespace-probe.stdout.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/namespace-probe.stderr.log",
+    "stored_path": "w66-worker-local-replay/namespace-probe.stderr.log.gz",
+    "original_sha256": "724bebc560d1f3c0b5483ada3b7fcd3e5180dd34ebbe417177101dc88522b828",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "paw-oracle-v4/accepted-main.stdout.log",
+    "stored_path": "paw-oracle-v4/accepted-main.stdout.log.gz",
+    "original_sha256": "fb350e1c5d3cc368a9c67ce68090779343ead2c4000327b52f506e8b6bbf150a",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "paw-oracle-v4/accepted-main.stderr.log",
+    "stored_path": "paw-oracle-v4/accepted-main.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-mechanical-accepted/ORACLE.stdout.log",
+    "stored_path": "pfxc-mechanical-accepted/ORACLE.stdout.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-mechanical-accepted/V6.stdout.log",
+    "stored_path": "pfxc-mechanical-accepted/V6.stdout.log.gz",
+    "original_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-mechanical-accepted/V6.stderr.log",
+    "stored_path": "pfxc-mechanical-accepted/V6.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-mechanical-accepted/ORACLE.stderr.log",
+    "stored_path": "pfxc-mechanical-accepted/ORACLE.stderr.log.gz",
+    "original_sha256": "dbce1c80ddae9d931f30e41d7189bed7855bf2afc06481bab2e7072b46eb901c",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "source-review-legacy-boundary/PAW-LAYOUT.stdout.log",
+    "stored_path": "source-review-legacy-boundary/PAW-LAYOUT.stdout.log.gz",
+    "original_sha256": "fb350e1c5d3cc368a9c67ce68090779343ead2c4000327b52f506e8b6bbf150a",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "source-review-legacy-boundary/PAW-LAYOUT.stderr.log",
+    "stored_path": "source-review-legacy-boundary/PAW-LAYOUT.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "mm5-oracle-v2/controls/reviewed-main-direct/stderr.log",
+    "stored_path": "mm5-oracle-v2/controls/reviewed-main-direct/stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "mm5-oracle-v2/controls/reviewed-main-direct/stdout.log",
+    "stored_path": "mm5-oracle-v2/controls/reviewed-main-direct/stdout.log.gz",
+    "original_sha256": "faf7a91232cdc4d2560647d81ff5d00c4579fefd8665fb7326e2726306137805",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "mm5-oracle-v2/controls/gpu-MM-5-off-common-on-sampling/stderr.log",
+    "stored_path": "mm5-oracle-v2/controls/gpu-MM-5-off-common-on-sampling/stderr.log.gz",
+    "original_sha256": "7464a9b094e3b3f9dfa406b18149f615bd6831210ae193c0b867ef09fd899e19",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "mm5-oracle-v2/controls/gpu-MM-5-off-common-on-sampling/stdout.log",
+    "stored_path": "mm5-oracle-v2/controls/gpu-MM-5-off-common-on-sampling/stdout.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "mm5-oracle-v2/controls/original-baseline/stderr.log",
+    "stored_path": "mm5-oracle-v2/controls/original-baseline/stderr.log.gz",
+    "original_sha256": "be5bd2974eeb52f2eae132bcf86d8657884f1a49f62fd83cac91f5d642e7cb3a",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "mm5-oracle-v2/controls/original-baseline/stdout.log",
+    "stored_path": "mm5-oracle-v2/controls/original-baseline/stdout.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "mm5-oracle-v2/controls/cpu-MM-5-off-recommended/stderr.log",
+    "stored_path": "mm5-oracle-v2/controls/cpu-MM-5-off-recommended/stderr.log.gz",
+    "original_sha256": "63f9c98e0353b61ef6fbe8ab144638defeb9c64c6819f2c243ed1300b2ca742b",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "mm5-oracle-v2/controls/cpu-MM-5-off-recommended/stdout.log",
+    "stored_path": "mm5-oracle-v2/controls/cpu-MM-5-off-recommended/stdout.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "mm5-oracle-v2/owner-assessments/gpu-MM-5-off-common-on-sampling/stderr.log",
+    "stored_path": "mm5-oracle-v2/owner-assessments/gpu-MM-5-off-common-on-sampling/stderr.log.gz",
+    "original_sha256": "7464a9b094e3b3f9dfa406b18149f615bd6831210ae193c0b867ef09fd899e19",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "mm5-oracle-v2/owner-assessments/gpu-MM-5-off-common-on-sampling/stdout.log",
+    "stored_path": "mm5-oracle-v2/owner-assessments/gpu-MM-5-off-common-on-sampling/stdout.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "mm5-oracle-v2/owner-assessments/cpu-MM-5-off-recommended/stderr.log",
+    "stored_path": "mm5-oracle-v2/owner-assessments/cpu-MM-5-off-recommended/stderr.log.gz",
+    "original_sha256": "63f9c98e0353b61ef6fbe8ab144638defeb9c64c6819f2c243ed1300b2ca742b",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "mm5-oracle-v2/owner-assessments/cpu-MM-5-off-recommended/stdout.log",
+    "stored_path": "mm5-oracle-v2/owner-assessments/cpu-MM-5-off-recommended/stdout.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "mm5-oracle-v2/first-validation/original-baseline/stderr.log",
+    "stored_path": "mm5-oracle-v2/first-validation/original-baseline/stderr.log.gz",
+    "original_sha256": "be5bd2974eeb52f2eae132bcf86d8657884f1a49f62fd83cac91f5d642e7cb3a",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "mm5-oracle-v2/first-validation/original-baseline/stdout.log",
+    "stored_path": "mm5-oracle-v2/first-validation/original-baseline/stdout.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "source-review-legacy-boundary-tu-on/grades/gpu-TU-GR-1-on-coding/stderr.log",
+    "stored_path": "source-review-legacy-boundary-tu-on/grades/gpu-TU-GR-1-on-coding/stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "source-review-legacy-boundary-tu-on/grades/gpu-TU-GR-1-on-coding/stdout.log",
+    "stored_path": "source-review-legacy-boundary-tu-on/grades/gpu-TU-GR-1-on-coding/stdout.log.gz",
+    "original_sha256": "410978429650143dd1e866dca77c4554b8c570c4069aef3af810756fbd72cf38",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/runs/off-recommended-final/independent.stdout.log",
+    "stored_path": "w66-worker-local-replay/runs/off-recommended-final/independent.stdout.log.gz",
+    "original_sha256": "09e4659aed95dabdfc2fbac01f6e09ebb11d0369fec354bcd1ef53abf4007f16",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/runs/off-recommended-final/original-acceptance.stderr.log",
+    "stored_path": "w66-worker-local-replay/runs/off-recommended-final/original-acceptance.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/runs/off-recommended-final/runtime-call-untruncated.stderr.log",
+    "stored_path": "w66-worker-local-replay/runs/off-recommended-final/runtime-call-untruncated.stderr.log.gz",
+    "original_sha256": "fefae9880bc97cf626f6b87e8f35825211d3cf7d8c5a177dc1d392786ef59ccc",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/runs/off-recommended-final/runtime-call-untruncated.stdout.log",
+    "stored_path": "w66-worker-local-replay/runs/off-recommended-final/runtime-call-untruncated.stdout.log.gz",
+    "original_sha256": "029cdf9466106996e9adf7befc5de02954e056de59dcc172ea1b6db27fd877c4",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/runs/off-recommended-final/serial-call-untruncated.stdout.log",
+    "stored_path": "w66-worker-local-replay/runs/off-recommended-final/serial-call-untruncated.stdout.log.gz",
+    "original_sha256": "624ca77e6609c4353b8824180941d3c7298eb23e185fca7ad5b1d727181bbb01",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/runs/off-recommended-final/serial-call-untruncated.stderr.log",
+    "stored_path": "w66-worker-local-replay/runs/off-recommended-final/serial-call-untruncated.stderr.log.gz",
+    "original_sha256": "a705b8f85f38288a1963d5b85d1082d13737befb0dcfa2b771ec5e55f1ae79d9",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/runs/off-recommended-final/independent.stderr.log",
+    "stored_path": "w66-worker-local-replay/runs/off-recommended-final/independent.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/runs/off-recommended-final/original-acceptance.stdout.log",
+    "stored_path": "w66-worker-local-replay/runs/off-recommended-final/original-acceptance.stdout.log.gz",
+    "original_sha256": "bd53509bb83118ca90b5cf872105f1fc42eb84df465ad60bec0d60b21b274397",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/runs/baseline/independent.stdout.log",
+    "stored_path": "w66-worker-local-replay/runs/baseline/independent.stdout.log.gz",
+    "original_sha256": "dff17fd9cd764a0c62a2219273bce4581d624eb8574afcb0b15540feb81fcacc",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/runs/baseline/original-acceptance.stderr.log",
+    "stored_path": "w66-worker-local-replay/runs/baseline/original-acceptance.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/runs/baseline/runtime-call-untruncated.stderr.log",
+    "stored_path": "w66-worker-local-replay/runs/baseline/runtime-call-untruncated.stderr.log.gz",
+    "original_sha256": "fefae9880bc97cf626f6b87e8f35825211d3cf7d8c5a177dc1d392786ef59ccc",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/runs/baseline/runtime-call-untruncated.stdout.log",
+    "stored_path": "w66-worker-local-replay/runs/baseline/runtime-call-untruncated.stdout.log.gz",
+    "original_sha256": "27cbc8587519c7c1d44c6e1d968acb8f2216e472f2dae00698cd69189b937a5a",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/runs/baseline/serial-call-untruncated.stdout.log",
+    "stored_path": "w66-worker-local-replay/runs/baseline/serial-call-untruncated.stdout.log.gz",
+    "original_sha256": "602b23b62b85ab61138ae2a8c82e2e537673208689100b22c0feb008ca22da8b",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/runs/baseline/serial-call-untruncated.stderr.log",
+    "stored_path": "w66-worker-local-replay/runs/baseline/serial-call-untruncated.stderr.log.gz",
+    "original_sha256": "9d998f22ce439097af6fd91ee349524a276da5edcfb82a31cf0d8095a9cf4745",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/runs/baseline/independent.stderr.log",
+    "stored_path": "w66-worker-local-replay/runs/baseline/independent.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/runs/baseline/original-acceptance.stdout.log",
+    "stored_path": "w66-worker-local-replay/runs/baseline/original-acceptance.stdout.log.gz",
+    "original_sha256": "862b05dae7198487ccef8b92b9da41ea8878a17de2b4567032d48ff7c592877f",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/runs/namespace-probe/stderr.log",
+    "stored_path": "w66-worker-local-replay/runs/namespace-probe/stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/runs/namespace-probe/stdout.log",
+    "stored_path": "w66-worker-local-replay/runs/namespace-probe/stdout.log.gz",
+    "original_sha256": "62d9cdea0a951b11bbcfc698b57137ef54f2bfdf256de5483ed6def8d0b8d1ab",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/runs/off-common-final/independent.stdout.log",
+    "stored_path": "w66-worker-local-replay/runs/off-common-final/independent.stdout.log.gz",
+    "original_sha256": "b44f011eac8728be40c643fbb72202d9b1197229a5a3ea5600fd917f29edad81",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/runs/off-common-final/original-acceptance.stderr.log",
+    "stored_path": "w66-worker-local-replay/runs/off-common-final/original-acceptance.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/runs/off-common-final/runtime-call-untruncated.stderr.log",
+    "stored_path": "w66-worker-local-replay/runs/off-common-final/runtime-call-untruncated.stderr.log.gz",
+    "original_sha256": "3951034d8df1e40dc7f807302fae46c427a9e049e8a4c5c32cfe1d4023ca0005",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/runs/off-common-final/runtime-call-untruncated.stdout.log",
+    "stored_path": "w66-worker-local-replay/runs/off-common-final/runtime-call-untruncated.stdout.log.gz",
+    "original_sha256": "54400a7fef98368897ae6a56a77cf705ebdb6dc602d902df31dd94ca7863205d",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/runs/off-common-final/serial-call-untruncated.stdout.log",
+    "stored_path": "w66-worker-local-replay/runs/off-common-final/serial-call-untruncated.stdout.log.gz",
+    "original_sha256": "cb7940e38697c62aa565f31cd81e9918a4ab3486a1c01065096b54a54e770116",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/runs/off-common-final/serial-call-untruncated.stderr.log",
+    "stored_path": "w66-worker-local-replay/runs/off-common-final/serial-call-untruncated.stderr.log.gz",
+    "original_sha256": "49982bf4b561286b2c2c6a228ea698249ccf2c5d1603f1f700d4530c0a2fb248",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/runs/off-common-final/independent.stderr.log",
+    "stored_path": "w66-worker-local-replay/runs/off-common-final/independent.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "w66-worker-local-replay/runs/off-common-final/original-acceptance.stdout.log",
+    "stored_path": "w66-worker-local-replay/runs/off-common-final/original-acceptance.stdout.log.gz",
+    "original_sha256": "a80cee8220ecc38db0d8f4c3c9a4c9950d246d5ed7169e9e191617413ff807fc",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "paw-oracle-v4/cpu-PAW-5-off-recommended-numa-resume-1/stderr.log",
+    "stored_path": "paw-oracle-v4/cpu-PAW-5-off-recommended-numa-resume-1/stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "paw-oracle-v4/cpu-PAW-5-off-recommended-numa-resume-1/stdout.log",
+    "stored_path": "paw-oracle-v4/cpu-PAW-5-off-recommended-numa-resume-1/stdout.log.gz",
+    "original_sha256": "fb350e1c5d3cc368a9c67ce68090779343ead2c4000327b52f506e8b6bbf150a",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "paw-oracle-v4/gpu-PAW-5-off-recommended-guidance-2/stderr.log",
+    "stored_path": "paw-oracle-v4/gpu-PAW-5-off-recommended-guidance-2/stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "paw-oracle-v4/gpu-PAW-5-off-recommended-guidance-2/stdout.log",
+    "stored_path": "paw-oracle-v4/gpu-PAW-5-off-recommended-guidance-2/stdout.log.gz",
+    "original_sha256": "fb350e1c5d3cc368a9c67ce68090779343ead2c4000327b52f506e8b6bbf150a",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "paw-oracle-v4/gpu-PAW-5-on-coding-guidance-2/stderr.log",
+    "stored_path": "paw-oracle-v4/gpu-PAW-5-on-coding-guidance-2/stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "paw-oracle-v4/gpu-PAW-5-on-coding-guidance-2/stdout.log",
+    "stored_path": "paw-oracle-v4/gpu-PAW-5-on-coding-guidance-2/stdout.log.gz",
+    "original_sha256": "fb350e1c5d3cc368a9c67ce68090779343ead2c4000327b52f506e8b6bbf150a",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "performance/multi-epoch/VALIDATION.log",
+    "stored_path": "performance/multi-epoch/VALIDATION.log.gz",
+    "original_sha256": "60ada485415cb287e910c7de060212a84e7f3f6e26f157063dd1438fdd845cd7",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/paid-off-recommended-assessment/stderr.log",
+    "stored_path": "pfxc-oracle-v6/paid-off-recommended-assessment/stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/paid-off-recommended-assessment/stdout.log",
+    "stored_path": "pfxc-oracle-v6/paid-off-recommended-assessment/stdout.log.gz",
+    "original_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/cpu-numa-assessment/stderr.log",
+    "stored_path": "pfxc-oracle-v6/cpu-numa-assessment/stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/cpu-numa-assessment/stdout.log",
+    "stored_path": "pfxc-oracle-v6/cpu-numa-assessment/stdout.log.gz",
+    "original_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/paid-on-coding-assessment/stderr.log",
+    "stored_path": "pfxc-oracle-v6/paid-on-coding-assessment/stderr.log.gz",
+    "original_sha256": "03c0e4d1419749e5d28b8dabbf7d961c2e5774a78a750c167890267238ce1731",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/paid-on-coding-assessment/stdout.log",
+    "stored_path": "pfxc-oracle-v6/paid-on-coding-assessment/stdout.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/angle-target-title/v6.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/angle-target-title/v6.stdout.log.gz",
+    "original_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/angle-target-title/v5.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/angle-target-title/v5.stdout.log.gz",
+    "original_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/angle-target-title/v6.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/angle-target-title/v6.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/angle-target-title/v5.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/angle-target-title/v5.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/missing-hyperlink/v6.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/missing-hyperlink/v6.stdout.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/missing-hyperlink/v5.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/missing-hyperlink/v5.stdout.log.gz",
+    "original_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/missing-hyperlink/v6.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/missing-hyperlink/v6.stderr.log.gz",
+    "original_sha256": "03c0e4d1419749e5d28b8dabbf7d961c2e5774a78a750c167890267238ce1731",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/missing-hyperlink/v5.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/missing-hyperlink/v5.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/collapsed-reference/v6.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/collapsed-reference/v6.stdout.log.gz",
+    "original_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/collapsed-reference/v5.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/collapsed-reference/v5.stdout.log.gz",
+    "original_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/collapsed-reference/v6.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/collapsed-reference/v6.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/collapsed-reference/v5.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/collapsed-reference/v5.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/external-wrong/v6.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/external-wrong/v6.stdout.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/external-wrong/v5.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/external-wrong/v5.stdout.log.gz",
+    "original_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/external-wrong/v6.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/external-wrong/v6.stderr.log.gz",
+    "original_sha256": "03c0e4d1419749e5d28b8dabbf7d961c2e5774a78a750c167890267238ce1731",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/external-wrong/v5.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/external-wrong/v5.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/code-example-only/v6.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/code-example-only/v6.stdout.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/code-example-only/v5.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/code-example-only/v5.stdout.log.gz",
+    "original_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/code-example-only/v6.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/code-example-only/v6.stderr.log.gz",
+    "original_sha256": "03c0e4d1419749e5d28b8dabbf7d961c2e5774a78a750c167890267238ce1731",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/code-example-only/v5.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/code-example-only/v5.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/unused-reference-only/v6.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/unused-reference-only/v6.stdout.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/unused-reference-only/v5.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/unused-reference-only/v5.stdout.log.gz",
+    "original_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/unused-reference-only/v6.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/unused-reference-only/v6.stderr.log.gz",
+    "original_sha256": "03c0e4d1419749e5d28b8dabbf7d961c2e5774a78a750c167890267238ce1731",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/unused-reference-only/v5.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/unused-reference-only/v5.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/reference-style/v6.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/reference-style/v6.stdout.log.gz",
+    "original_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/reference-style/v5.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/reference-style/v5.stdout.log.gz",
+    "original_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/reference-style/v6.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/reference-style/v6.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/reference-style/v5.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/reference-style/v5.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/case-wrong/v6.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/case-wrong/v6.stdout.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/case-wrong/v5.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/case-wrong/v5.stdout.log.gz",
+    "original_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/case-wrong/v6.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/case-wrong/v6.stderr.log.gz",
+    "original_sha256": "03c0e4d1419749e5d28b8dabbf7d961c2e5774a78a750c167890267238ce1731",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/case-wrong/v5.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/case-wrong/v5.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/actual-main-direct/v6.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/actual-main-direct/v6.stdout.log.gz",
+    "original_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/actual-main-direct/v5.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/actual-main-direct/v5.stdout.log.gz",
+    "original_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/actual-main-direct/v6.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/actual-main-direct/v6.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/actual-main-direct/v5.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/actual-main-direct/v5.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/actual-paid-on2-broken-link/v6.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/actual-paid-on2-broken-link/v6.stdout.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/actual-paid-on2-broken-link/v5.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/actual-paid-on2-broken-link/v5.stdout.log.gz",
+    "original_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/actual-paid-on2-broken-link/v6.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/actual-paid-on2-broken-link/v6.stderr.log.gz",
+    "original_sha256": "03c0e4d1419749e5d28b8dabbf7d961c2e5774a78a750c167890267238ce1731",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/actual-paid-on2-broken-link/v5.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/actual-paid-on2-broken-link/v5.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/html-anchor/v6.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/html-anchor/v6.stdout.log.gz",
+    "original_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/html-anchor/v5.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/html-anchor/v5.stdout.log.gz",
+    "original_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/html-anchor/v6.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/html-anchor/v6.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/html-anchor/v5.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/html-anchor/v5.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/canonical-recipe-bytes-changed/v6.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/canonical-recipe-bytes-changed/v6.stdout.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/canonical-recipe-bytes-changed/v5.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/canonical-recipe-bytes-changed/v5.stdout.log.gz",
+    "original_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/canonical-recipe-bytes-changed/v6.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/canonical-recipe-bytes-changed/v6.stderr.log.gz",
+    "original_sha256": "da4c11453116d0cbaded66acad541e7fa56c145c33ecef4a42569d49d4ea636a",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/canonical-recipe-bytes-changed/v5.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/canonical-recipe-bytes-changed/v5.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/wrong-event-regression/v6.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/wrong-event-regression/v6.stdout.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/wrong-event-regression/v5.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/wrong-event-regression/v5.stdout.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/wrong-event-regression/v6.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/wrong-event-regression/v6.stderr.log.gz",
+    "original_sha256": "68d6c407acfc489bba153901e0ace8c1f434b2e0ffd063d7db2f73fca964fb89",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/wrong-event-regression/v5.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/wrong-event-regression/v5.stderr.log.gz",
+    "original_sha256": "68d6c407acfc489bba153901e0ace8c1f434b2e0ffd063d7db2f73fca964fb89",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/valid-two-column-colon/v6.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/valid-two-column-colon/v6.stdout.log.gz",
+    "original_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/valid-two-column-colon/v5.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/valid-two-column-colon/v5.stdout.log.gz",
+    "original_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/valid-two-column-colon/v6.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/valid-two-column-colon/v6.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/valid-two-column-colon/v5.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/valid-two-column-colon/v5.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/wrong-local-identical-bytes/v6.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/wrong-local-identical-bytes/v6.stdout.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/wrong-local-identical-bytes/v5.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/wrong-local-identical-bytes/v5.stdout.log.gz",
+    "original_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/wrong-local-identical-bytes/v6.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/wrong-local-identical-bytes/v6.stderr.log.gz",
+    "original_sha256": "03c0e4d1419749e5d28b8dabbf7d961c2e5774a78a750c167890267238ce1731",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/wrong-local-identical-bytes/v5.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/wrong-local-identical-bytes/v5.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/corrected-link-fixture/v6.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/corrected-link-fixture/v6.stdout.log.gz",
+    "original_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/corrected-link-fixture/v5.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/corrected-link-fixture/v5.stdout.log.gz",
+    "original_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/corrected-link-fixture/v6.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/corrected-link-fixture/v6.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/corrected-link-fixture/v5.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/corrected-link-fixture/v5.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/image-only/v6.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/image-only/v6.stdout.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/image-only/v5.stdout.log",
+    "stored_path": "pfxc-oracle-v6/controls/image-only/v5.stdout.log.gz",
+    "original_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/image-only/v6.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/image-only/v6.stderr.log.gz",
+    "original_sha256": "03c0e4d1419749e5d28b8dabbf7d961c2e5774a78a750c167890267238ce1731",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/image-only/v5.stderr.log",
+    "stored_path": "pfxc-oracle-v6/controls/image-only/v5.stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "source-review-legacy-boundary/grades/cpu-PAW-5-off-recommended-numa-resume-1/stderr.log",
+    "stored_path": "source-review-legacy-boundary/grades/cpu-PAW-5-off-recommended-numa-resume-1/stderr.log.gz",
+    "original_sha256": "09f5ea9f405601e171bc460210809052d304451db6cfb1040a45b6eb4cafeb6e",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "source-review-legacy-boundary/grades/cpu-PAW-5-off-recommended-numa-resume-1/stdout.log",
+    "stored_path": "source-review-legacy-boundary/grades/cpu-PAW-5-off-recommended-numa-resume-1/stdout.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "source-review-legacy-boundary/grades/gpu-TU-GR-1-off-common-on-sampling/stderr.log",
+    "stored_path": "source-review-legacy-boundary/grades/gpu-TU-GR-1-off-common-on-sampling/stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "source-review-legacy-boundary/grades/gpu-TU-GR-1-off-common-on-sampling/stdout.log",
+    "stored_path": "source-review-legacy-boundary/grades/gpu-TU-GR-1-off-common-on-sampling/stdout.log.gz",
+    "original_sha256": "2269095132a425335b57ae5d67b5c5a9a7870805a157998a0b2d612fef6ae4b1",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "source-review-legacy-boundary/grades/gpu-MM-5-off-common-on-sampling/stderr.log",
+    "stored_path": "source-review-legacy-boundary/grades/gpu-MM-5-off-common-on-sampling/stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "source-review-legacy-boundary/grades/gpu-MM-5-off-common-on-sampling/stdout.log",
+    "stored_path": "source-review-legacy-boundary/grades/gpu-MM-5-off-common-on-sampling/stdout.log.gz",
+    "original_sha256": "ad1546ceacfae3aec47dd930e43c10cecc58600050398c84e30e6d66601e9b04",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "source-review-legacy-boundary/grades/cpu-MM-5-off-recommended/stderr.log",
+    "stored_path": "source-review-legacy-boundary/grades/cpu-MM-5-off-recommended/stderr.log.gz",
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "source-review-legacy-boundary/grades/cpu-MM-5-off-recommended/stdout.log",
+    "stored_path": "source-review-legacy-boundary/grades/cpu-MM-5-off-recommended/stdout.log.gz",
+    "original_sha256": "ad1546ceacfae3aec47dd930e43c10cecc58600050398c84e30e6d66601e9b04",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  },
+  {
+    "original_path": "pfxc-oracle-v6/controls/canonical-recipe-bytes-changed/lane/artifacts/serving-recipes/qwen3.6-35b-a3b-q8-gpu-mtp.json",
+    "stored_path": "pfxc-oracle-v6/controls/canonical-recipe-bytes-changed/lane/artifacts/serving-recipes/qwen3.6-35b-a3b-q8-gpu-mtp.json.gz",
+    "original_sha256": "5032782f97a4c0789aa7d85774fcf5ac2d275b3eb7b00830c57060ae77338fc3",
+    "encoding": "gzip; decompress to original relative path for replay; raw bytes preserved"
+  }
+]

@@ -1,0 +1,45 @@
+{
+  "label": "baseline",
+  "source_unit": "gpu-DS41-W-66-off-common-on-sampling",
+  "source_candidate": false,
+  "candidate_sha256": "ec49d2f0607335d2a68c2522a9eee81fa379eb2e9d1d3f522af4e30c35096d83",
+  "checks": [
+    {
+      "kind": "original-acceptance",
+      "command": "python3 -m pytest -q scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py scripts/kernel_rnd/autokernel/loop/test_serial_run.py::test_actual_cpu_post_keep_resume_rebinds_original_launch_without_recalibration",
+      "rc": 1,
+      "wall_s": 5.921062865993008,
+      "stdout_sha256": "862b05dae7198487ccef8b92b9da41ea8878a17de2b4567032d48ff7c592877f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "runtime-call-untruncated",
+      "command": "python3 -m pytest -xvs scripts/kernel_rnd/autokernel/loop/test_runtime_keep_source_continuity.py::test_runtime_keep_then_source_reuses_actual_recipe_and_fresh_source_floor",
+      "rc": 1,
+      "wall_s": 2.9222097469028085,
+      "stdout_sha256": "27cbc8587519c7c1d44c6e1d968acb8f2216e472f2dae00698cd69189b937a5a",
+      "stderr_sha256": "fefae9880bc97cf626f6b87e8f35825211d3cf7d8c5a177dc1d392786ef59ccc"
+    },
+    {
+      "kind": "serial-call-untruncated",
+      "command": "python3 -m pytest -xvs scripts/kernel_rnd/autokernel/loop/test_serial_run.py::test_actual_cpu_post_keep_resume_rebinds_original_launch_without_recalibration",
+      "rc": 0,
+      "wall_s": 3.830881271045655,
+      "stdout_sha256": "602b23b62b85ab61138ae2a8c82e2e537673208689100b22c0feb008ca22da8b",
+      "stderr_sha256": "9d998f22ce439097af6fd91ee349524a276da5edcfb82a31cf0d8095a9cf4745"
+    },
+    {
+      "kind": "canonical-independent-oracle",
+      "command": "export PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 PYTHONDONTWRITEBYTECODE=1; exec python3 /case/.taskflow-refs/.independent-oracle.py --pytest /tmp/independent-pytest",
+      "rc": 1,
+      "stdout_sha256": "dff17fd9cd764a0c62a2219273bce4581d624eb8574afcb0b15540feb81fcacc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "stock_container": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/w66-worker-local-replay/runs/baseline/sandbox/CONTAINER.json",
+  "owned_container_removed": true,
+  "provider_upstream_port": 1,
+  "no_model_endpoint_supplied": true,
+  "model_prompt_or_session_calls": 0,
+  "actual_stock_readonly_refs_and_gitsetup": true
+}

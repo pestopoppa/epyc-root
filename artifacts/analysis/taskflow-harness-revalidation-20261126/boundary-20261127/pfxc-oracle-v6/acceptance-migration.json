@@ -1,0 +1,14 @@
+{
+  "case": "PFXC-A3",
+  "change": "Retain every V5 check and require an actual CommonMark or HTML hyperlink resolving from the document to the supplied byte-pinned canonical recipe. Words, unused definitions, images and code examples are not hyperlinks. No new task requirement.",
+  "control_receipt": "REPLAY.json",
+  "control_receipt_sha256": "805ae33b0ad0cbfae4ee8c9b75ae59db9438329554c10e3f18b790be8cf817f2",
+  "extra_native_attempts": 0,
+  "extra_paid_model_calls": 0,
+  "oracle_sha256": "a5d5d9ea2d06ccddf0ed70d9ed635a8d53e5c8b3db857e0917c05bdf10898089",
+  "original_requirement": "Write docs/research/qwen3.6-35b-a3b-q8-gpu-mtp-cache-sizing.md as the A3B recipe companion with sections Source rows, Entry sizes, Cache sizing and VRAM budget. Link artifacts/serving-recipes/qwen3.6-35b-a3b-q8-gpu-mtp.json and preserve its bytes.",
+  "original_requirement_source_sha256": "1acec09e6f88ea78c189d76a80a6c677903f9269866c94a6b3d9db60defee4d1",
+  "previous_oracle_sha256": "0909b84252e9e717d10704bfd90f09bad631a869b8880ba6cc54a798c3929068",
+  "raw_scores_unchanged": true,
+  "version": "pfxc.recipe-hyperlink.v6"
+}

@@ -1,0 +1,44 @@
+{
+  "status": "prepared_not_authorized_not_launched",
+  "row": "ROW.json",
+  "feedback": "FEEDBACK.md",
+  "checker": "../oracle.py",
+  "checker_package_required": [
+    "../vendor",
+    "../PARSER-PROVENANCE.json"
+  ],
+  "checker_sha256": "a5d5d9ea2d06ccddf0ed70d9ed635a8d53e5c8b3db857e0917c05bdf10898089",
+  "quality_module": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/launch.py",
+  "quality_module_sha256": "13848d68e02913fc8cbd209da0c3189c7f0837eb66629dffe1ec2efe7e5406ad",
+  "entrypoint": "unchanged quality.run_row(epoch, port, row, quality_manifest_sha)",
+  "quality_manifest_sha256": "7661bb92dd613add2f9af608afc5e5795b375b315de17ee50683c0bda7359d36",
+  "saved_state_hash": "fa23e5204e748d82b3b6e3938970490aeda6a6e4d76b069ace0ea84aa469e8e0",
+  "saved_state_hash_implementation": {
+    "source": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-runner/engine/opencode_derived/__main__.py",
+    "source_sha256": "732069fa17ab70412cfd35aceec144a96763ddee431a44442edbaa2c36df742b",
+    "function_source_sha256": "5a7cdb1af646aa998331b7973c73bbf10a51828fdd80510b89572591d68146c0"
+  },
+  "full_tool_profile": "same qualified twelve direct tools and Code Mode catalog, title role64, primary32768, preserved thinking/sampler/session",
+  "provider_config_wall_s": 1800,
+  "reason_for_unchanged_config": "Saved OpenCode config rejects altered provider chunkTimeout; preserve same-session config and use independent owner deadline.",
+  "owner_observed_deadline_s": 300,
+  "lease_required": {
+    "exclusive_gpu_slot": 3,
+    "owner_and_controller_start_ticks": true,
+    "same_gpu_server_pid_start_and_executable_hash": true,
+    "fresh_idle_slot3_and_no_outstanding_queue": true,
+    "cancel_on_owner_controller_server_or_lease_loss": true,
+    "cancellation_classification": "partial/interrupted grant loss; not quality failure",
+    "stop_owned_worker_and_container_confirmed": true,
+    "never_stop_shared_gpu_server": true
+  },
+  "executor_options": [
+    "Main explicit owner-held slot3 grant with cancellation/lifetime guard; old coordinator does not count this callback as pending.",
+    "pilot_runtime combined boundary coordinator schedules this slot3 row before legacy MM ON and owns its complete lifetime."
+  ],
+  "no_implicit_borrow_or_lifetime_extension": true,
+  "native_cap2_and_final_REJECT_preserved": true,
+  "reuse_previous_semantic_review_only_if": "V6 passes and the only candidate byte change is the required hyperlink target; otherwise additional source review is required.",
+  "corrected_target_or_paid_final_review_text_in_feedback": false,
+  "model_calls": 0
+}

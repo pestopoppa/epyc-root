@@ -1,0 +1,18 @@
+{
+  "candidate_patch_sha256": "68699f113ea1bbfcb16aa0e9c5031d705fff815dd0120e55a0b8e3112dffd731",
+  "decision": "rejected",
+  "source_review": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/reviews/NARIQ-LIBTRELLIS-MAP-1/gpu-ON-on-coding/final-acceptance/runs/NARIQ-LIBTRELLIS-MAP-1/guidance-1/assistance-accounting.json",
+  "source_review_sha256": "170569bf42504dd629acbd63d74c7716a5b48a776b89597cfb59ba2deb0a717c",
+  "raw_native_status": "interrupted",
+  "raw_oracle": {
+    "rc": 0,
+    "oracle_sha256": "7dfb632558142af85b2d2395a17781bf81f7aa16899f73a91b2bdb9b698ff795",
+    "acceptance_version": "original",
+    "original_oracle_sha256": "7dfb632558142af85b2d2395a17781bf81f7aa16899f73a91b2bdb9b698ff795",
+    "stdout_sha256": "4c82cec89a4949d31149cc9a9b1c2e44f0058e9b1cfc4b8268e600aaea8e6827",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "semantic_review_required": true
+  },
+  "qualification": "full source review; raw structural scores unchanged",
+  "current_bounded_verdict_preserved": true
+}

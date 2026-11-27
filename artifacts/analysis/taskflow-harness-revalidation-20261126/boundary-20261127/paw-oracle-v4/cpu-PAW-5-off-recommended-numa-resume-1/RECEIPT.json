@@ -1,0 +1,10 @@
+{
+  "unit": "cpu-PAW-5-off-recommended-numa-resume-1",
+  "checker_sha256": "9e6583fbebba2c82e89a3f4332128d44d3ccec43147a3f83910a1e2fce8a40d6",
+  "candidate_doc_sha256": "506db508599080eb7b155165d58ef3f84c9d4c22e4b449556f945e5904fdfa0f",
+  "raw_result_sha256": "1c28ec8b83e34244e0c13345cf8a8533e662593d20d4fb4b7f553f936b76db3c",
+  "raw_result_preserved": true,
+  "rc": 0,
+  "candidate_unchanged": true,
+  "scope": "structure/provenance only; semantic main review separate"
+}

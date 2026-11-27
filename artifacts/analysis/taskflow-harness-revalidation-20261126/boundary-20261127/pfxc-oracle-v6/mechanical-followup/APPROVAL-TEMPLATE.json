@@ -1,0 +1,8 @@
+{
+  "approved_by": null,
+  "mechanical_seal_sha256": "096aa294ce5153cd78624196bf19c403773bfd0e4caba42f9249b4f515a7dffd",
+  "owner_slot3_lease": null,
+  "owner_deadline_s": 300,
+  "explicit_additional_third_feedback": false,
+  "instruction": "Main selects a concrete lifetime-guarded executor and re-probes owner/server/idle slot before approving. This file authorizes no inference."
+}

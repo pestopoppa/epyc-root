@@ -1,0 +1,31 @@
+{
+  "unit": "gpu-PFXC-A3-off-recommended-guidance-2",
+  "result_sha256": "a5f563337239afa86fcd8006f1fecde0c0880ba9f8d51fadd4d3031e6c28b816",
+  "candidate_patch_sha256": "91f03d60fde517bf71b9c8f9440b2eccda4118131c88eb2cfb7a8035f7bf1bf9",
+  "candidate_sha256": "28c150b4f472d0e103ac05c6f86f2fff874d37fe6396bf28de9d81deedb700bd",
+  "raw_status": "oracle_pass",
+  "raw_oracle": {
+    "rc": 0,
+    "oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+    "acceptance_version": "original",
+    "original_oracle_sha256": "c24d7895ec3157595cebcb24a4c7a930ee4792358a5598745142f93ddc059d1e",
+    "stdout_sha256": "a3e07692eeabc2c4c33e435198b691f8997f66ddc473414683503708cb2124c0",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "semantic_review_required": true
+  },
+  "reassessment_version": "pfxc.recipe-hyperlink.v6",
+  "reassessment_oracle_sha256": "a5d5d9ea2d06ccddf0ed70d9ed635a8d53e5c8b3db857e0917c05bdf10898089",
+  "rc": 0,
+  "diagnostic": "",
+  "stdout_sha256": "42e0555b7948b2db1ee17b6c2089fd6e752926233f14b56d7be136e7eb0a5da2",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "raw_scores_unchanged": true,
+  "original_inputs_sha256": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-off-recommended-guidance-2/RESULT.json": "a5f563337239afa86fcd8006f1fecde0c0880ba9f8d51fadd4d3031e6c28b816",
+    "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-off-recommended-guidance-2/independent/work/docs/research/qwen3.6-35b-a3b-q8-gpu-mtp-cache-sizing.md": "28c150b4f472d0e103ac05c6f86f2fff874d37fe6396bf28de9d81deedb700bd",
+    "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-off-recommended-guidance-2/independent/work/artifacts/serving-recipes/qwen3.6-35b-a3b-q8-gpu-mtp.json": "d3a3cf4f935a00dd9b020ea409f52a26caedfe3cf2325f636ae7c4edd5cf302b",
+    "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-off-recommended-guidance-2/independent/candidate.patch": "91f03d60fde517bf71b9c8f9440b2eccda4118131c88eb2cfb7a8035f7bf1bf9"
+  },
+  "semantics": "requires independent semantic review; structural pass is not semantic acceptance",
+  "model_calls": 0
+}

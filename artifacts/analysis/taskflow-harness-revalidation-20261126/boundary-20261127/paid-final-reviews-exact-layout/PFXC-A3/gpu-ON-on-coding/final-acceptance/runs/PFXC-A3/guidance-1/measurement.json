@@ -1,0 +1,51 @@
+{
+  "case": "PFXC-A3",
+  "arm": "guidance",
+  "ordinal": 1,
+  "requested_model": "gpt-6.1-sol",
+  "requested_effort": "low",
+  "execution": {
+    "rc": 0,
+    "wall_s": 79.783234,
+    "cli_version": "codex-cli 0.172.0",
+    "tool_audit_required": true
+  },
+  "jsonl": {
+    "fresh_thread_count": 1,
+    "thread_id": "01a21a98-0956-7c60-8b94-3a489ee01dd4",
+    "completed_turn_count": 1,
+    "malformed_records": 0,
+    "errors": 0,
+    "usage": {
+      "input_tokens": 87656,
+      "cached_input_tokens": 66048,
+      "output_tokens": 942,
+      "reasoning_output_tokens": 78,
+      "uncached_input_tokens": 21608
+    },
+    "command_count": 4,
+    "item_types": [
+      "agent_message",
+      "command_execution"
+    ],
+    "commentary_overhead_chars": 118,
+    "final_message_chars": 504,
+    "outside_scope_review_flags": [
+      {
+        "item_id": "item_4",
+        "command": "/usr/bin/bash -lc \"python3 - <<'PY'\nfrom pathlib import Path\nimport re,math,hashlib\np=Path('docs/research/qwen3.6-35b-a3b-q8-gpu-mtp-cache-sizing.md'); t=p.read_text(); s=Path('.taskflow-refs/external/pfxc/pfxc-source-excerpts.txt').read_text()\na=[(int(n),v) for n,v in re.findall(r'\"'^'\"\\\\s*(\\\\d+):.*making room for prompt cache entry.*size = ([0-9.]+) MiB',s,re.M)]\nb=[]\nfor line in t.splitlines():\n if re.match(r'\\\\|\\\\s*\\\\d',line):\n  cells=[v.strip() for v in line.strip('|').split('|')]\n  if len("
+      }
+    ]
+  },
+  "changed_by_strong_turn": [],
+  "final_changes": [
+    "docs/research/qwen3.6-35b-a3b-q8-gpu-mtp-cache-sizing.md"
+  ],
+  "out_of_scope_changes": [],
+  "path_scope_pass": true,
+  "patch_sha256": "cd5cc4f138353d22ff9d98e93c021a63964992c8135488803fbead953ad7a2be",
+  "retained_runtime_artifacts": {},
+  "oracle": null,
+  "human_tool_and_answer_blinding_review": "pending",
+  "reasoning_accounting": "missing explicit reasoning tokens remain null; output includes them when reported"
+}

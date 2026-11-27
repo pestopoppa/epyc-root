@@ -1,0 +1,10 @@
+{
+  "unit": "gpu-PAW-5-on-coding-guidance-2",
+  "checker_sha256": "9e6583fbebba2c82e89a3f4332128d44d3ccec43147a3f83910a1e2fce8a40d6",
+  "candidate_doc_sha256": "de92f989f3dc094eee2d03a593e587209e66bd66d8eac0d07a80d600121cf075",
+  "raw_result_sha256": "a9c5f11c3617d48e9d88c1842e337c4c2cdceb214d6f96f37b80380356b01394",
+  "raw_result_preserved": true,
+  "rc": 0,
+  "candidate_unchanged": true,
+  "scope": "structure/provenance only; semantic main review separate"
+}

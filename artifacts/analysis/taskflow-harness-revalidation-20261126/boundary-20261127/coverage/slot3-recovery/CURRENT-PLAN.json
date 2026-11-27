@@ -1,0 +1,108 @@
+{
+  "schema": "owner-slot3-recovery.v1",
+  "holder": {
+    "pid": 3507046,
+    "ppid": 89061,
+    "start_ticks": 161578912
+  },
+  "controller": {
+    "pid": 3507253,
+    "ppid": 3507046,
+    "start_ticks": 161578918
+  },
+  "server": {
+    "pid": 3553296,
+    "ppid": 3507253,
+    "start_ticks": 161585422
+  },
+  "grant": {
+    "holder_pid": 3507046,
+    "regions": [
+      "q0",
+      "q1",
+      "q2",
+      "q3"
+    ]
+  },
+  "serving": {
+    "port": 42559,
+    "serving_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/out-gpu/live.json",
+    "serving_receipt_sha256": "932b1ad48721cf8d87c2192f724d2a4ef4de23e25fc2aaf3d7ae2b6c2ff0c3e7",
+    "server_executable_sha256": "0e2bdb4c70f64fbf78791dd805aed37702324c02ef8d45d1f686c68ddf61cf4e",
+    "model_path": "/mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf"
+  },
+  "bound_source_receipts": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/GRANT.json": "2ed5484734c7c2e8741d6eb5a62e993f587c671b4846ab0eacc4ea4509dbdbf2",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/APPROVAL.json": "269a65995c40c86d593675a93551ef63f5b3a885fefb21a2bd265690f3e4221f",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/PLAN.json": "b895206cad5daf131f9ea6dd4b5d60c6b91945f99bbe95f9259fdd589d3d724b",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/SERVING.json": "dc56cff5df7c373d2dde749ab00df9c720532c4aa0540f84061b1102c8f8aa66",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/mechanical-control/EXECUTION.json": "cde5e37d918a5ba36b07028ac22d4e7bc37ec5ceae228be5c764688780c69b65",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/mechanical-control/worker.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-boundary-v3/runs/boundary-01/units/gpu-PFXC-A3-on-coding-post-review-mechanical-3/MECHANICAL-ERROR.json": "f51870c87b76d70523a7fe705f385412d4325a10a089608f4a754d110fad850c"
+  },
+  "mechanical": {
+    "case": "PFXC-A3",
+    "backend": "gpu",
+    "thinking": true,
+    "profile": "on-coding",
+    "sampling": {
+      "temperature": 0.6,
+      "top_p": 0.95,
+      "top_k": 20,
+      "min_p": 0.0,
+      "presence_penalty": 0.0,
+      "repeat_penalty": 1.0,
+      "seed": 223355
+    },
+    "slot": 3,
+    "cohort": 0,
+    "request_cap": 32768,
+    "generated_ceiling": 120000,
+    "wall_s": 1800,
+    "id": "gpu-PFXC-A3-on-coding-post-review-mechanical-3",
+    "feedback_class": "post-review deterministic mechanical repair",
+    "extra_feedback_ordinal": 3,
+    "native_protocol_cap2_result_retained": true,
+    "extra_paid_semantic_guidance_rounds": 0,
+    "claim_minimum_guidance": false,
+    "resume": {
+      "initial_row": "gpu-PFXC-A3-on-coding",
+      "prior": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-PFXC-A3-on-coding-guidance-2",
+      "prior_result_sha256": "1153e80178eac64b9cb359d82844733c9a19b390b3ad66a586b47ff8c695ea74",
+      "prior_session_sha256": "1163f5d52913578fc009d194a4d68e04b5c298f74e6f8e7cac982a679c3ac446",
+      "prior_state_sha256": "fa23e5204e748d82b3b6e3938970490aeda6a6e4d76b069ace0ea84aa469e8e0",
+      "feedback": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/pfxc-oracle-v6/mechanical-followup/FEEDBACK.md",
+      "feedback_sha256": "5290e9d0c52cb88053bbeed59dd4f2050f7bfe3c2d6bfa56f9e341369d965f6e",
+      "ordinal": 3,
+      "exception_class": "additional-verifier-only-post-review-mechanical"
+    }
+  },
+  "legacy_mm_on": {
+    "case": "MM-5",
+    "backend": "gpu",
+    "thinking": true,
+    "profile": "on-coding",
+    "sampling": {
+      "temperature": 0.6,
+      "top_p": 0.95,
+      "top_k": 20,
+      "min_p": 0.0,
+      "presence_penalty": 0.0,
+      "repeat_penalty": 1.0,
+      "seed": 223355
+    },
+    "slot": 3,
+    "cohort": 0,
+    "request_cap": 32768,
+    "generated_ceiling": 120000,
+    "wall_s": 1800,
+    "id": "gpu-MM-5-on-coding",
+    "required_for_residual_question": true,
+    "physical_slot_policy": "distinct cold C22 v4 slots within cohort; owner per-slot request serialization and cache-ram=0; no cross-owner borrowing"
+  },
+  "original_attempts_started": false,
+  "mechanical_deadline_s": 300,
+  "mm_deadline_s": 1800,
+  "write_scope": "private recovery evidence only",
+  "context": 131072
+}

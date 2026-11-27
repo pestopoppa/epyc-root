@@ -1,0 +1,234 @@
+{
+  "epochs": [
+    {
+      "id": "cache-safe-01",
+      "layout": "quality",
+      "serving_root": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01",
+      "units_root": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units",
+      "plan": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/SELECTED-ROWS.json",
+      "backends": [
+        "cpu",
+        "gpu"
+      ],
+      "bindings": [
+        {
+          "kind": "original_approval",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/APPROVAL.json",
+          "sha256": "62504054b9b905189f972b7d607eaa43c72f42bf3a195d2b66fb5e4acd135c26"
+        },
+        {
+          "kind": "approved_quality_manifest",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/QUALITY-MANIFEST.json",
+          "sha256": "7661bb92dd613add2f9af608afc5e5795b375b315de17ee50683c0bda7359d36"
+        },
+        {
+          "kind": "approved_frozen_grid",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/GRID.json",
+          "sha256": "506c30e14b0953c8aeda031cc968070ac2e3c516507a82c285aca206141efd2f"
+        },
+        {
+          "kind": "sealed_coordinator_source",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/launch.py",
+          "sha256": "13848d68e02913fc8cbd209da0c3189c7f0837eb66629dffe1ec2efe7e5406ad"
+        },
+        {
+          "kind": "sealed_coordinator_source",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/opencode_derived/transport.py",
+          "sha256": "e526039e88666bd327cc9c8d4c683de52111806920e50fd21b3655ca0ba3143d"
+        },
+        {
+          "kind": "sealed_coordinator_source",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/opencode_derived/sandbox.py",
+          "sha256": "cab793c1aad2993108de43ebe8e8b2de1aadf5b1ddc523fe99ee655ca8cba684"
+        },
+        {
+          "kind": "served_configuration",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/CONFIG-cpu.json",
+          "sha256": "71f7433bf7a610c88ac213a2f12d82d196a0167771f6df50fe6e312602974813"
+        },
+        {
+          "kind": "served_configuration",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/CONFIG-gpu.json",
+          "sha256": "e761950638cc9cf98d57b285445e6fd80a9035d16cb5a3afa012ef69921ca267"
+        },
+        {
+          "kind": "owner_placement_interruptions",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/cpu-placement-incident/CPU-INTERRUPTS.json",
+          "sha256": "40822b47bfcfbc00d7a4962fa3a8caa30d5acd702e2ce982679aa415817e191f"
+        },
+        {
+          "kind": "original_weight_residency",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/NUMA-BEFORE.json",
+          "sha256": "3afa3859dc06a81315fafff683edd6bf1409460abf4edbd57eba1dfd7c12f1d8"
+        }
+      ],
+      "overlays": [
+        {
+          "backend": "cpu",
+          "tag": "cpu_placement_incident",
+          "ids": [
+            "cpu-DS41-W-66-off-recommended",
+            "cpu-NARIQ-LIBTRELLIS-MAP-1-off-recommended",
+            "cpu-PAW-5-off-recommended",
+            "cpu-PFXC-A3-off-recommended"
+          ],
+          "evidence": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/cpu-placement-incident/CPU-INTERRUPTS.json"
+        }
+      ]
+    },
+    {
+      "id": "cpu-02/measured-01",
+      "layout": "cpu_repaired",
+      "serving_root": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02",
+      "units_root": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/units",
+      "plan": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/APPROVAL.json",
+      "backends": [
+        "cpu"
+      ],
+      "default_backend": "cpu",
+      "profile_tags": [
+        "after_cpu_numa_repair"
+      ],
+      "bindings": [
+        {
+          "kind": "batch_approval",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/APPROVAL.json",
+          "sha256": "f22f216a1a7f4d27bc979ed3aa21f84bd374072447cb4a31ec8121e9dfb7814a"
+        },
+        {
+          "kind": "batch_dispatch",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/jobs/measured-01/DISPATCH.json",
+          "sha256": "2ad38cb6c697bc71c907e9b47c245e201dce6abca041f110da9859a41bb5b9d3"
+        },
+        {
+          "kind": "sealed_repaired_cpu_dispatch",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/DISPATCH-SEAL.json",
+          "sha256": "7ae020f0cf70511b3771341f8cc19acaf8ae115db379c473ab6cb9d7d37358c4"
+        },
+        {
+          "kind": "sealed_coordinator_source",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/dispatch.py",
+          "sha256": "4ada5b3de18a4fabc1edfa6108c6615d25ae03a2a84fb71ba65ac80e65669ba6"
+        },
+        {
+          "kind": "sealed_coordinator_source",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/serve.py",
+          "sha256": "2b1fc702bb14a23e3ebe804e82a95715ca22be1e374bf9696ce60109c10eaa46"
+        },
+        {
+          "kind": "approved_cpu_ready",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/READY.json",
+          "sha256": "ec89231f1bd496513b7e0eda368ff160d7360f7cf716dd4e8718c9c138f003c3"
+        },
+        {
+          "kind": "approved_weight_residency",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/NUMA-AFTER.json",
+          "sha256": "7b7e8511d02a618eb66e5b4dac22f98140355a989650b0972b7c8c5e20aa18d5"
+        },
+        {
+          "kind": "approved_cpu_serving",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/out-cpu/live.json",
+          "sha256": "30f7ab3c29a823c294a9c4b9d928c2f002211d30fae060aec4977b8e3490a194"
+        },
+        {
+          "kind": "legacy_worker_seal",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-runner/RUNNER-SEAL.json",
+          "sha256": "9498641010d8c6e910862f38e1f838e28432a7934b205a2a874b3079837c3fd2"
+        },
+        {
+          "kind": "served_configuration",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/cpu-numa-repair/runs/cpu-02/CONFIG-cpu.json",
+          "sha256": "e6bf30774b952e29b302d28dbe8e06dbf418a0938006f6815aa9dd729b0a35a8"
+        },
+        {
+          "kind": "approved_quality_manifest",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/QUALITY-MANIFEST.json",
+          "sha256": "7661bb92dd613add2f9af608afc5e5795b375b315de17ee50683c0bda7359d36"
+        },
+        {
+          "kind": "approved_frozen_grid",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/GRID.json",
+          "sha256": "506c30e14b0953c8aeda031cc968070ac2e3c516507a82c285aca206141efd2f"
+        },
+        {
+          "kind": "sealed_coordinator_source",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/launch.py",
+          "sha256": "13848d68e02913fc8cbd209da0c3189c7f0837eb66629dffe1ec2efe7e5406ad"
+        },
+        {
+          "kind": "sealed_coordinator_source",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/opencode_derived/transport.py",
+          "sha256": "e526039e88666bd327cc9c8d4c683de52111806920e50fd21b3655ca0ba3143d"
+        },
+        {
+          "kind": "sealed_coordinator_source",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/opencode_derived/sandbox.py",
+          "sha256": "cab793c1aad2993108de43ebe8e8b2de1aadf5b1ddc523fe99ee655ca8cba684"
+        }
+      ]
+    },
+    {
+      "id": "legacy-gpu-v2/gpu-01",
+      "layout": "legacy_gpu",
+      "serving_root": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-gpu-v2/runs/gpu-01",
+      "units_root": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-gpu-v2/runs/gpu-01/units",
+      "plan": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-gpu-v2/MAIN-APPROVAL.json",
+      "backends": [
+        "gpu"
+      ],
+      "default_backend": "gpu",
+      "bindings": [
+        {
+          "kind": "approved_runner_seal",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-gpu-v2/RUNNER-SEAL.json",
+          "sha256": "ada24479670aae02ffbce7eadb0c1c941a1ffcb5183865cef475b35710191bd7"
+        },
+        {
+          "kind": "prelaunch_owner_approval",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-gpu-v2/MAIN-APPROVAL.json",
+          "sha256": "754c365d2976747d87451bcc57b15651cd812f02c051ed494507097175163baf"
+        },
+        {
+          "kind": "observed_epoch_approval",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-gpu-v2/runs/gpu-01/APPROVAL.json",
+          "sha256": "754c365d2976747d87451bcc57b15651cd812f02c051ed494507097175163baf"
+        },
+        {
+          "kind": "legacy_case_package",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/PACKAGE-SEAL.json",
+          "sha256": "9b1586f7759831364eefd98f7a1cf35df0d066a96c587675acd571b3628b06e3"
+        },
+        {
+          "kind": "sealed_coordinator_source",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-gpu-v2/run.py",
+          "sha256": "45e85ee362a757a0896b5641d280bde6ca95789ff4afec60024cb610238f3ed8"
+        },
+        {
+          "kind": "sealed_coordinator_source",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-gpu-v2/CONFIG-gpu.json",
+          "sha256": "e761950638cc9cf98d57b285445e6fd80a9035d16cb5a3afa012ef69921ca267"
+        },
+        {
+          "kind": "sealed_coordinator_source",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-gpu-v2/engine/opencode_derived/__main__.py",
+          "sha256": "732069fa17ab70412cfd35aceec144a96763ddee431a44442edbaa2c36df742b"
+        },
+        {
+          "kind": "sealed_coordinator_source",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-gpu-v2/engine/opencode_derived/transport.py",
+          "sha256": "e526039e88666bd327cc9c8d4c683de52111806920e50fd21b3655ca0ba3143d"
+        },
+        {
+          "kind": "observed_served_configuration",
+          "path": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-gpu-v2/runs/gpu-01/CONFIG-gpu.json",
+          "sha256": "e761950638cc9cf98d57b285445e6fd80a9035d16cb5a3afa012ef69921ca267"
+        }
+      ]
+    }
+  ],
+  "main_roots": [
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs"
+  ],
+  "reviews": {}
+}

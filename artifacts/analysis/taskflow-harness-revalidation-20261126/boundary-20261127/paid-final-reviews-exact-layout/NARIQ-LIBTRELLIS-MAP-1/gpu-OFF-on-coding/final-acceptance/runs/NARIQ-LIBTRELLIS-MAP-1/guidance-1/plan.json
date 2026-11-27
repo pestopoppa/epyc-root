@@ -1,0 +1,104 @@
+{
+  "schema": "epyc.main-comparison.plan.v1",
+  "case": "NARIQ-LIBTRELLIS-MAP-1",
+  "arm": "guidance",
+  "ordinal": 1,
+  "model": "gpt-6.1-sol",
+  "reasoning_effort": "low",
+  "provider": "openai",
+  "fresh_session": true,
+  "expected_cli_version": "codex-cli 0.172.0",
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--json",
+    "--ephemeral",
+    "--ignore-user-config",
+    "--ignore-rules",
+    "--skip-git-repo-check",
+    "--sandbox",
+    "danger-full-access",
+    "-C",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/reviews/NARIQ-LIBTRELLIS-MAP-1/gpu-OFF-on-coding/final-acceptance/runs/NARIQ-LIBTRELLIS-MAP-1/guidance-1/lane",
+    "-m",
+    "gpt-6.1-sol",
+    "-c",
+    "model_reasoning_effort=\"low\"",
+    "-c",
+    "model_provider=\"openai\"",
+    "-c",
+    "project_doc_max_bytes=0",
+    "-c",
+    "mcp_servers={}",
+    "-"
+  ],
+  "task_scope": "Inspect and provide feedback only",
+  "filesystem_boundary": "private staged working directory with audited instruction-scoped access",
+  "reasoning_usage": "capture explicit CLI usage when exposed, otherwise report unavailable",
+  "max_wall_s": 900,
+  "command_affinity": "180-183",
+  "resource_class": "remote model, local control shell only",
+  "outside_worker_oracle": [
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/reviews/NARIQ-LIBTRELLIS-MAP-1/gpu-OFF-on-coding/final-acceptance/cases/NARIQ-LIBTRELLIS-MAP-1/oracle.py",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/reviews/NARIQ-LIBTRELLIS-MAP-1/gpu-OFF-on-coding/final-acceptance/runs/NARIQ-LIBTRELLIS-MAP-1/guidance-1/lane"
+  ],
+  "oracle_sha256": "7dfb632558142af85b2d2395a17781bf81f7aa16899f73a91b2bdb9b698ff795",
+  "prompt_sha256": "78b58509b3081a0e0a111128c85f7322010700e51745f628a0452975a4a35b43",
+  "before_files": {
+    ".taskflow-refs/epyc-root@9cd1c942a3ad9edce34ba42b8eaf796156e8be72/research/deep-dives/intake-kspec-20261120/intake-2733.md": {
+      "sha256": "567a6ef22784a6dd187d7d266ddd0c90b128c67b95b7c83123b8a0b77366346f",
+      "bytes": 2731,
+      "executable": false
+    },
+    ".taskflow-refs/external/nariq-upstream/libtrellis-excerpts.txt": {
+      "sha256": "1e4a584b083b7bd695697f05444d72597b71f69e5467504074bfb0d0250b645d",
+      "bytes": 12049,
+      "executable": false
+    },
+    "docs/research/exl3-4-gfx90a-libtrellis-design.md": {
+      "sha256": "650324ea0cd0118c0c339d40f29cccc1f0160b30395ddaebf79ead51d01c30bd",
+      "bytes": 14995,
+      "executable": false
+    },
+    "scripts/kernel_rnd/exl3_gfx90a/README.md": {
+      "sha256": "30f1e45829de64c253db03c7454cd99ff6c4a69baecfde4d6cc0d687ec4de2d0",
+      "bytes": 11178,
+      "executable": false
+    },
+    "scripts/kernel_rnd/exl3_gfx90a/kernels.hip": {
+      "sha256": "180f1a37f634bd1f69e7777b9735410e92511dc583a55a9d80152c8747356d0e",
+      "bytes": 22125,
+      "executable": false
+    },
+    "scripts/kernel_rnd/exl3_gfx90a/test_runtime.hip": {
+      "sha256": "2733ea92d08c0231ba056e1e48c467c55ac8efa9b70a5571e2135923704bc744",
+      "bytes": 23980,
+      "executable": false
+    }
+  },
+  "received_local_proposal": [
+    "docs/research/exl3-4-gfx90a-libtrellis-design.md"
+  ],
+  "feedback_sha256": "47d80d2aa3582a2d3b5e1c4be04899ffe2417f4aeab7fbe42511994779fbf3f5",
+  "live_calls": "await_native_harness_readiness_and_main_approval",
+  "review_kind": "final-acceptance",
+  "mode": "gpu-OFF-on-coding",
+  "native_ordinal": 0,
+  "native_correction_ceiling": 2,
+  "allowed_next_native_correction": null,
+  "assistance_role": "paid-independent-final-acceptance",
+  "source_native_result_sha256": "fc57cf5b41a09d4fcefc4eed72f5de213b1c96e282154b23775569cd843d0cdb",
+  "candidate_input_patch_sha256": "94f32ccbebf15232a837658630f463fe98a8c30bc4ad1fc806f7528f93b247b5",
+  "candidate_scope": "read-only exact staged proposal",
+  "scheduling_protocol": {
+    "kind": "review-tool-host-affinity-only",
+    "previous": "84-87",
+    "current": "180-183",
+    "reason": "avoid runnable pytest starvation from concurrent96CPU inference",
+    "preserve_model_profile_and_usage_accounting": true,
+    "speed_comparison_claim": false,
+    "adapter_source_sha256": "af68070e428b79c8927edaa45d46c673dc349b9823356e01be19613c50c9fb80"
+  }
+}

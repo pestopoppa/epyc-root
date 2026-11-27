@@ -1,0 +1,27 @@
+{
+  "id": "gpu-MM-5-off-common-on-sampling",
+  "rc": 1,
+  "candidate_patch_sha256": "a62cb7476c519b0ece04a00e35093d2f1ff7e9874eea8d042cb6d89af194b17f",
+  "checked_candidate_files": {
+    "src/vision/analyzers/vl_describe.py": {
+      "bytes": 25150,
+      "executable": false,
+      "sha256": "64d1e88c0925759378f8541ed8f407f2c1cd68e2920590df4184eaade2744057"
+    },
+    "tests/unit/test_vl_describe_resize.py": {
+      "bytes": 7436,
+      "executable": false,
+      "sha256": "92c1299a1b6f068ceeee7f12c7b8016c3132832ca772674874842464502dadbe"
+    }
+  },
+  "checker_version": "mm5.image-contract.v2",
+  "oracle_sha256": "6619c29e02b97122137357b410da8968344fcf55aa01033a61e55dc611804099",
+  "contract_sha256": "c08d80d2cd4c50599465c75687cc17ea83ebe5632d3ce768b970cc358da48bdd",
+  "source_control_sha256": "8b60c8d3492b51cef7e3a1a1151f62bd92a0f97a8487d12c06407699179b4976",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "7464a9b094e3b3f9dfa406b18149f615bd6831210ae193c0b867ef09fd899e19",
+  "started_at": 1795746385.0812433,
+  "terminal_at": 1795746389.2423775,
+  "raw_scores_preserved": true,
+  "model_calls": 0
+}
