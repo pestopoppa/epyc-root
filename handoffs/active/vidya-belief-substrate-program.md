@@ -4951,3 +4951,5 @@ Real-dispatch source coverage for VB-TASKFLOW-CANARY-WIRE includes `ws58-a3b-pil
 - [ ] **VB-REPLAN-METRICS-WIRE** [non-inference] Adapter for rowflow replan-metrics.jsonl (C shadow soak) → ClaimTuple; one record per day; no new grading rule. Source row: scripts/vidya/adapters/README.md (Rowflow replan-metrics).
       · done when: a daily replan-metrics record yields a ClaimTuple that claim_tuple.grade() accepts, and the planning-context canary for this source passes
       · gate: none
+
+The November27 operator-authorized 27B GPU / Q38FN CPU repeat extends VB-TASKFLOW-CANARY-WIRE and PERF-WIRE: preserve original per-model shard/template/capability identity, DFlash/MTP counters, thinking mode, concurrent resource windows and paid-assistance custody. Protocol: `docs/design/27b-q38fn-full-tools-repeat-20261127.md`; pre-hook outcomes remain committed observations.
