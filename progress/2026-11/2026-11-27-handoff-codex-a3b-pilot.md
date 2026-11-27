@@ -142,7 +142,7 @@ Next: codex-a3b-pilot finishes qualified TU ON paid2 and final accounting, prese
 
 ### 04:35 UTC — technical closure and publication
 
-- **A3B-FULL-TOOLS-CANARY:** Six original pinned task types plus the matched light W66 condition are assessed under the qualified full-tools C22 setup. Accepted A3B artifacts cover W66, MM original feasible/startup scope and PFXC after its recorded guidance; NARIQ, PAW and TU retain substantive bounded-run failures. These are task observations, not an intrinsic ceiling or formal success-rate estimate. The completed report is `docs/reports/a3b-full-tools-canary-20261127.md`. [no-belief: committed conclusion to be registered after publication commit]
+- **A3B-FULL-TOOLS-CANARY:** Six original pinned task types plus the matched light W66 condition are assessed under the qualified full-tools C22 setup. Accepted A3B artifacts cover W66, MM original feasible/startup scope and PFXC after its recorded guidance; NARIQ, PAW and TU retain substantive bounded-run failures. These are task observations, not an intrinsic ceiling or formal success-rate estimate. The completed report is `docs/reports/a3b-full-tools-canary-20261127.md`. [belief: cc] (`cc:v1:fe4a185ec4738611526884ecfc76457e`, committed observation only)
 - Thinking-ON task conditions generated75745 tokens in the six initial attempts and222450 across17 retained attempts including guidance/light conditions; all17 have closed known generation counts. The common-sampler initial OFF set has50292 known plus one unknown receipt. Reasoning-only native token splits remain unknown. Matched light W66 ON/OFF used23599/14111 initially; OFF restored exact identity with1778 further local tokens and no paid source critique.
 - TU ON paid2 ended normally at2787 new /25576 chain tokens. V4 and final paid source review reject the mount-error skip; no further native attempts are pending. All three MM final source reviews accept the original task scope, while added cap-one robustness remains failed and separately recorded; supplemental mechanical3 patch is explicitly rejected on that extra condition, without moving original objective2 acceptance to different bytes.
 - Main reviewed and persisted canonical TU/MM checker fixes. Meaningful class/JUnit, launch/denial, under-cap identity, geometry and startup-env controls pass together with verification integration:47 tests in17.61s. Previously qualified unchanged full-tool/core tests and native controls remain bound; no unnecessary re-runs.
@@ -150,4 +150,12 @@ Next: codex-a3b-pilot finishes qualified TU ON paid2 and final accounting, prese
 - All eight native slots idle and all eight callback locks free before the owned STOP. CPU147530/GPU147287 and their captured holder/controller exited; cleanup rc0, KFD empty. Remote-control appserver89061 remains live. No production kernel or unrelated process modified/stopped.
 - Existing Taskflow belief-source row and prospective wiring task now describe the final receipts. The findings enter only as committed observations; no retrospective measurement warrant or new grading ladder. Handoff index check exits0 with existing advisory debt and no touched-box errors.
 
-Next: codex-a3b-pilot publishes the final evidence/report and canonical fixes, registers the committed observation, and verifies the remote branch.
+Next: codex-a3b-pilot verifies the pushed closing commits; Taskflow owners retain qualified tools, checks and source review for future dispatch.
+
+### 04:44 UTC — durable closure
+
+Canonical TU/MM repairs committed as `bd8f69cff`; report and byte-preserving final evidence committed as `4c5ec6b90`. Registered the scoped report conclusion as `cc:v1:fe4a185ec4738611526884ecfc76457e` from that committed source. This is an observation, not a retrospective measurement warrant. Package and stored/decoded checksums pass. [belief: cc]
+
+Managed Beelzebub remote control remained connected in15 direct samples through04:41:01 UTC with daemon89061 alive. Bare `codex remote-control --json` starts a separate temporary foreground server in the installed version and therefore is not a managed-status probe; its error did not describe this session. No daemon reconnect/restart was needed; phone-side UI was not tested. Redacted receipt retained separately.
+
+Next: Taskflow owners use the completed report for bounded routing; no native canary work remains.

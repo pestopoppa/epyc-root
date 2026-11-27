@@ -1,0 +1,50 @@
+{
+  "bare_cli_observation": {
+    "argv": [
+      "codex",
+      "remote-control",
+      "--json"
+    ],
+    "elapsed_s": 1.098,
+    "exit_code": 1,
+    "initial_diagnostic_assumption_corrected": true,
+    "source_proven_behavior": "ephemeral foreground app-server startup",
+    "started_utc": "2026-11-27T04:40:45.639Z",
+    "status_word": "errored"
+  },
+  "cli_version": "0.172.0",
+  "correlation_window_utc": {
+    "last_sample": "2026-11-27T04:41:01.647Z",
+    "start": "2026-11-27T04:40:38.007Z"
+  },
+  "credentials_pairing_codes_and_identity_values_exported": false,
+  "evidence_root": "../remote-control-readonly",
+  "evidence_sha256": {
+    "UNIX-WS-CORRELATION.ndjson": "76daf9adb42614341c3c66f55c4e906c91ab21b36261e7df15060ffda9a8db77",
+    "UNIX-WS-STATUS.ndjson": "3966fa36d4cacd554b6165bcff03f9042cad339824d095e6183729ae3f22aaa2",
+    "remote-control-cmd-v0.172.0.rs": "8baf41638339d280937c63b9fa9fadbd3a9e879c71113f21be1c0fe44747079e",
+    "schema/v2/RemoteControlStatusChangedNotification.json": "56aa1d58294238557cd8b16199909c2c157a7542b9259ef2deddf40fe4c02c91",
+    "schema/v2/RemoteControlStatusReadResponse.json": "6504a09081b79fc0c222ff72be6a983bd553bf4712151e37a77daf106e04be90",
+    "websocket_probe.py": "16cf1f8ffc62835c6603aae8511975382e995160242513f4d99b2a906baecb25"
+  },
+  "identity_fields_present_without_values_recorded": true,
+  "managed_app_server_version": "0.172.0",
+  "managed_connected_samples": 15,
+  "managed_daemon_restart_or_state_change_requested": false,
+  "managed_notification": "remoteControl/status/changed",
+  "managed_observation_transport": "WebSocket over existing local Unix control socket",
+  "managed_process_continuity_observed": true,
+  "managed_reconnect_required_on_observation": false,
+  "managed_rpc": "remoteControl/status/read",
+  "managed_status": "connected",
+  "phone_client_connectivity_verified": false,
+  "schema": "codex.managed-remote-control.local-verification.v1",
+  "server_label_matches_requested_host": true,
+  "source": {
+    "cli_routing": "https://github.com/openai/codex/blob/rust-v0.172.0/codex-rs/cli/src/remote_control_cmd.rs#L79-L132",
+    "foreground_socket": "https://github.com/openai/codex/blob/rust-v0.172.0/codex-rs/cli/src/remote_control_cmd.rs#L180-L243",
+    "repository": "https://github.com/openai/codex",
+    "tag": "rust-v0.172.0"
+  },
+  "underlying_ephemeral_connection_error": "unknown"
+}

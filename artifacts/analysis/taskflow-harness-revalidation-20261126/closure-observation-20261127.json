@@ -1,0 +1,8 @@
+{
+  "report_commit": "4c5ec6b90",
+  "canonical_fix_commit": "bd8f69cff",
+  "observation": "cc:v1:fe4a185ec4738611526884ecfc76457e",
+  "register": "data/belief/committed_conclusions.jsonl",
+  "scope": "Judged/Located committed observation only; no retrospective native measurement warrant",
+  "final_artifact_manifest_sha256": "e2325df2fee359420067438103b600be4c11c3020d0fdd94c8ade2969a3dbac3"
+}
