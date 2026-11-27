@@ -1,0 +1,22 @@
+{
+  "unit": "gpu-DS41-W-66-on-coding",
+  "raw_status": "oracle_pass",
+  "generated_observed": 26791,
+  "model_wall_s": 1648.102,
+  "result_sha256": "1691abaa1d52ec45f86d630e77e88b5717a0e101c156c9016609c619e766099e",
+  "patch_sha256": "62c3fde23c88c9d1cb8eb2d6ce60a662296dc60cfeba97119cd46f70a1b131de",
+  "oracle": {
+    "rc": 0,
+    "oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+    "acceptance_version": "original",
+    "original_oracle_sha256": "54968138d7f0005acbe2f1c9ad07706015cab7baebb1e73f4d114ec84d9b8d5a",
+    "stdout_sha256": "2aa1dddbb24f71c0880d3aba53dc1afbaea301d5bea99533653ab13dbe4e657b",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "semantic_review_required": true
+  },
+  "reviewer": "main management session, not a separately metered CLI call",
+  "source_review": "Scoped fixture writes a real selection receipt through the existing store; continuation is asserted equal to that exact observed reference. Existing independent checks verify digest bytes through the unchanged phase journal and run the source rebind regression. Production code and numerical assertions remain unchanged.",
+  "verdict": "accepted artifact and normal independent completion from detailed owner brief",
+  "normal_completion": true,
+  "raw_status_preserved": true
+}

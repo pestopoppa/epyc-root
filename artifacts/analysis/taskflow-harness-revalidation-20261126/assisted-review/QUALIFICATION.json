@@ -1,0 +1,32 @@
+{
+  "all_passed": true,
+  "model_calls": 0,
+  "checks": [
+    {
+      "case": "NARIQ-LIBTRELLIS-MAP-1",
+      "kind": "initial-diagnosis",
+      "root": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/reviews/NARIQ-LIBTRELLIS-MAP-1/gpu-OFF-off-recommended/initial-diagnosis",
+      "seal_sha256": "aa8596ed23733448c1ca3f07461561916db6c44a400cfe0ddd68003765728d85",
+      "plan_sha256": "4faf953e2c6e6ca794d04bc30d5e358ab44b784d3652e7a80aa96a2981e8de65",
+      "template_denied": true,
+      "private_metric_HERE": true,
+      "exact_candidate_hashes": true,
+      "actual_prior_help_entries": 1,
+      "native_ordinal": 1
+    },
+    {
+      "case": "PFXC-A3",
+      "kind": "final-acceptance",
+      "root": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/reviews/PFXC-A3/gpu-ON-on-coding/final-acceptance",
+      "seal_sha256": "e6ddf882a3d99e78e262e00e722cf9542e54f1d1cdbed18a3e22e5b375b56d41",
+      "plan_sha256": "7d601c089c0cac6a4d720fd0db7fa72369fad171e86d1e7cccbc802ee15a7304",
+      "template_denied": true,
+      "private_metric_HERE": true,
+      "exact_candidate_hashes": true,
+      "actual_prior_help_entries": 2,
+      "native_ordinal": 2
+    }
+  ],
+  "markdown_hard_break_preserved": true,
+  "upstream_sources_unchanged": true
+}

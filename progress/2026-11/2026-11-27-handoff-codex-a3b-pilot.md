@@ -69,4 +69,8 @@ The deterministic main-only accounting now covers six initial cases plus one sep
 
 Canonical CPU preflight now requires --no-mmap and directly verifies a unique model-scale anonymous weight allocation across the live worker NUMA nodes. It rejects skewed or unverified placement before transport. All257 Taskflow tests pass; the canonical preflight also passed read-only against live CPU2386678. The frozen replay core is unchanged and protected by the equivalent standalone residency check.
 
+W66 GPU thinking ON completed normally and passed independent checks plus main source review:26791 generated tokens,1648.102s. OFF common-sampler had a valid artifact at the1800s deadline after16482 generated tokens. Keep artifact acceptance, normal completion, total generated usage and temporal/resource qualifications separate.
+
+The per-mode assistance adapter preserves the original main-model profile and exact candidate bytes. It fixes a staging-only false rejection of valid Markdown two-space hard breaks using candidate-only git apply/check whitespace=nowarn, followed by exact RESULT hash reconstruction; malformed patches still fail. No model rerun or whitespace stripping occurred. PAW ON/OFF initial paid reviews are active under exec81345/61006. NARIQ OFF initial diagnosis and PFXC ON final acceptance are active under exec73801/10585. Final acceptance is a separately metered paid role after native correction2, never an uncounted extra guidance round.
+
 Next: codex-a3b-pilot verifies active CPU placement, reviews the paid-guidance corrections, runs the residual GPU legacy pairs without duplicating CPU results, and completes accepted-result/token/time comparisons.

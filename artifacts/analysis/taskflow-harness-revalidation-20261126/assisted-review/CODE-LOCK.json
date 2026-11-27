@@ -1,0 +1,11 @@
+{
+  "sha256": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/assisted-review/review.py": "c020c321f031763281f4476149d1d3c1e0a723086d508e1d41ad4d3d80443d49",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/prepare.py": "864bdad1512fc223469a372b78f779e47e00c6432d7515cba0884a753172ce0c",
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/measure.py": "3175392d9b99143501a3b3e385d549234bc7ef4c2d50a802b72bf9a42f251488"
+  },
+  "model": "gpt-6.1-sol",
+  "effort": "low",
+  "imports": "exact original sources; private per-review module HERE; only prompt role adapted",
+  "native_protocol": "initial0 + deterministic1 + at most one paid-guided correction2; final acceptance review is a different paid role; takeover separate"
+}
