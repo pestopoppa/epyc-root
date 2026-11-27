@@ -60,3 +60,9 @@ In both SLC configurations the compiled OFF function's 5,184 instruction bytes m
 The [build manifest](build-identity.json) pins the private HIP library to SHA-256 `100b71f4551de8f5cb370fd6d76467090b009a591ca7de970bf0dda85ffde445`. Reapplying the patch to the parent reproduces candidate tree `f05d4b71f91f6cb8669a844d0426937ad33f50b8`. The C21 host frontends and servedperf test executable share the same private library set. Clean-source recompilation reproduced the GPU text, constant data and metadata and the host text. ELF symbol ordering differed between the two objects. File and source identities for the separate frontends are in the manifest.
 
 The target model SHA-256 is `a680f44a06920e5d689774823782006aa3acc8db95750323373b24139b67e348`. The DFlash2 draft SHA-256 is `7f1c9a31a6ed40044c69f6508b50fd63b87abd8e1fb7fe4290303df549153751`.
+
+## Named MI210 row
+
+Row `ak-q8-convcore-gpu-20261127` uses the [sealed runner and inputs](gate-source.tar.gz). Its archive includes the row specification, gate declaration, input hashes, correctness checks, profiler, and decision code. The target and draft GGUF files are external inputs. The CPU-reference panel contains 26 required shape filters. The test runner emits 46 matching cases per arm, including duplicates. At ub 16 and 512 the larger-width fallback is an accepted control route.
+
+The complete operator panel comprises six width-eight shapes in both arms, two trace passes and one independent counter pass per shape and arm. The aggregate sums logical Q8_0 weight bytes and dispatch durations weighted by the pre-existing call counts. It reports decimal GB/s and dynamic vector instructions per 1,024 weight bytes. All timing visits use fresh servers. The initial three-arm smoke recorded 34,568,626,176 bytes of own-process VRAM in each visit and observed the conversion marker only in ON.
