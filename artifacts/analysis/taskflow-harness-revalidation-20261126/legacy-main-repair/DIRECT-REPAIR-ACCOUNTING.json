@@ -1,0 +1,200 @@
+{
+  "case": "TU-GR-1",
+  "arm": "direct-repair",
+  "ordinal": 1,
+  "requested_model": "gpt-6.1-sol",
+  "requested_effort": "low",
+  "execution": {
+    "rc": 0,
+    "wall_s": 71.562237,
+    "cli_version": "codex-cli 0.172.0",
+    "tool_audit_required": true
+  },
+  "jsonl": {
+    "fresh_thread_count": 1,
+    "thread_id": "01a21a7a-9f03-7c41-8ae7-a1f6895e58b2",
+    "completed_turn_count": 1,
+    "malformed_records": 0,
+    "errors": 0,
+    "usage": {
+      "input_tokens": 57572,
+      "cached_input_tokens": 49792,
+      "output_tokens": 460,
+      "reasoning_output_tokens": 51,
+      "uncached_input_tokens": 7780
+    },
+    "command_count": 3,
+    "item_types": [
+      "agent_message",
+      "command_execution",
+      "file_change"
+    ],
+    "commentary_overhead_chars": 130,
+    "final_message_chars": 391,
+    "outside_scope_review_flags": []
+  },
+  "changed_by_strong_turn": [
+    "scripts/autopilot/evals/dtap/tests/test_grader_isolation.py"
+  ],
+  "final_changes": [
+    "scripts/autopilot/evals/dtap/harness/isolation.py",
+    "scripts/autopilot/evals/dtap/tests/test_grader_isolation.py"
+  ],
+  "out_of_scope_changes": [],
+  "path_scope_pass": true,
+  "patch_sha256": "9926a6b982cd23c1fbe27c0d0e6b31be7b3035d0fb5c35d186991c0b2c39553b",
+  "retained_runtime_artifacts": {
+    ".pytest_cache/.gitignore": {
+      "sha256": "3ed731b65d06150c138e2dadb0be0697550888a6b47eb8c45ecc9adba8b8e9bd",
+      "bytes": 37,
+      "executable": false
+    },
+    ".pytest_cache/CACHEDIR.TAG": {
+      "sha256": "37dc88ef9a0abeddbe81053a6dd8fdfb13afb613045ea1eb4a5c815a74a3bde4",
+      "bytes": 191,
+      "executable": false
+    },
+    ".pytest_cache/README.md": {
+      "sha256": "73fd6fccdd802c419a6b2d983d6c3173b7da97558ac4b589edec2dfe443db9ad",
+      "bytes": 302,
+      "executable": false
+    },
+    ".pytest_cache/v/cache/nodeids": {
+      "sha256": "4f3362baf24df904434c4c8d9a3fc88ca8d8c715cd1005c3ced83c01174f60cf",
+      "bytes": 195,
+      "executable": false
+    },
+    ".pytest_cache/v/cache/stepwise": {
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2,
+      "executable": false
+    }
+  },
+  "oracle": {
+    "case": "TU-GR-1",
+    "oracle_sha256": "8385fe0c79b0726a0b5f4d7f5ace1b7c9cf9779445a96b1733087907560b62c2",
+    "rc": 0,
+    "wall_s": 4.9337,
+    "checked_candidate_files": {
+      "scripts/autopilot/evals/dtap/harness/isolation.py": {
+        "sha256": "f0a04529dd91454887fad7a8bc62fa0cc6b3956bc85168ec2c55b125b67d9fbc",
+        "bytes": 3094,
+        "executable": false
+      },
+      "scripts/autopilot/evals/dtap/tests/test_grader_isolation.py": {
+        "sha256": "92e8c58690675e54b8cc30704a1303a97513b61749bbf01910e5885709547ede",
+        "bytes": 2149,
+        "executable": false
+      }
+    },
+    "retained_runtime_artifacts": {
+      ".pytest_cache/.gitignore": {
+        "sha256": "3ed731b65d06150c138e2dadb0be0697550888a6b47eb8c45ecc9adba8b8e9bd",
+        "bytes": 37,
+        "executable": false
+      },
+      ".pytest_cache/CACHEDIR.TAG": {
+        "sha256": "37dc88ef9a0abeddbe81053a6dd8fdfb13afb613045ea1eb4a5c815a74a3bde4",
+        "bytes": 191,
+        "executable": false
+      },
+      ".pytest_cache/README.md": {
+        "sha256": "73fd6fccdd802c419a6b2d983d6c3173b7da97558ac4b589edec2dfe443db9ad",
+        "bytes": 302,
+        "executable": false
+      },
+      ".pytest_cache/v/cache/nodeids": {
+        "sha256": "4f3362baf24df904434c4c8d9a3fc88ca8d8c715cd1005c3ced83c01174f60cf",
+        "bytes": 195,
+        "executable": false
+      },
+      ".pytest_cache/v/cache/stepwise": {
+        "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "bytes": 2,
+        "executable": false
+      }
+    },
+    "stdout_sha256": "6dc3672967c240e2b7733d75d606569ca94f0b8562ae6e69e7c386b84e0f52bd",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "semantic_review_required": true,
+    "environment_contract_sha256": "8754335a8f2603dd4d6bdb42e7b422c5280325062a2bb0e0a703fc6040e4d6e0"
+  },
+  "human_tool_and_answer_blinding_review": "pending",
+  "reasoning_accounting": "missing explicit reasoning tokens remain null; output includes them when reported",
+  "first_pass": {
+    "execution": {
+      "rc": 0,
+      "wall_s": 119.841858,
+      "cli_version": "codex-cli 0.172.0",
+      "tool_audit_required": true
+    },
+    "usage": {
+      "input_tokens": 115044,
+      "cached_input_tokens": 102656,
+      "output_tokens": 2069,
+      "reasoning_output_tokens": 72,
+      "uncached_input_tokens": 12388
+    },
+    "oracle": {
+      "case": "TU-GR-1",
+      "oracle_sha256": "8385fe0c79b0726a0b5f4d7f5ace1b7c9cf9779445a96b1733087907560b62c2",
+      "rc": 1,
+      "wall_s": 18.2436,
+      "checked_candidate_files": {
+        "scripts/autopilot/evals/dtap/harness/isolation.py": {
+          "sha256": "f0a04529dd91454887fad7a8bc62fa0cc6b3956bc85168ec2c55b125b67d9fbc",
+          "bytes": 3094,
+          "executable": false
+        },
+        "scripts/autopilot/evals/dtap/tests/test_grader_isolation.py": {
+          "sha256": "cf5adb8c732cc7f56e4710945b77fb6fd44b1fc8dc7a57479301398c88056eab",
+          "bytes": 2098,
+          "executable": false
+        }
+      },
+      "retained_runtime_artifacts": {
+        ".pytest_cache/.gitignore": {
+          "sha256": "3ed731b65d06150c138e2dadb0be0697550888a6b47eb8c45ecc9adba8b8e9bd",
+          "bytes": 37,
+          "executable": false
+        },
+        ".pytest_cache/CACHEDIR.TAG": {
+          "sha256": "37dc88ef9a0abeddbe81053a6dd8fdfb13afb613045ea1eb4a5c815a74a3bde4",
+          "bytes": 191,
+          "executable": false
+        },
+        ".pytest_cache/README.md": {
+          "sha256": "73fd6fccdd802c419a6b2d983d6c3173b7da97558ac4b589edec2dfe443db9ad",
+          "bytes": 302,
+          "executable": false
+        },
+        ".pytest_cache/v/cache/nodeids": {
+          "sha256": "4f3362baf24df904434c4c8d9a3fc88ca8d8c715cd1005c3ced83c01174f60cf",
+          "bytes": 195,
+          "executable": false
+        },
+        ".pytest_cache/v/cache/stepwise": {
+          "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "bytes": 2,
+          "executable": false
+        }
+      },
+      "stdout_sha256": "906ec20177991e1d7e1cd23f619003e48c683699d9dd01e8e2b45a849c7b8cc9",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "semantic_review_required": true,
+      "environment_contract_sha256": "8754335a8f2603dd4d6bdb42e7b422c5280325062a2bb0e0a703fc6040e4d6e0"
+    },
+    "source": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/coverage/legacy-comparison/runs/TU-GR-1/direct-1",
+    "sha256": {
+      "plan.json": "49284b60aab0bfb5d16b8b9e152ad6633cb8bc5b28b8c93207526bd158aa1353",
+      "prompt.md": "6c78fea137318ae50f54e007a8461fb760f0ea331ca09eff1073cdc8ac261bcf",
+      "delta.patch": "bdde24e42566ae5328b5d630d275b17dea44096080f7c288fdf80f827cf97db4",
+      "events.jsonl": "d199d8e1413c19e814f76c12f479043da1505aa6eb6c1f34cf31a517e8157458",
+      "execution.json": "1047b076cedf4e843edbb7e5601c2e64318253f9f26c41ef2f04fe253378dc7d",
+      "oracle-result.json": "2d8566ed521df65921ad6f2c45af60e4e197d1352e6d235d477959fbbe825f72",
+      "oracle.stdout.log": "906ec20177991e1d7e1cd23f619003e48c683699d9dd01e8e2b45a849c7b8cc9",
+      "oracle.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "scope": "post-first-pass direct-main repair; preserve independent first-pass outcome and costs"
+}

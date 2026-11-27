@@ -1,0 +1,49 @@
+{
+  "case": "TU-GR-1",
+  "oracle_sha256": "8385fe0c79b0726a0b5f4d7f5ace1b7c9cf9779445a96b1733087907560b62c2",
+  "rc": 0,
+  "wall_s": 4.9337,
+  "checked_candidate_files": {
+    "scripts/autopilot/evals/dtap/harness/isolation.py": {
+      "sha256": "f0a04529dd91454887fad7a8bc62fa0cc6b3956bc85168ec2c55b125b67d9fbc",
+      "bytes": 3094,
+      "executable": false
+    },
+    "scripts/autopilot/evals/dtap/tests/test_grader_isolation.py": {
+      "sha256": "92e8c58690675e54b8cc30704a1303a97513b61749bbf01910e5885709547ede",
+      "bytes": 2149,
+      "executable": false
+    }
+  },
+  "retained_runtime_artifacts": {
+    ".pytest_cache/.gitignore": {
+      "sha256": "3ed731b65d06150c138e2dadb0be0697550888a6b47eb8c45ecc9adba8b8e9bd",
+      "bytes": 37,
+      "executable": false
+    },
+    ".pytest_cache/CACHEDIR.TAG": {
+      "sha256": "37dc88ef9a0abeddbe81053a6dd8fdfb13afb613045ea1eb4a5c815a74a3bde4",
+      "bytes": 191,
+      "executable": false
+    },
+    ".pytest_cache/README.md": {
+      "sha256": "73fd6fccdd802c419a6b2d983d6c3173b7da97558ac4b589edec2dfe443db9ad",
+      "bytes": 302,
+      "executable": false
+    },
+    ".pytest_cache/v/cache/nodeids": {
+      "sha256": "4f3362baf24df904434c4c8d9a3fc88ca8d8c715cd1005c3ced83c01174f60cf",
+      "bytes": 195,
+      "executable": false
+    },
+    ".pytest_cache/v/cache/stepwise": {
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2,
+      "executable": false
+    }
+  },
+  "stdout_sha256": "6dc3672967c240e2b7733d75d606569ca94f0b8562ae6e69e7c386b84e0f52bd",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "semantic_review_required": true,
+  "environment_contract_sha256": "8754335a8f2603dd4d6bdb42e7b422c5280325062a2bb0e0a703fc6040e4d6e0"
+}
