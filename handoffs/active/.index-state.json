@@ -28,7 +28,7 @@
       "blocked": 12,
       "handoffs": 9,
       "oldest_advance": "2026-11-05",
-      "open": 494
+      "open": 498
     },
     "user-facing-harness-index.md": {
       "blocked": 1,
@@ -235,7 +235,7 @@
       "closed": 305,
       "guarded": 0,
       "last_advanced": "2026-11-23",
-      "open": 85,
+      "open": 89,
       "owner_index": "routing-and-optimization-index.md",
       "prune": {
         "blocker": "open-tasks",
@@ -244,7 +244,7 @@
       },
       "row_id": "RTG-02",
       "state": "active",
-      "total": 391,
+      "total": 395,
       "tracks": [
         {
           "blocked": 0,
@@ -431,6 +431,16 @@
           "markers": 0,
           "name": "lab-reliability-ladder",
           "open": 1
+        },
+        {
+          "blocked": 0,
+          "closed": 0,
+          "gates": [],
+          "guarded": 0,
+          "line": 5234,
+          "markers": 1,
+          "name": "W66 serving attribution and local worker recovery",
+          "open": 4
         }
       ]
     },
