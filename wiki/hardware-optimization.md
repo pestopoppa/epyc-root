@@ -4,6 +4,23 @@
 **Confidence**: verified (established CPU/NUMA findings) · observation (all 2026-07 GPU throughput numbers — single-run, contended host, no protocol-id per MEASUREMENT.md)
 **Sources**: (+ sweep 2 sources, see its Source References; +4 on 2026-11-19, see the first Compiled Update) 210 native document references (source review 2026-10-07)
 
+## November 27 local kernel results
+
+On MI210, the Q8 conversion redesign cut vector instructions per KiB by 12.9%, yet delivered a paired served speedup of 0.998× (95% CI 0.990–1.006). The short-row census bounded the A3B single-request gain at 0.49% even if the two Q8 groups cost nothing. The relevant attention prefill and RF6 verify symbols used zero scratch. On EPYC, Q8 and Q15 both preserved 48/48 held-out greedy decisions, and Q15 slowed the complete head at one thread. These results shift the next authorized MI210 comparison to reproducing the actual prefill and decode delays under matched cache history and peer load. [Measured results and owner evidence](../progress/2026-11/2026-11-27-intake-kernel-systems.md#kernel-priorities-after-local-measurements) · [Serving trace](../docs/reports/autopilot-w66-trace.md) · [Replay protocol](../docs/reports/autopilot-w66-replay-plan.md).
+
+## Compiled update — 2026-11-27 upstream GPU diagnostics and CPU near-tie evidence
+
+- **PC sampling on MI200.** AMD's ROCm 6.4+ guide and SDK reference document host-trap time sampling on gfx90a. Samples can land up to two instructions from the latency site, including around branches. The guide's GEMM timings concern its LDS-tiling example, and its WAITCNT comparison covers two selected hot lines. The approved audit starts with build IDs, DWARF line tables, and offline symbol-plus-offset mapping of the existing code objects. [intake-3006#record](../research/deep-dives/intake-nov27-kernel-systems/intake-3006.md), [intake-3020#record](../research/deep-dives/intake-nov27-kernel-systems/intake-3020.md).
+- **Skinny F32 GEMM.** The HIP split-K patch uses a two-pass reduction on selected RDNA3 targets at K ≥ 2048. The author's gfx1101 result of 36.2 µs versus 329.9 µs for rocBLAS uses one 64 × 256 × 4608 shape and 32 slices. The dispatch predicate excludes gfx90a. The filed census compares actual F32 router shapes, solutions, and time share before pricing a local candidate. [intake-3008#record](../research/deep-dives/intake-nov27-kernel-systems/intake-3008.md).
+- **Attention scratch traffic.** A CUDA flash-attention patch makes the V-load extent constant when the head is unpadded and retains the clamp for padded heads. The author's A4000 prefill result motivates checking the executed gfx90a symbols for private-segment allocation and scratch instructions. The local candidate requires evidence of scratch traffic on the affected path. [intake-3009#record](../research/deep-dives/intake-nov27-kernel-systems/intake-3009.md).
+- **CPU numerical parity and residency.** The Qwen3-0.6B assembly reports used EPYC 7642, a row-split weight format, and a historical llama-bench comparison. Neon observed a greedy divergence with global Q15 scaling and used per-block signed Q15. Opus reported no benefit from its own L3 partition and about 10% slowdown at one thread. The filed work evaluates near-tie parity against Q8 and FP32 separately from whether a draft head can benefit from CCD-local residency. [intake-3012#record](../research/deep-dives/intake-nov27-kernel-systems/intake-3012.md).
+
+### Source References (2026-11-27 research intake)
+
+- [Verified dive digest](../research/deep-dives/intake-digests/2026-11-27-ids-3006-3024.md)
+- [Run summary](../research/deep-dives/intake-nov27-kernel-systems/run-summary.md)
+- [Approved Stage 3 plan](../research/deep-dives/intake-nov27-kernel-systems/stage3-plan.md)
+
 ## Compiled update — 2026-11-26 upstream kernels, determinism, and state ownership
 
 **Confidence**: external for upstream results and inferred for EPYC applicability. This intake filed trace and regression work without running benchmarks. [November 26 filing](../progress/2026-11/2026-11-26-intake-nov26-kernels.md), [approved intake plan](../research/deep-dives/intake-nov26-kernels/stage3-plan.md).

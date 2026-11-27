@@ -1,33 +1,35 @@
 {
   "by_type": {
-    "docs": 597,
+    "docs": 600,
     "handoff-active": 31,
     "handoff-blocked": 1,
     "handoff-completed": 382,
-    "progress": 1518,
-    "research": 590
+    "progress": 1519,
+    "research": 612
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-23T10:09:00Z",
   "last_touch": {
     "advanced": {
-      "added": 13,
+      "added": 26,
       "changed": 0,
       "removed": 0
     },
-    "at": "2026-11-27T14:49:39Z",
+    "at": "2026-11-27T16:43:08Z",
     "scope_paths": [
-      "progress/2026-11/2026-11-27-codex-inkblot-intake.md",
-      "progress/2026-11/2026-11-27.md",
-      "research/deep-dives/intake-digests/2026-11-27-ids-3025-3032.md",
-      "research/deep-dives/intake-inkblot-20261127"
+      "docs/reports/autopilot-w66-cpu-prefix-q012.md",
+      "docs/reports/autopilot-w66-replay-plan.md",
+      "docs/reports/autopilot-w66-trace.md",
+      "progress/2026-11/2026-11-27-intake-kernel-systems.md",
+      "research/deep-dives/intake-digests/2026-11-27-ids-3006-3024.md",
+      "research/deep-dives/intake-nov27-kernel-systems"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-27T14:49:39Z",
+  "scan_time": "2026-11-27T16:43:08Z",
   "schema_version": 1,
-  "source_set_hash": "459a729bd93a704f8148fbbbe9dce8fdcee1131241cb2959c794a54ac9ed7f43",
+  "source_set_hash": "678e4e9ad5c3ed39444bcdec3da5ce24feb09b3600456c6c3686e5d147542827",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -6150,6 +6152,14 @@
       "type": "research"
     },
     {
+      "content_hash": "c5010b4fb7fbf0ebf7de088fce4a34165f11387e6f4fa59eee17d342a2a887bc",
+      "modified": "2026-11-27T16:39:38Z",
+      "path": "research/deep-dives/intake-digests/2026-11-27-ids-3006-3024.md",
+      "size": 51144,
+      "title": "Intake dive digest \u2014 2026-11-27, intake-3006#record .. intake-3024#record",
+      "type": "research"
+    },
+    {
       "content_hash": "839a53d69375a3c955e6752d5e6dbf4ba90f238ae21ed0a7164d457a3989cf50",
       "modified": "2026-11-27T14:45:58Z",
       "path": "research/deep-dives/intake-digests/2026-11-27-ids-3025-3032.md",
@@ -7027,6 +7037,174 @@
       "path": "research/deep-dives/intake-nov26-kernels/stage3-plan.md",
       "size": 172182,
       "title": "Proposed filing for the November 26 research intake",
+      "type": "research"
+    },
+    {
+      "content_hash": "6ec868426f17a2500b0b77d5db8a9aff95325a3015829520c472fbf7ae4ba0d2",
+      "modified": "2026-11-27T16:39:38Z",
+      "path": "research/deep-dives/intake-nov27-kernel-systems/intake-3006.md",
+      "size": 4650,
+      "title": "Beyond Counters: Instruction-Level GPU Hotspot Profiling with PC Sampling in ROCprofiler-SDK",
+      "type": "research"
+    },
+    {
+      "content_hash": "64f1bc3247d1c68e49be8696e47d5e1345db4d6fac0de3f428ac405bc86c4b2d",
+      "modified": "2026-11-27T16:39:38Z",
+      "path": "research/deep-dives/intake-nov27-kernel-systems/intake-3007.md",
+      "size": 3880,
+      "title": "Bringing MXFP4 MoE to AMD Instinct MI300 Series GPUs with FlyDSL",
+      "type": "research"
+    },
+    {
+      "content_hash": "360631b464b0e2f9d9bb6674b1e5014b948d31a10a5ca4f4100c737c9da13628",
+      "modified": "2026-11-27T16:39:38Z",
+      "path": "research/deep-dives/intake-nov27-kernel-systems/intake-3008.md",
+      "size": 2761,
+      "title": "HIP: add split-K F32 GEMM path for untuned RDNA3 chips",
+      "type": "research"
+    },
+    {
+      "content_hash": "e4954f6e4ac86f1776ed7b7500d79b9c5396eabf79831a3c0a02bffa440a4114",
+      "modified": "2026-11-27T16:39:38Z",
+      "path": "research/deep-dives/intake-nov27-kernel-systems/intake-3009.md",
+      "size": 2352,
+      "title": "cuda : use constant V load length when head dim is unpadded",
+      "type": "research"
+    },
+    {
+      "content_hash": "fe6e2b1e9737e5534d827be97a347e335a38cc7537428e62cef75e5abb74de64",
+      "modified": "2026-11-27T16:39:38Z",
+      "path": "research/deep-dives/intake-nov27-kernel-systems/intake-3010.md",
+      "size": 2871,
+      "title": "opencl: add multi token f32 GEMV for spec verify",
+      "type": "research"
+    },
+    {
+      "content_hash": "d953ef836db42d9275f7e107b8ae12fee89670ed8721599e51d93ccbea25828c",
+      "modified": "2026-11-27T16:39:38Z",
+      "path": "research/deep-dives/intake-nov27-kernel-systems/intake-3011.md",
+      "size": 2835,
+      "title": "moe-cache : deduplicate physical expert banks across looped MoE layers",
+      "type": "research"
+    },
+    {
+      "content_hash": "b12f6a9769a656b247f4e4b3771c90e7dec89d60ad008f50d2b2c5fdf98ac280",
+      "modified": "2026-11-27T16:39:38Z",
+      "path": "research/deep-dives/intake-nov27-kernel-systems/intake-3012.md",
+      "size": 6458,
+      "title": "Qwen3-0.6B in raw x86-64 machine code: Gemini 4 Neon vs Claude Opus 5.5",
+      "type": "research"
+    },
+    {
+      "content_hash": "441a8f5f795cb274a2c8e5f2ab8f71f77819c492173e931ab6f20ae3545fc7a8",
+      "modified": "2026-11-27T16:39:38Z",
+      "path": "research/deep-dives/intake-nov27-kernel-systems/intake-3013.md",
+      "size": 3611,
+      "title": "One Token, Many Lessons: Sliding-Window Attention within Gated Delta Networks",
+      "type": "research"
+    },
+    {
+      "content_hash": "4ce123730dcb471ffeef45ab0fd0798aa892b6a2b95269f0de99f49eb18a56eb",
+      "modified": "2026-11-27T16:39:38Z",
+      "path": "research/deep-dives/intake-nov27-kernel-systems/intake-3014.md",
+      "size": 3683,
+      "title": "When Every Rollout Fails: Splicing Learner-Conditioned Options into Long-Horizon Agent RL",
+      "type": "research"
+    },
+    {
+      "content_hash": "6d43066a5ac7432b253fb32d5253715fd220ab5c647062279037736a9ec62578",
+      "modified": "2026-11-27T16:39:38Z",
+      "path": "research/deep-dives/intake-nov27-kernel-systems/intake-3015.md",
+      "size": 4068,
+      "title": "HoMe: Toward Practical Harness Optimization of Memory Systems for AI Assistants",
+      "type": "research"
+    },
+    {
+      "content_hash": "2ee9c819b65a53a89f9ad64c85906f3044f41b79dd25501e955d34dd3860b4cd",
+      "modified": "2026-11-27T16:39:38Z",
+      "path": "research/deep-dives/intake-nov27-kernel-systems/intake-3016.md",
+      "size": 3560,
+      "title": "CoordRoute: Coordinated Multi-Model Routing for Maximum Compute-Budget Utility",
+      "type": "research"
+    },
+    {
+      "content_hash": "d4a15c84794c0d3a08d6beb7e5b54bc244a46f3156e533de6a4cbcdff06ce3e5",
+      "modified": "2026-11-27T16:39:38Z",
+      "path": "research/deep-dives/intake-nov27-kernel-systems/intake-3017.md",
+      "size": 4149,
+      "title": "When Skills Fail to Compose: Compatibility and Retention in Language Models",
+      "type": "research"
+    },
+    {
+      "content_hash": "470e6e569d00a68dbf6c6d84284c45b5a4c7c65588fee8f4b694e80f5561ce76",
+      "modified": "2026-11-27T16:39:38Z",
+      "path": "research/deep-dives/intake-nov27-kernel-systems/intake-3018.md",
+      "size": 3962,
+      "title": "MGMem: An Efficient, Deterministic, and Provenance-Preserving Framework for Long-Horizon Agent Memory",
+      "type": "research"
+    },
+    {
+      "content_hash": "7bba89a98242b48bdf13b601e3be12a7570be182a928fe8314638208caf00b7d",
+      "modified": "2026-11-27T16:39:38Z",
+      "path": "research/deep-dives/intake-nov27-kernel-systems/intake-3019.md",
+      "size": 4277,
+      "title": "FlyingStart: Learned Cross-Token Warm Starts for Fixed-Point Decoding in Recurrent-Depth Language Models",
+      "type": "research"
+    },
+    {
+      "content_hash": "c562d434a3d3ca319c2ba946d1218b1f167bf9f2d95b69aa2f329e5dd72ae6bf",
+      "modified": "2026-11-27T16:39:38Z",
+      "path": "research/deep-dives/intake-nov27-kernel-systems/intake-3020.md",
+      "size": 2589,
+      "title": "Using PC sampling",
+      "type": "research"
+    },
+    {
+      "content_hash": "c8dec7af4bd720e3ca67930c269231b20ed24a403df2abdf3f99617835b6daa2",
+      "modified": "2026-11-27T16:39:38Z",
+      "path": "research/deep-dives/intake-nov27-kernel-systems/intake-3021.md",
+      "size": 2458,
+      "title": "[FlyDSL] [CI] [a16w4] Support MXFP4 weights on gfx942 (CDNA3)",
+      "type": "research"
+    },
+    {
+      "content_hash": "e6ce72129af70f35bf7320c080a284be3fe48733675a051f5683a00528187255",
+      "modified": "2026-11-27T16:39:38Z",
+      "path": "research/deep-dives/intake-nov27-kernel-systems/intake-3022.md",
+      "size": 3640,
+      "title": "ReMe \u2014 HoMe plugin, evaluation and optimization harness",
+      "type": "research"
+    },
+    {
+      "content_hash": "c80181d05864f95cd60d46375b6018606f585c0fffa9f7c75418b4f3b9a60136",
+      "modified": "2026-11-27T16:39:38Z",
+      "path": "research/deep-dives/intake-nov27-kernel-systems/intake-3023.md",
+      "size": 3312,
+      "title": "Adaptive LLM Routing under Budget Constraints",
+      "type": "research"
+    },
+    {
+      "content_hash": "0466b92fc2b7c39dde191b5544b205091a8f2ddda77ba7bd4dda791ca02daae1",
+      "modified": "2026-11-27T16:39:38Z",
+      "path": "research/deep-dives/intake-nov27-kernel-systems/intake-3024.md",
+      "size": 6741,
+      "title": "MGMem: mention-graph retrieval for long-term dialogue memory question answering",
+      "type": "research"
+    },
+    {
+      "content_hash": "cd1b7d70cbb97c77d3d0bd07a1f081e3eedcdeb28fa737034e80d6ea49237a6f",
+      "modified": "2026-11-27T16:39:38Z",
+      "path": "research/deep-dives/intake-nov27-kernel-systems/run-summary.md",
+      "size": 5297,
+      "title": "November 27 research intake",
+      "type": "research"
+    },
+    {
+      "content_hash": "2f7f17f2e775fedc0d05fc713e13f6037ebcdf339c3905cb7f4e06817f2cbccb",
+      "modified": "2026-11-27T16:39:38Z",
+      "path": "research/deep-dives/intake-nov27-kernel-systems/stage3-plan.md",
+      "size": 111090,
+      "title": "November 27 research intake filing proposal",
       "type": "research"
     },
     {
@@ -20054,6 +20232,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "78188fdd07fda20c15ff7f233653b41628b50a2859a30dbc5b5832ad7df77800",
+      "modified": "2026-11-27T16:40:56Z",
+      "path": "progress/2026-11/2026-11-27-intake-kernel-systems.md",
+      "size": 5481,
+      "title": "November 27 research intake filing",
+      "type": "progress"
+    },
+    {
       "content_hash": "dd1d4f5b34766fdcbca029c7e800343d6229ff4f3fb76184f7cc0dc81fe43ebf",
       "modified": "2026-11-27T14:45:58Z",
       "path": "progress/2026-11/2026-11-27.md",
@@ -23190,6 +23376,30 @@
       "type": "docs"
     },
     {
+      "content_hash": "0108be34f4542cfde537f7f8417501b4bc33800012049de199687a96bdbfaa79",
+      "modified": "2026-11-27T16:39:37Z",
+      "path": "docs/reports/autopilot-w66-cpu-prefix-q012.md",
+      "size": 3607,
+      "title": "CPU prefix retention on q0\u2013q2",
+      "type": "docs"
+    },
+    {
+      "content_hash": "50233ac879823413c26f259aadb6b348dbf76ee841dbf7b3c2198dcde9d2e348",
+      "modified": "2026-11-27T16:39:37Z",
+      "path": "docs/reports/autopilot-w66-replay-plan.md",
+      "size": 8048,
+      "title": "Autopilot handoff: explain the A3B serving tail and use it in the loop",
+      "type": "docs"
+    },
+    {
+      "content_hash": "46cf6ebbcf8f9abba09c9a0373ff285c2ee11ea0f2263cccc2d41dd380e965af",
+      "modified": "2026-11-27T16:39:37Z",
+      "path": "docs/reports/autopilot-w66-trace.md",
+      "size": 15072,
+      "title": "W66 light serving attribution",
+      "type": "docs"
+    },
+    {
       "content_hash": "dd9500cecf194fee3b4ca772d2a625d2ea7df3f724132c665f54b7b5608c741c",
       "modified": "2026-11-23T18:02:40Z",
       "path": "docs/reports/cafe2-expert-union-build-20261104/INTEGRATION.md",
@@ -24982,7 +25192,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 3119,
+  "total_new": 3145,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

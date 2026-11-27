@@ -2,8 +2,18 @@
 
 **Category**: `training_distillation`
 **Confidence**: verified
-**Last compiled**: 2026-11-26 (research intake). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-08-12 (the byte-level weight-delta geometry probe below has now EXECUTED, not merely been proposed: both ground-truth gates pass, GGUF delta-geometry is confirmed trustworthy at Q8, and the lineage statistic named as a risk in the prior text was independently confirmed to need the correction it predicted — see the same section)
+**Last compiled**: 2026-11-27 (kernel and systems research intake). Earlier: 2026-11-26 (research intake). Earlier: 2026-11-01 (intake backfill, IDs ≤2060, workspace-58). Earlier: 2026-11-01 (10-31 intake deep dives, workspace-58). Earlier: 2026-08-12 (the byte-level weight-delta geometry probe below has now EXECUTED, not merely been proposed: both ground-truth gates pass, GGUF delta-geometry is confirmed trustworthy at Q8, and the lineage statistic named as a risk in the prior text was independently confirmed to need the correction it predicted — see the same section)
 **Sources**: 37 documents
+
+## Compiled update — 2026-11-27: Learner-rated repairs for all-fail rollout groups
+
+- When all binary rewards in a group are zero, SPLICE restores a failed trajectory at a selected decision point, asks a teacher for short options, and values nonterminal options through continuations by the current learner. The paper reports 18.9% SWE training-task graduation versus 15.9% for its adapted ReLIFT and 8.1% for GRPO on initially failed tasks. Comparisons hold available tasks fixed and use different compute. The filed audit counts reproducible restore points and verifier-passing continuations before considering training or changes to the existing reward. [intake-3014#record](../research/deep-dives/intake-nov27-kernel-systems/intake-3014.md).
+
+### Source References (2026-11-27 research intake)
+
+- [Verified dive digest](../research/deep-dives/intake-digests/2026-11-27-ids-3006-3024.md)
+- [Run summary](../research/deep-dives/intake-nov27-kernel-systems/run-summary.md)
+- [Approved Stage 3 plan](../research/deep-dives/intake-nov27-kernel-systems/stage3-plan.md)
 
 ## Compiled Update — 2026-11-01 (intake backfill, IDs ≤2060)
 
