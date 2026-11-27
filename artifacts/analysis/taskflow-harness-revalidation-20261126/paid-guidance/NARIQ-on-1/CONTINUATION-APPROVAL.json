@@ -1,0 +1,31 @@
+{
+  "approved_by": "main",
+  "at": "2026-11-27T00:55:15.433446+00:00",
+  "quality_manifest_sha256": "7661bb92dd613add2f9af608afc5e5795b375b315de17ee50683c0bda7359d36",
+  "native_compaction_passed": true,
+  "native_compaction_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/native-compaction/run/PASS.json",
+  "native_compaction_sha256": "1b681f191e21526710e353be6a8c9ff5948a9258e682a57cb02fa32195189963",
+  "scope": "14 matched exploratory calibration rows; independent execution from detailed original owner briefs; no handoff claims/ticks/landings",
+  "main_only_blinding": "direct outputs outside all worker mounts",
+  "stop": "retain increments; stop only on scoped evidence answer or diagnostic futility, no official material-benefit threshold",
+  "harness_source_commit": "beb0225b1",
+  "prior_interrupted_epoch": "initial-01 and repaired-01; serving-confounded, pre-break PAW draft retained separately",
+  "repair_controls": "C22 shared RAM cache disabled; upstream per-slot serialization; 8 native slot controls pass",
+  "native_slot_receipt": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-v4/native-slot-control/run/PASS.json",
+  "native_slot_receipt_sha256": "8052d3d468fd61ec12720e8c3fa1d1730a6f4314b57d033e69d8d1eb3423672f",
+  "guidance_rows": [
+    {
+      "initial_row": "gpu-NARIQ-LIBTRELLIS-MAP-1-on-coding",
+      "ordinal": 2,
+      "prior": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/units/gpu-NARIQ-LIBTRELLIS-MAP-1-on-coding-guidance-1",
+      "prior_result_sha256": "70078869ab5c7df004ba6121f7d9cd5b3c032415337148c731065904f3cdee5d",
+      "prior_session_sha256": "05335163f72e01824738af4f7609b802500b46e4d0df679981eb496065f7eeb1",
+      "feedback": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/feedback/NARIQ-on-paid-guidance-1.txt",
+      "feedback_sha256": "2824fce12e78438a1e0faf1ab65c9079b6e1601c3a9e8cbff05c5868288127d5",
+      "feedback_source": "fresh independently metered main-model source review",
+      "main_model_feedback_calls": 1,
+      "main_review_measurement": "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/NARIQ-LIBTRELLIS-MAP-1/guidance-1/measurement.json",
+      "main_review_measurement_sha256": "e79c6decd66bb0e46c91acfe52829403984645256e53c01fe3e8009f029d2617"
+    }
+  ]
+}

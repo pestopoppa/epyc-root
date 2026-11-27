@@ -1,0 +1,8 @@
+{
+  "approved_by": "main",
+  "native_harness_qualified": true,
+  "plans": {
+    "/mnt/raid0/llm/tmp/ws58-a3b-revalidate-20261126/main-comparison/runs/NARIQ-LIBTRELLIS-MAP-1/guidance-1/plan.json": "f2c9ee9b4ba29dee800fb3c071ccf76ac846e7251863b98894059d85836c13df"
+  },
+  "scope": "one measured independent semantic review of NARIQ ON after deterministic recovery; no candidate edits; no access to main direct answer"
+}

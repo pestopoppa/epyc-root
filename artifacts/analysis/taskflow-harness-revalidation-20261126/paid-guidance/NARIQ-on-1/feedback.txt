@@ -1,0 +1,11 @@
+REJECT
+
+The sections pass the local check, but the note contains material errors. Revise only the design note:
+
+- **Offset arithmetic:** Recheck pinned `common.cuh:90–96,165–174`. It states `|4v| ≤ 504`, not 252. Write GEMV explicitly as `(dot(4v+1528, staged_x) − 1528*sum(staged_x))/4`; GEMM subtracts 1528 before multiplication and applies `/4` afterward.
+- **MFMA ownership:** Recheck `kernels.hip::mfma` and `mfma_probe`. One wave computes all 256 outputs: **64 lanes × four accumulators**, not four waves. The harness puts activations in A and weights in B; distinguish this from libtrellis’s weight A-fragment. Correct the CUDA fragment counts and provide a concrete native preparation address layout.
+- **Grouped compatibility:** Recheck pinned `gemv.cu:714–740`: preparation retains each matrix’s `pre`, `s16`, Hadamard flag, prepared buffer and sums. Sharing an input alone does not permit sharing transformed activations. Specify reuse only for equivalent transformation, scaling and rounding; otherwise prepare separate compatible groups. `rate_x2` is codec rate, not the input dimension.
+- **LDS accounting:** Replace the approximate table with exact dimensions, element sizes, two-stage allocation, padding/scratch and total ≤65536 bytes. Its rows currently total **57344 bytes**, not 65536; FP16 is two bytes, and `16×16×16` is not 512 elements. Keep register accumulators outside LDS unless explicitly spilled.
+- **Coverage versus execution:** Recheck README’s opening and compute sections: GPU qualification remains **open**. Remove unsupported “Executed on GPU: Yes,” fixture-pass and qualification claims. `test_runtime.hip` defines checks; its printed `pass` strings do not establish execution. Preserve the `dd090a874c22be58e09b18fc1fc86da7b46b1d85` pin and distinguish existing full-operator/grouping checks from uncovered offset, new layout and shared-input resource behavior.
+
+Validation: rerun the supplied heading assertion, independently recalculate the LDS total, and cross-check every coverage/execution statement against README and `test_runtime.hip`. No builds or GPU runs are needed. Proposal left unmodified.

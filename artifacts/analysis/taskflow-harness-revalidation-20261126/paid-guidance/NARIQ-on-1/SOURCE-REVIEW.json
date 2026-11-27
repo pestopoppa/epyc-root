@@ -1,0 +1,19 @@
+{
+  "verdict": "REJECT",
+  "proposal_unchanged": true,
+  "reviewed_commands": 3,
+  "allowed_primary_web_reference": "https://gpuopen.com/learn/amd-lab-notes/amd-lab-notes-matrix-cores-readme/",
+  "answer_blinding": "no prior solution access; relative source reads only",
+  "feedback_sha256": "2824fce12e78438a1e0faf1ab65c9079b6e1601c3a9e8cbff05c5868288127d5",
+  "metered_usage": {
+    "input_tokens": 123494,
+    "cached_input_tokens": 91008,
+    "output_tokens": 1016,
+    "reasoning_output_tokens": 21,
+    "uncached_input_tokens": 32486
+  },
+  "wall_s": 95.819931,
+  "approval": "/mnt/raid0/llm/tmp/ws58-a3b-frozen-revalidation-20261126/quality-runs/cache-safe-01/guidance-approvals/paid-gpu-NARIQ-on-guidance-2.json",
+  "approval_sha256": "f43117b53ec7fa28d7e134670db7a3846cbcba03049402e5f9a261cb77de81f9",
+  "original_structural_score_preserved": true
+}
