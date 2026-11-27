@@ -129,3 +129,9 @@ Final reference inventory:2027 proxy receipts (2003 forwarded,43 forwarded failu
 Owned servers4174105/4174106 and controller/holder4174029/4174024 are absent with clean native exits and no remaining owned locks; passive watcher also exited. Archive verified21187 decoded files/50 compressed shards/254759507 stored bytes, including full pinned PFX sources, exact saved baseline bytes, actual paid guidance, native per-stream/per-mode metrics and cleanup. After archive capture, applied canonical TU V5 executable-launch negative control and optional qualified GPU27B native-effort setting with legacy/resume controls plus verbatim generic recipe. Actual targeted suite43passed21.64s; git diff --check passed. Final findings: docs/reports/27b-q38fn-full-tools-repeat-20261127.md. [no-belief: committed-conclusion observation registered separately after report commit; no retrospective measurement warrant]
 
 Next: codex-a3b-pilot publishes the closed evidence and committed observation; no further model trials are queued.
+
+## Durable closure
+
+Final evidence and canonical fixes committed as `5d84db8fe`. Verified archive again after relocation; all21187 decoded files/50 shards match. Committed-conclusion observation registered as `cc:v1:d31658204145662bf96d6da48c1006d5`, anchored to final report line3, with archive-validation and checksum manifest raw evidence. This remains an observation, not a reconstructed measurement warrant. [belief: cc]
+
+Next: codex-a3b-pilot reuses the closed evidence for the next authorized dispatch; no further runs are queued.
