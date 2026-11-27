@@ -1,0 +1,12 @@
+{
+  "cpu": {
+    "pid": 926604,
+    "rc": 0,
+    "dead_verified": true
+  },
+  "gpu": {
+    "pid": 927458,
+    "rc": 0,
+    "dead_verified": true
+  }
+}

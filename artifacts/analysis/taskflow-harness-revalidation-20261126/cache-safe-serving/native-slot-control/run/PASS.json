@@ -1,0 +1,98 @@
+{
+  "passed": true,
+  "stage": "c22 cache-off slot serialization",
+  "real_tasks": 0,
+  "quality_manifest_sha256": "7661bb92dd613add2f9af608afc5e5795b375b315de17ee50683c0bda7359d36",
+  "np": 4,
+  "cache_ram": 0,
+  "slots": [
+    {
+      "passed": true,
+      "backend": "cpu",
+      "slot": 0,
+      "requests": 5,
+      "cold_prompt_tokens": 6294,
+      "queued_title_s": 21.2203,
+      "slot_cache_hit_tokens": 6290,
+      "short_tail_prompt_tokens": 26,
+      "generated": 10
+    },
+    {
+      "passed": true,
+      "backend": "cpu",
+      "slot": 1,
+      "requests": 5,
+      "cold_prompt_tokens": 6294,
+      "queued_title_s": 30.2712,
+      "slot_cache_hit_tokens": 6290,
+      "short_tail_prompt_tokens": 26,
+      "generated": 10
+    },
+    {
+      "passed": true,
+      "backend": "cpu",
+      "slot": 2,
+      "requests": 5,
+      "cold_prompt_tokens": 6294,
+      "queued_title_s": 38.834,
+      "slot_cache_hit_tokens": 6290,
+      "short_tail_prompt_tokens": 26,
+      "generated": 10
+    },
+    {
+      "passed": true,
+      "backend": "cpu",
+      "slot": 3,
+      "requests": 5,
+      "cold_prompt_tokens": 6294,
+      "queued_title_s": 68.5935,
+      "slot_cache_hit_tokens": 6290,
+      "short_tail_prompt_tokens": 26,
+      "generated": 10
+    },
+    {
+      "passed": true,
+      "backend": "gpu",
+      "slot": 0,
+      "requests": 5,
+      "cold_prompt_tokens": 6294,
+      "queued_title_s": 4.6336,
+      "slot_cache_hit_tokens": 6290,
+      "short_tail_prompt_tokens": 26,
+      "generated": 10
+    },
+    {
+      "passed": true,
+      "backend": "gpu",
+      "slot": 1,
+      "requests": 5,
+      "cold_prompt_tokens": 6294,
+      "queued_title_s": 6.8395,
+      "slot_cache_hit_tokens": 6290,
+      "short_tail_prompt_tokens": 26,
+      "generated": 10
+    },
+    {
+      "passed": true,
+      "backend": "gpu",
+      "slot": 2,
+      "requests": 5,
+      "cold_prompt_tokens": 6294,
+      "queued_title_s": 8.602,
+      "slot_cache_hit_tokens": 6290,
+      "short_tail_prompt_tokens": 26,
+      "generated": 10
+    },
+    {
+      "passed": true,
+      "backend": "gpu",
+      "slot": 3,
+      "requests": 5,
+      "cold_prompt_tokens": 6294,
+      "queued_title_s": 14.5035,
+      "slot_cache_hit_tokens": 6290,
+      "short_tail_prompt_tokens": 26,
+      "generated": 10
+    }
+  ]
+}
