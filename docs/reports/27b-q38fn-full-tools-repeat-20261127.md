@@ -21,7 +21,7 @@ An artifact requires the original deterministic checks, exact-source independent
 
 One actionable CI correction is a same-session continuation with check output, not an independently implemented patch. Fresh paid planning retries are separate guided conditions; the coach supplies source-specific pointers but no code or final deliverable. Prior local cost remains charged. Registered-temperature and longer-wall supplements are reported separately rather than replacing original results.
 
-At the interim checkpoint Q38FN MM and detailed W66 nonthinking are independently accepted normal completions without corrective guidance. Each consumed one final independent review. The complete per-condition table will replace this checkpoint after the remaining work closes.
+At the interim checkpoint Q38FN MM and detailed W66 nonthinking are independently accepted normal completions without corrective guidance. Each consumed one final independent review. GPU PFX nonthinking is now accepted after one CI correction, one paid source diagnosis and an additional main arithmetic reminder; its original initial attempt remains censored. Two distinct source reviews were consumed for that guided branch. The complete per-condition table will replace this checkpoint after the remaining work closes.
 
 ## Defects repaired during this repeat
 
@@ -32,6 +32,10 @@ At the interim checkpoint Q38FN MM and detailed W66 nonthinking are independentl
 5. Nine CPU file-custody qualification records carried an erroneous hardcoded GPU instrumentation label. An exact-file amendment binds their unchanged raw records to the original CPU PID/birth proof. Offline projection corrects those nine labels while retaining the raw labels; 912 other shared receipt projections were identical at the validation checkpoint. No real-task assignment or model call changed.
 
 Closed-budget artifacts also required an explicit grading adapter, because the original adapter admitted only normal completion. The separate adapter checks elapsed budget, drained reservations, scope, exact candidate bytes and reference custody; it does not rewrite the native interrupted status. Missing tests in CPU MM thinking and TU nonthinking are genuine incomplete deliverables, not grounds to weaken acceptance.
+
+6. The final GPU TU source audit exposed an additional coverage gap despite old-checker PASS and paid reviewer ACCEPT: an `unshare` executable-launch permission error could be mistaken for namespace setup failure when the executable path contains `/proc/self/`. V5 adds this original-requirement diagnostic case. Eight contained controls preserve the pinned main-only positive and reject the exact GPU candidate and a synthetic broadened classifier. Main rejected the artifact, preserving both old verdicts and paid costs. This is an injected classification control, not a claim the normal worker launcher selects `/proc/self/exe`. The canonical checker/test patch is prepared for application after source-locked work and archive capture finish.
+
+A separate CPU PFX thinking supplement carries its own budget-closed document and adopted paid diagnosis into a fresh session on slot0 or3. The original budget outcome remains censored. Prior charged allowance is debited; no prior reasoning or tool history is transferred, and slot cache warmth is unmeasured. This is explicitly a checkpoint/restart workflow variant, not an isolated guidance intervention.
 
 The future owner-v3 race controls and scheduler controls are tested scratch improvements; active epoch02 and its frozen task runner were not silently replaced while jobs ran.
 
