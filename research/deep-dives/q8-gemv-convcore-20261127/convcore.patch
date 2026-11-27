@@ -1,0 +1,106 @@
+From 5c061bf85ea4e3e855216f33bf31cf1febbde6c6 Mon Sep 17 00:00:00 2001
+From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+Date: Fri, 27 Nov 2026 15:01:55 +0000
+Subject: [PATCH] ggml-hip: add experimental V5I packed conversion core
+
+Assisted-by: Codex
+---
+ ggml/src/ggml-cuda/mmq-q8-mf.cu | 49 +++++++++++++++++++++++++--------
+ 1 file changed, 38 insertions(+), 11 deletions(-)
+
+diff --git a/ggml/src/ggml-cuda/mmq-q8-mf.cu b/ggml/src/ggml-cuda/mmq-q8-mf.cu
+index 9e4aa63d6..0f00ebd0f 100644
+--- a/ggml/src/ggml-cuda/mmq-q8-mf.cu
++++ b/ggml/src/ggml-cuda/mmq-q8-mf.cu
+@@ -1340,7 +1340,7 @@ static const char q8mf6_build_marker[] __attribute__((used)) =
+ #define Q8MF6_HB    (32 * Q8MF_ROWB)   // 8704 B: half a packed stage
+ #define Q8MF6_RED   2048
+
+-template <int P, int AUX>
++template <int P, int AUX, bool CONVCORE>
+ static __global__ void __launch_bounds__(Q8MF_NT, 4)
+ q8mf6_mul_mat(const char * __restrict__ W, const uint32_t wbytes, const char * __restrict__ act, const uint32_t abytes,
+               const int S, const int U, const int G, const int M, float * __restrict__ out, const int64_t out_s1) {
+@@ -1398,6 +1398,16 @@ q8mf6_mul_mat(const char * __restrict__ W, const uint32_t wbytes, const char * _
+     const int gq = lane >> 4;
+     const int c0 = 4 * gq;
+     float acc[4] = {0.0f, 0.0f, 0.0f, 0.0f};
++    // An int8 dot of 32 products has magnitude <= 2^19. Seeding MFMA with
++    // the bits of 1.5 * 2^23 keeps the biased sum in the unit-ULP FP32 binade.
++    // Reinterpret the bits and subtract the bias exactly, two lanes at a time.
++    constexpr float bias = 12582912.0f;
++    constexpr int seed = CONVCORE ? __builtin_bit_cast(int, bias) : 0;
++    q8mf_v4i initial = {seed, seed, seed, seed};
++    if constexpr (CONVCORE) {
++        // Keep the seed live across the pipelined loop instead of rematerializing it per unit.
++        asm volatile("" : "+v"(initial));
++    }
+     auto compute = [&]() {
+         const char * lw = lds + (16 * rg + j) * Q8MF_ROWB;
+         const char * la = lds + Q8MF6_HB;
+@@ -1418,13 +1428,20 @@ q8mf6_mul_mat(const char * __restrict__ W, const uint32_t wbytes, const char * _
+             const float  dw = __half2float(*(const __half *) (lw + 34 * i));
+             const int2   a  = *(const int2 *) (la + i * 512 + lane * 8);
+             const float4 da = *(const float4 *) (la + Q8MF_KS * 512 + i * 64 + gq * 16);
+-            const q8mf_v4i z = {0, 0, 0, 0};
+-            q8mf_v4i s = __builtin_amdgcn_mfma_i32_16x16x16i8(a.x, w0, z, 0, 0, 0);
++            q8mf_v4i s = __builtin_amdgcn_mfma_i32_16x16x16i8(a.x, w0, initial, 0, 0, 0);
+             s          = __builtin_amdgcn_mfma_i32_16x16x16i8(a.y, w1, s, 0, 0, 0);
+-            acc[0] += (float) s[0] * (dw * da.x);
+-            acc[1] += (float) s[1] * (dw * da.y);
+-            acc[2] += (float) s[2] * (dw * da.z);
+-            acc[3] += (float) s[3] * (dw * da.w);
++            if constexpr (CONVCORE) {
++                const q8mf_v4f dot = __builtin_bit_cast(q8mf_v4f, s) - q8mf_v4f{bias, bias, bias, bias};
++                acc[0] += dot[0] * (dw * da.x);
++                acc[1] += dot[1] * (dw * da.y);
++                acc[2] += dot[2] * (dw * da.z);
++                acc[3] += dot[3] * (dw * da.w);
++            } else {
++                acc[0] += (float) s[0] * (dw * da.x);
++                acc[1] += (float) s[1] * (dw * da.y);
++                acc[2] += (float) s[2] * (dw * da.z);
++                acc[3] += (float) s[3] * (dw * da.w);
++            }
+         }
+     };
+
+@@ -1497,12 +1514,16 @@ q8mf6_mul_mat(const char * __restrict__ W, const uint32_t wbytes, const char * _
+
+ static void ggml_cuda_mul_mat_q8_mf6(ggml_backend_cuda_context & ctx, const ggml_tensor * src0, const ggml_tensor * src1, ggml_tensor * dst) {
+     const q8mf_cfg & cfg = q8mf_get_cfg();
++    static const bool convcore = q8mf_env_int("GGML_HIP_Q8_MF6_CONVCORE", 0) == 1;
+     constexpr int p = 2;
+     {
+         static std::atomic<int64_t> n_calls{0};
+         if (n_calls.fetch_add(1) == 0) {
+             GGML_LOG_INFO("ggml_cuda_q8_mf: V5 4-WG/CU half-tile packed path ran (call 1, GGML_HIP_Q8_MF=6, P=%d, slc=%d, %s)\n",
+                 p, cfg.slc, q8mf6_build_marker);
++            if (convcore) {
++                GGML_LOG_INFO("ggml_cuda_q8_mf: V5 packed conversion core ran (GGML_HIP_Q8_MF6_CONVCORE=1)\n");
++            }
+         }
+     }
+     cudaStream_t stream = ctx.stream();
+@@ -1525,11 +1546,17 @@ static void ggml_cuda_mul_mat_q8_mf6(ggml_backend_cuda_context & ctx, const ggml
+     }
+     const char *   W      = (const char *) src0->data;
+     const uint32_t wbytes = (uint32_t) ggml_nbytes(src0);
+-#define Q8MF6_L(PP, AA) q8mf6_mul_mat<PP, AA><<<G, Q8MF_NT, 0, stream>>>(W, wbytes, act.get(), (uint32_t) abytes, S, U, G, M, d, dst_s1)
+-    if (cfg.slc) {
+-        Q8MF6_L(2, 2);
++#define Q8MF6_L(AA, CC) q8mf6_mul_mat<p, AA, CC><<<G, Q8MF_NT, 0, stream>>>(W, wbytes, act.get(), (uint32_t) abytes, S, U, G, M, d, dst_s1)
++    if (convcore) {
++        if (cfg.slc) {
++            Q8MF6_L(2, true);
++        } else {
++            Q8MF6_L(0, true);
++        }
++    } else if (cfg.slc) {
++        Q8MF6_L(2, false);
+     } else {
+-        Q8MF6_L(2, 0);
++        Q8MF6_L(0, false);
+     }
+ #undef Q8MF6_L
+     CUDA_CHECK(cudaGetLastError());
