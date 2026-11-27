@@ -12,6 +12,7 @@ from taskflow import vision_contract  # noqa: E402
 _CANDIDATE = """
 import base64
 import json
+import os
 import urllib.request
 from io import BytesIO
 from types import SimpleNamespace
@@ -19,12 +20,18 @@ from PIL import Image
 from src.backends import serving_calls
 
 
+_ENV = "ORCHESTRATOR_VL_MAX_PIXELS"
+_STARTUP_CAP = os.environ.get(_ENV)
+
+
 def encode_image_for_vl(path, max_pixels):
     with Image.open(path) as original:
         w, h = original.size
-        if max_pixels is None:
+        if max_pixels is None or w * h <= max_pixels:
             size = (0, 0) if variant == "zero raw dimensions" else (w, h)
-            raw = b"wrong bytes" if variant == "reencoded default" else path.read_bytes()
+            raw = path.read_bytes()
+            if variant == "reencoded default" or (max_pixels is not None and variant == "reencoded under cap"):
+                raw = b"wrong bytes"
             return base64.b64encode(raw).decode("ascii"), "image/png", size
 
         scale = (max_pixels / (w * h)) ** 0.5
@@ -34,6 +41,10 @@ def encode_image_for_vl(path, max_pixels):
             width = min(width, max_pixels // height // 28 * 28)
         if width < height and variant != "tall overflow":
             height = min(height, max_pixels // width // 28 * 28)
+        if variant == "lost feasible aspect" and (w, h) == (641, 913):
+            width = height = 280
+        if variant == "lost tall orientation" and (w, h, max_pixels) == (100, 4000, 7840):
+            width = height = 28
         with BytesIO() as output:
             original.resize((width, height)).save(output, format="PNG")
             size = (w, h) if variant == "original resize dimensions" else (width, height)
@@ -46,6 +57,9 @@ def vision_token_estimate(w, h):
 
 class VLDescribeAnalyzer:
     def __init__(self, *, backend, max_pixels=None):
+        configured = _STARTUP_CAP if variant == "module-import environment" else os.environ.get(_ENV)
+        if max_pixels is None and configured is not None and variant != "ignored startup environment":
+            max_pixels = int(configured)
         self.max_pixels = max_pixels
 
     def _analyze_with_server(self, path, start):
@@ -77,6 +91,7 @@ class VLDescribeAnalyzer:
     ("variant", "failure"),
     [
         ("correct", ""),
+        ("module-import environment", ""),
         ("reencoded default", "large: raw bytes changed"),
         ("zero raw dimensions", "large: raw dimensions (0, 0)"),
         ("original resize dimensions", "large: encoded dimensions"),
@@ -86,6 +101,10 @@ class VLDescribeAnalyzer:
         ("wire bypass", "server max_pixels=784: server sent dimensions (896, 896)"),
         ("unsupported recorder keyword", "server max_pixels=None: expected one serving-call record"),
         ("missing recorder estimate", "server max_pixels=None: serving-call estimate None, expected 1024"),
+        ("reencoded under cap", "under-cap image at cap 30000: raw bytes changed"),
+        ("lost feasible aspect", "portrait aspect: dimensions (280, 280) are inconsistent with aspect-preserving"),
+        ("lost tall orientation", "tall orientation: dimensions (28, 28) lose source orientation"),
+        ("ignored startup environment", "ORCHESTRATOR_VL_MAX_PIXELS=784: server startup environment: server sent dimensions"),
     ],
 )
 def test_mm5_candidate_contract(tmp_path, variant, failure):

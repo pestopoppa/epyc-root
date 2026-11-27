@@ -1,6 +1,7 @@
 import shlex
 import subprocess
 import sys
+import textwrap
 from pathlib import Path
 
 import pytest
@@ -59,6 +60,65 @@ def test_contract_requires_an_access_errno_instead_of_erofs(lane):
     file.write_text(file.read_text().replace("in {errno.ENOENT, errno.EACCES}", "in {errno.ENOENT, errno.EACCES, errno.EROFS}"))
 
     assert "simulated namespace wrong-access-errno" in tu_grader_isolation.validate(lane, _ACCEPTANCE, 120)
+
+
+def test_contract_accepts_class_based_pytest_tests(lane):
+    file = lane / _TEST_FILE
+    original = file.read_text()
+    start = original.index("def test_reachable_grader_is_flagged(")
+    body = original[start:].replace("(sentinel):", "(self, sentinel):")
+    file.write_text(original[:start] + "class TestGraderIsolation:\n" + textwrap.indent(body, "    "))
+
+    assert tu_grader_isolation.validate(lane, _ACCEPTANCE, 120) is None
+
+
+def test_contract_rejects_foreign_and_duplicate_junit_results(tmp_path):
+    path = tmp_path / "report.xml"
+    exact = f'<testcase file="{_TEST_FILE}" classname="test_grader_isolation.TestGraderIsolation" name="test_isolated_launch_denies"/>'
+    foreign = '<testcase file="other/test_grader_isolation.py" classname="test_grader_isolation" name="test_isolated_launch_denies"/>'
+    path.write_text(f"<testsuite>{foreign}{exact}</testsuite>")
+    assert tu_grader_isolation._outcomes(path) == {"test_isolated_launch_denies": ("passed", "")}
+    path.write_text(f"<testsuite>{exact}{exact}</testsuite>")
+    with pytest.raises(ValueError, match="duplicate results"):
+        tu_grader_isolation._outcomes(path)
+
+
+@pytest.mark.parametrize(("addition", "phase"), [
+    ('diagnostic.endswith("Invalid argument")', "namespace-invalid-argument"),
+    ('"unshare" in diagnostic and "Operation not permitted" in diagnostic', "mount-permission-path-unshare"),
+])
+def test_contract_rejects_other_errors_that_resemble_permission_refusals(lane, addition, phase):
+    file = lane / _TEST_FILE
+    file.write_text(file.read_text().replace("if diagnostic in {", f"if ({addition}) or diagnostic in {{"))
+
+    assert f"simulated namespace {phase}" in tu_grader_isolation.validate(lane, _ACCEPTANCE, 120)
+
+
+def test_contract_rejects_skipping_on_an_absent_launcher(lane):
+    file = lane / _TEST_FILE
+    source = file.read_text().replace("import secrets", "import secrets\nimport shutil")
+    file.write_text(source.replace(
+        '    scratch = sentinel.parent.parent',
+        '    if shutil.which("unshare") is None:\n        pytest.skip("unshare unavailable")\n'
+        '    scratch = sentinel.parent.parent',
+    ))
+
+    assert "simulated namespace missing-launcher" in tu_grader_isolation.validate(lane, _ACCEPTANCE, 120)
+
+
+@pytest.mark.parametrize(("accepted_errno", "phase"), [
+    ("errno.EROFS", "wrong-listdir-errno-only"),
+    ("None", "null-listdir-errno-only"),
+])
+def test_contract_rejects_invalid_directory_errno_with_valid_open_errno(lane, accepted_errno, phase):
+    file = lane / _TEST_FILE
+    source = file.read_text()
+    file.write_text(source.replace(
+        'result["listdir_errno"] in {errno.ENOENT, errno.EACCES}',
+        f'result["listdir_errno"] in {{errno.ENOENT, errno.EACCES, {accepted_errno}}}',
+    ))
+
+    assert f"simulated namespace {phase}" in tu_grader_isolation.validate(lane, _ACCEPTANCE, 120)
 
 
 def test_contract_keeps_propagation_setup_separate_from_hiding_the_sentinel(lane):
