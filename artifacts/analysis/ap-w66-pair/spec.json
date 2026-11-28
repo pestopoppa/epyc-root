@@ -1,0 +1,53 @@
+{
+  "schema": "epyc.row.v3",
+  "kind": "compute",
+  "lane": "gpu",
+  "owner": "codex-ni-main",
+  "id": "codex-ap-w66-pair-gpu-20261127-r2",
+  "handoff_task": "autopilot-program.md:AP-W66-PAIR",
+  "regions": "mi210_0,88-95,184-191",
+  "claim_cpus": "88-95",
+  "declared_threads": 8,
+  "launcher": "/mnt/raid0/llm/tmp/ap-w66-pair-20261127-r2/launch.sh",
+  "workdir": "/mnt/raid0/llm/tmp/ap-w66-pair-20261127-r2",
+  "scratch_root": "/mnt/raid0/llm/tmp/ap-w66-pair-20261127-r2",
+  "result_path": "/mnt/raid0/llm/tmp/ap-w66-pair-20261127-r2/out/run/RESULT.json",
+  "result_format": "json",
+  "stop_file": "/mnt/raid0/llm/tmp/ap-w66-pair-20261127-r2/STOP",
+  "estimate_s": 5000,
+  "min_window_s": 300,
+  "priority_rank": 1,
+  "estimate_basis": {
+    "provisional": true,
+    "units": 29,
+    "reason": "C22 load and six reconstructed predecessor prefill snapshots up to 170 seconds each; eight reversed paired and up to four third-pair attempts, two preserve-thinking variants, peer prefills, restore I/O and shutdown.",
+    "rebook_from": "/mnt/raid0/llm/tmp/ap-w66-pair-20261127-r2/out/smoke/smoke_measure.json"
+  },
+  "ports": [
+    27400
+  ],
+  "scratch_gb": 48,
+  "first_progress_s": 240,
+  "model": "Qwen3.6-35B-A3B-MTP-Q8_0, C22 HIP ce6fcbbde, four split slots at 131072 tokens each, f16 KV, pinned sampling and template",
+  "decision_rule": "Diagnostic paired replay. Measure lower TTFT, native prefill and decode seconds and retain streamed quality. Stop for a target after the effect survives reversal and exceeds the same-arm repeat range; otherwise stop after three matched pairs and report the mismatch or uncertainty. Use a third fixed-cap pair if generation diverges. Stop on missing input, identity, slot, or residency evidence.",
+  "futility": {
+    "rule": "Stop on a third matched pair or when attribution survives reversed order and exceeds measured repeat noise."
+  },
+  "verdict_by": "agent",
+  "requires_quiet_host": false,
+  "resumable": false,
+  "smoke_predicate": "/usr/bin/grep -q '\"ok\": true' /mnt/raid0/llm/tmp/ap-w66-pair-20261127-r2/out/TERMINAL-smoke.json && [ \"$(stat -c %Y /mnt/raid0/llm/tmp/ap-w66-pair-20261127-r2/out/TERMINAL-smoke.json)\" -ge \"${FILLER_SMOKE_T0:?}\" ]",
+  "expects_created": [
+    "/mnt/raid0/llm/tmp/ap-w66-pair-20261127-r2/out/TERMINAL-smoke.json"
+  ],
+  "keep": [
+    "out/run/*.json",
+    "out/run/*.jsonl",
+    "out/run/private",
+    "out/smoke",
+    "out/TERMINAL-smoke.json"
+  ],
+  "supersedes": [
+    "codex-ap-w66-pair-gpu-20261127"
+  ]
+}

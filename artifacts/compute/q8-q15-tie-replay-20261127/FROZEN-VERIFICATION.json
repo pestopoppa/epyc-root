@@ -1,0 +1,17 @@
+{
+  "verified_logit_rows": 1128,
+  "bytewise_checks": {
+    "1": {
+      "native_vs_matched_q8_full_logit_bytes_equal": 88,
+      "native_vs_captured_full_logit_bytes_equal": 72
+    },
+    "8": {
+      "native_vs_matched_q8_full_logit_bytes_equal": 88,
+      "native_vs_captured_full_logit_bytes_equal": 72
+    },
+    "24": {
+      "native_vs_matched_q8_full_logit_bytes_equal": 88,
+      "native_vs_captured_full_logit_bytes_equal": 72
+    }
+  }
+}

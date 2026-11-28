@@ -1,0 +1,33 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/codex-mi210-matmul-census-gpu-20261127/launcher.out",
+ "elapsed_s": 36,
+ "ended": "rc=75 time=2026-11-27T15:40:00Z reason=partial-native-incomplete",
+ "engine_sha256": "b1d8feafc1fe3ea374a555c02342e069991efa8a2b8b82a144303b92eea8c922",
+ "first_progress": "smoke_predicate exited 0",
+ "first_progress_s": 300,
+ "first_unit_at": "2026-11-27T15:40:00Z",
+ "id": "codex-mi210-matmul-census-gpu-20261127",
+ "launcher_sha256": "6fd2a82bba8b7c698aecb5d509dd613f701dcbe6a7e238a2d19f99ebfe174aeb",
+ "measured_busy_fraction": 0.097,
+ "measured_claimed_cpus": 8,
+ "measured_threads": 0.774,
+ "passed_at": "2026-11-27T15:40:00Z",
+ "progress_rule": "smoke_predicate",
+ "regions": "mi210_0,184-191",
+ "residency_evidence": {
+  "kfd_pids": [
+   799611
+  ]
+ },
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/codex-mi210-matmul-census-20261127/out/RESULT.json",
+ "smoke_identity": {
+  "job_sha256": "3bba1314a499c2bfc497008a3384ff9646393326aff7e6bc7d5675d2cde24ab8",
+  "spec_sha256": "196dffff1ca232e18e4cb0adc69964244181f1a7f5c9d3ee87b5830b39ec9edc"
+ },
+ "smoke_measure": "/mnt/raid0/llm/tmp/codex-mi210-matmul-census-20261127/out/smoke/smoke_measure.json",
+ "smoke_measure_sha256": "e4e6ac1118076334f64764aa963e009898e8e3f6ac52c9defe1eb4cfd3959e68",
+ "units": 0,
+ "vram_used_max_bytes": 39966269440,
+ "warning": null
+}

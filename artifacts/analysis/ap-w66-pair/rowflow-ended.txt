@@ -1,0 +1,7 @@
+rc=0 time=2026-11-27T17:04:58Z reason=direct-run
+job_id=codex-ap-w66-pair-gpu-20261127-r2
+owner=codex-ni-main
+step=job-run
+estimated_wall_s=5000
+started=2026-11-27T16:41:01Z
+regions=mi210_0,88-95,184-191

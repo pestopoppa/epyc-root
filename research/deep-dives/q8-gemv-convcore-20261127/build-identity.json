@@ -1,0 +1,153 @@
+{
+  "artifacts": {
+    "bin/libggml-base.so": {
+      "sha256": "a52536af687cd6691eb1a5f204a9d3e3bf22a29a2de8426722752e37bc94fd74",
+      "source_sha": "5d85e7e737d5557cd38d86a39a07a37e35b2f12f"
+    },
+    "bin/libggml-base.so.0": {
+      "sha256": "a52536af687cd6691eb1a5f204a9d3e3bf22a29a2de8426722752e37bc94fd74",
+      "source_sha": "5d85e7e737d5557cd38d86a39a07a37e35b2f12f"
+    },
+    "bin/libggml-base.so.0.16.0": {
+      "sha256": "a52536af687cd6691eb1a5f204a9d3e3bf22a29a2de8426722752e37bc94fd74",
+      "source_sha": "5d85e7e737d5557cd38d86a39a07a37e35b2f12f"
+    },
+    "bin/libggml-cpu.so": {
+      "sha256": "c8c1c7da276c2d7a7bae0373a61956d5f1b6263a080a657a9fbb6a0828a2ff3f",
+      "source_sha": "5d85e7e737d5557cd38d86a39a07a37e35b2f12f"
+    },
+    "bin/libggml-cpu.so.0": {
+      "sha256": "c8c1c7da276c2d7a7bae0373a61956d5f1b6263a080a657a9fbb6a0828a2ff3f",
+      "source_sha": "5d85e7e737d5557cd38d86a39a07a37e35b2f12f"
+    },
+    "bin/libggml-cpu.so.0.16.0": {
+      "sha256": "c8c1c7da276c2d7a7bae0373a61956d5f1b6263a080a657a9fbb6a0828a2ff3f",
+      "source_sha": "5d85e7e737d5557cd38d86a39a07a37e35b2f12f"
+    },
+    "bin/libggml-hip.so": {
+      "sha256": "100b71f4551de8f5cb370fd6d76467090b009a591ca7de970bf0dda85ffde445",
+      "source_sha": "5c061bf85ea4e3e855216f33bf31cf1febbde6c6"
+    },
+    "bin/libggml-hip.so.0": {
+      "sha256": "100b71f4551de8f5cb370fd6d76467090b009a591ca7de970bf0dda85ffde445",
+      "source_sha": "5c061bf85ea4e3e855216f33bf31cf1febbde6c6"
+    },
+    "bin/libggml-hip.so.0.16.0": {
+      "sha256": "100b71f4551de8f5cb370fd6d76467090b009a591ca7de970bf0dda85ffde445",
+      "source_sha": "5c061bf85ea4e3e855216f33bf31cf1febbde6c6"
+    },
+    "bin/libggml.so": {
+      "sha256": "224253708e939dfb79cee44da8a9ce37bfe6a34631d06a1d7c84726c73733694",
+      "source_sha": "5d85e7e737d5557cd38d86a39a07a37e35b2f12f"
+    },
+    "bin/libggml.so.0": {
+      "sha256": "224253708e939dfb79cee44da8a9ce37bfe6a34631d06a1d7c84726c73733694",
+      "source_sha": "5d85e7e737d5557cd38d86a39a07a37e35b2f12f"
+    },
+    "bin/libggml.so.0.16.0": {
+      "sha256": "224253708e939dfb79cee44da8a9ce37bfe6a34631d06a1d7c84726c73733694",
+      "source_sha": "5d85e7e737d5557cd38d86a39a07a37e35b2f12f"
+    },
+    "bin/libllama-bench-impl.so": {
+      "sha256": "d820a83a95abda00a9149e642745b72deb867c426fa2b46f368074d554b4afd3",
+      "source_sha": "98ff8a42a00ce816522fc913bbcfc414fe850d54"
+    },
+    "bin/libllama-common.so": {
+      "sha256": "c38d30c510d009d1722ae05aeffd535ee876db61297f4ce5ec85c235b5e9a171",
+      "source_sha": "5d85e7e737d5557cd38d86a39a07a37e35b2f12f"
+    },
+    "bin/libllama-common.so.0": {
+      "sha256": "c38d30c510d009d1722ae05aeffd535ee876db61297f4ce5ec85c235b5e9a171",
+      "source_sha": "5d85e7e737d5557cd38d86a39a07a37e35b2f12f"
+    },
+    "bin/libllama-common.so.0.0.10729": {
+      "sha256": "c38d30c510d009d1722ae05aeffd535ee876db61297f4ce5ec85c235b5e9a171",
+      "source_sha": "5d85e7e737d5557cd38d86a39a07a37e35b2f12f"
+    },
+    "bin/libllama-perplexity-impl.so": {
+      "sha256": "4f822c9a966bde09d3742453416e0e633dbe06e14ded705450f8044b1e0acd1f",
+      "source_sha": "98ff8a42a00ce816522fc913bbcfc414fe850d54"
+    },
+    "bin/libllama-server-impl.so": {
+      "sha256": "b7d5c431a6b4da173094c616c9ab5edefc44c1898f80f383cde3da8d8733b15e",
+      "source_sha": "98ff8a42a00ce816522fc913bbcfc414fe850d54"
+    },
+    "bin/libllama.so": {
+      "sha256": "e9ff6550f7e144811f4338ce285bfeee9c359bddd2aeefb1c026900064e8dc30",
+      "source_sha": "5d85e7e737d5557cd38d86a39a07a37e35b2f12f"
+    },
+    "bin/libllama.so.0": {
+      "sha256": "e9ff6550f7e144811f4338ce285bfeee9c359bddd2aeefb1c026900064e8dc30",
+      "source_sha": "5d85e7e737d5557cd38d86a39a07a37e35b2f12f"
+    },
+    "bin/libllama.so.0.0.10729": {
+      "sha256": "e9ff6550f7e144811f4338ce285bfeee9c359bddd2aeefb1c026900064e8dc30",
+      "source_sha": "5d85e7e737d5557cd38d86a39a07a37e35b2f12f"
+    },
+    "bin/libmtmd.so": {
+      "sha256": "370c1f4eb948f4897d6c474754f90cc70c8d293f22976c29630ea94a9c209f5b",
+      "source_sha": "98ff8a42a00ce816522fc913bbcfc414fe850d54"
+    },
+    "bin/libmtmd.so.0": {
+      "sha256": "370c1f4eb948f4897d6c474754f90cc70c8d293f22976c29630ea94a9c209f5b",
+      "source_sha": "98ff8a42a00ce816522fc913bbcfc414fe850d54"
+    },
+    "bin/libmtmd.so.0.0.10728": {
+      "sha256": "370c1f4eb948f4897d6c474754f90cc70c8d293f22976c29630ea94a9c209f5b",
+      "source_sha": "98ff8a42a00ce816522fc913bbcfc414fe850d54"
+    },
+    "bin/llama-bench": {
+      "sha256": "69c771f1f400fca044d546f0c9e986af8d451520e4bf2ae217c81e63c97cd045",
+      "source_sha": "98ff8a42a00ce816522fc913bbcfc414fe850d54"
+    },
+    "bin/llama-perplexity": {
+      "sha256": "2480121fda299cac124c552be6551c46e9f1c4d1641063b3a6ee327a775ce149",
+      "source_sha": "98ff8a42a00ce816522fc913bbcfc414fe850d54"
+    },
+    "bin/llama-server": {
+      "sha256": "2a7496ba4b34bc77b69d9cfdcecfd0b05e4fc2a1dff5635596af686ffdc0b0e9",
+      "source_sha": "98ff8a42a00ce816522fc913bbcfc414fe850d54"
+    },
+    "bin/test-backend-ops": {
+      "sha256": "6b67d357077de78cb34534cf031d7f5739f08df48d3b681e2d627154261c00ac",
+      "source_sha": "5d85e7e737d5557cd38d86a39a07a37e35b2f12f"
+    }
+  },
+  "branch": "codex/llama.cpp-experimental-q8convcore-20261127",
+  "kind": "gpu",
+  "method": "rebuild mmq-q8-mf.cu from clean candidate and relink private HIP library with original archived link inputs",
+  "original_c21_frontend_store": "/mnt/raid0/llm/kernels/builds/gpu-20261124-98ff8a42a-c21",
+  "original_servedperf_store": "/mnt/raid0/llm/kernels/builds/gpu-20261124-5d85e7e73-servedperf",
+  "output": "/mnt/raid0/llm/tmp/q8-convcore-20261127/candidate-bundle",
+  "parent": "5d85e7e737d5557cd38d86a39a07a37e35b2f12f",
+  "production_ancestor": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "proof": {
+    "baseline-reproduced.so.link.json": "bcfeb4991b339c05d625e53d5935e86869186807d00fd84854b07c60e9c943b6",
+    "baseline-store-sha-check.txt": "13050ce41f1fe2f718fbccb412239ecb7fbfe97695627506c87d873266dff308",
+    "c21-store-sha-check.txt": "07f55a7b1930edf0807366f8f98708caa988077c6b05bf2a7cc337021bb26226",
+    "candidate.gfx90a.s.argv.json": "2a14b60ecba4b2292c574eb7fb540632ad9942fc520f1b1726981a6a39d56694",
+    "candidate.link.json": "f57863c59e228a6f5f1b0330951bfcde9bdf6c56cc86d63c3aa5afcb3cd1881b",
+    "candidate.tu.o.argv.json": "9c4dea39d5c3a2269d5a65e425adab0279348a62145afb190a369b4ac8989f7d",
+    "check-bias.cpp": "663c6984bf3e2ee6d18344cbaeb2e64fc2c0c60dbf939dc1133a382a66cb9169",
+    "check-isa.json": "14eae78a1744ee76e9c6e43177c826a9d1da4d473dd22f22700735611984ef91",
+    "check-isa.py": "fcd7cd383828b59f3f9646cda33edf2b260bf8819a567e1e03e6917d71b1e38a",
+    "compile-tu.py": "1ea8541f3f12de7e4fe36a5b43ecdc4a27986dfcc0b63b55bb868213e0e41e63",
+    "convcore.patch": "a449aa7daa48ca10ab3aff7f0d40dc49b74c6e70ed04637e2f4b9194c334eabb",
+    "gitnexus-impact.txt": "20495438d6d0fc463b5fe3fd2adc48801caca8fb44f85cde88a58baaaf7eff8f",
+    "host-oracle.txt": "5e152499476393448d86f6bdb446f7bdcbf8fa574225e638a28c143d103aaa5a",
+    "linkage-libggml-hip.so.txt": "f4e6bad63e9c407839b15e3c4b1050f8bd605433611dc4198c61429622155cbf",
+    "linkage-llama-bench.txt": "5f46542398968c7e56c9884b6bcf7b1ba2c2abd9dc151af1c09b4a7a20ea1cfb",
+    "linkage-llama-perplexity.txt": "91bbfc1738a7fddd31cd20eb05ae6159325a25dae4d6eb9af8f272afe673771e",
+    "linkage-llama-server.txt": "325deb998ed9d8aafaf9a77186878ace2bc06a4118725f8efc34cbacbd05876d",
+    "linkage-test-backend-ops.txt": "ffbe59c0f6d19b2418c1dc49c80ca57b0693c0c399c4a1f8a0643ccfa241b380",
+    "relink-hip.py": "44543d4c25738d3c3c9f1e98578ee57b3ad579e08d92d6a1c742b5d3ad2fa220",
+    "seal-bundle.py": "8e0a5af332ed319f1b517bcc22c14d9b8d9486b4db5dc1532b469a63a8f12dc9",
+    "source-reproduction.txt": "970d0812359aeae01ee24b44f7d18abc91bcc97bf2395ff94d298a3775194c10"
+  },
+  "schema": "epyc.build-identity.v1",
+  "sha256sums": "SHA256SUMS (relative to bundle root)",
+  "source": "/mnt/raid0/llm/tmp/q8-convcore-20261127/llama.cpp-experimental",
+  "source_sha": "5c061bf85ea4e3e855216f33bf31cf1febbde6c6",
+  "source_tree": "f05d4b71f91f6cb8669a844d0426937ad33f50b8",
+  "target": "gfx90a"
+}

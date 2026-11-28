@@ -1,0 +1,47 @@
+{
+  "checked_unix": 1795861286.8865316,
+  "gpu_busy_pct_at_check": 0,
+  "kfd_clients_after": [],
+  "owned_processes_at_live_capture": {
+    "captured_unix": 1795860792.6983027,
+    "direct_supervisor_pid": 1574626,
+    "owned_pids_at_capture": [
+      1574626,
+      1574743,
+      1574942,
+      1716763
+    ]
+  },
+  "present_after": {
+    "1501373": false,
+    "1502207": false,
+    "1502845": false,
+    "1574626": false,
+    "1574743": false,
+    "1574942": false,
+    "1575716": false,
+    "1716763": false,
+    "1748415": false,
+    "1782092": false,
+    "1797059": false,
+    "1829430": false
+  },
+  "server_pids_in_scored_visits": [
+    1575716,
+    1716763,
+    1748415,
+    1782092,
+    1797059,
+    1829430
+  ],
+  "smoke_cleanup": {
+    "driver_pid": 1502207,
+    "ended_unix": 1795860631.598002,
+    "exists_after": false,
+    "kfd_after": false,
+    "kfd_present_at_wait_exit": false,
+    "kfd_retirement_wait_s": 0.00014380109496414661,
+    "owned_server_pid": 1502845,
+    "server_rc": 0
+  }
+}

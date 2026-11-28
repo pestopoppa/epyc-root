@@ -1266,15 +1266,29 @@ Operator-approved 2026-10-31 (plan revision 2, `research/intake-stage3-plan-2026
       · gate: ak-c22-knee-batch-gate-gpu-20261125-r4        · inputs: `/mnt/raid0/llm/tmp/q8-gemv-85pct-strategy-20261125.md`
       · owner: autokernel
   - 2026-11-25 (autokernel) knee-batch: r3 FAIL_CORRECTNESS (`ak-c22-knee-batch-gate-gpu-20261125-r3`), r4 `ak-c22-knee-batch-gate-gpu-20261125-r4` judged futile at its interim look, stopped and withdrawn by the operator ruling that every row carries a futility look; ops measured flat (no GB/s gain from batching GEMV launches). No verdict.json was written for r4 (withdrawn). Dead end seeded with q8wt/q8lean in the journal record `akm-c22-q8-gemv-q8wt-q8lean-kneebatch-det2`. [belief: cc]
-- [ ] **Q8-GEMV-CONVCORE-1** [inference] Redesign the V5I served 27B Q8_0 weight GEMV conversion-heavy core (about 40 VALU per wave per unit, cvt_f32_i32 int8-to-float path) to cut VALU per KB from 29 toward the stream kernel's 9, since V5I is issue-bound not bandwidth-bound (q8wt, q8lean, knee-batch all lost)
+- [x] **Q8-GEMV-CONVCORE-1** [inference] Redesign the V5I served 27B Q8_0 weight GEMV conversion-heavy core (about 40 VALU per wave per unit, cvt_f32_i32 int8-to-float path) to cut VALU per KB from 29 toward the stream kernel's 9, since V5I is issue-bound not bandwidth-bound (q8wt, q8lean, knee-batch all lost) ✅ 2026-11-27 [belief: cc] fail rc=0; NO_KEEP. Served V5I speedup 0.9981x (95% CI 0.9904–1.0060). Operator 1183→1188 GB/s, VALU 28.49→24.82/KiB. All 46 cases passed per arm; max mean KLD 0.000428.; result /mnt/raid0/llm/tmp/codex-convcore-gate-20261127/out/RESULT.json
+      · model: Qwen3.8-27B Q8_0 + DFlash2-Q8_0, np1 greedy, draft n-max 7
+      · build: candidate HIP binary, same V5I MF=6 build for OFF/OFF2/ON
+      · metric: VALU/KiB and ms/round lower, packed-weight GB/s higher
+      · rule: CPU reference PASS, mean KLD <=0.003 at ub 8/4/16/512, valid A/A within 2%, KEEP if served speedup 95% CI lower >1.01
+      · region: MI210 exclusive + assigned host CPUs
+      · est: provisional, pilot: n=1 smoke visit to rebook
+      · stop rule: stop-on-answer at 8 scored blocks; stop-on-futility on failed correctness, missing witness/proof, invalid A/A, or CI upper <1.0 at block 4; gate-class = futility-only
       · done when: a gate row files KEEP / NO_KEEP / FAIL_* / FUTILITY_* with op VALU per KB, GB/s vs V5I, KLD and served ms/round CI; or a note names why the conversion core cannot shrink (packed int8 dot / MFMA operand path already ruled out)
       · gate: none        · inputs: `/mnt/raid0/llm/tmp/q8-gemv-85pct-strategy-20261125.md` `/mnt/raid0/llm/tmp/ak-c22-q8wt-op-diag-gpu-20261125`
+
+The kernel owner retained V5I for the tested single-request greedy Qwen3.8-27B Q8_0 + DFlash2 recipe. Both control servers logged V5 packed dispatch with `GGML_HIP_Q8_MF6_CONVCORE` unset. [Q8 conversion-core decision and audit](../../research/deep-dives/q8-gemv-convcore-20261127/README.md)
+
 - [ ] **PC-HOSTTRAP-COVERAGE** [non-inference] Inventory build IDs and DWARF line tables for served MMQ, MMVQ and attention code objects; map representative addresses offline and record coverage for stripped objects. Keep host-trap collection behind an isolated compatible toolchain and driver capability check.
       · done when: Use the original ELFs, code objects, store manifests and build IDs. Keep one other binary for validation. Record symbol+offset, source line or unmappable reason for each sampled PC. Only trial host-trap if unresolved hotspots remain and firmware/driver enumerate the capability; collect separate baseline runtime and check perturbation, skid and sample loss.
       · gate: none        · inputs: `research/deep-dives/intake-nov27-kernel-systems/stage3-plan.md` `research/deep-dives/intake-nov27-kernel-systems/intake-3006.md` `research/deep-dives/intake-nov27-kernel-systems/intake-3020.md`
-- [ ] **FATTN-PRIVATE-SEGMENT** [non-inference] Join executed attention symbols to private-segment bytes and scratch instructions from content-identified code objects. Compare constant-length and dynamic-tail paths only on affected shapes, retaining correctness for padded V and partial tiles.
+- [x] **FATTN-PRIVATE-SEGMENT** [non-inference] Join executed attention symbols to private-segment bytes and scratch instructions from content-identified code objects. Compare constant-length and dynamic-tail paths only on affected shapes, retaining correctness for padded V and partial tiles. ✅ 2026-11-27 [belief: cc] ABSENT_PATH. The MMA V load already has a fixed width in the audited builds. Production A3B prefill and 27B RF6 verify were scratch-free. The separate A3B two-column vector kernel had a 144 B private frame and RF4 had 14 VGPR spills. [Dispatch and code-object audit](../../research/deep-dives/fattn-private-segment-20261127/README.md)
       · done when: Compare deployed GPU symbols on a train and holdout context length, retaining code-object hash, VGPR/scratch metadata, ISA and dispatch hits. A nonzero private segment alone cannot prove traffic. Stop on absent path or equal material scratch traffic; specialize and time only if affected. Check both padded and unpadded tails.
       · gate: none        · inputs: `research/deep-dives/intake-nov27-kernel-systems/stage3-plan.md` `research/deep-dives/intake-nov27-kernel-systems/intake-3009.md`
+
+- [ ] **FATTN-VEC-PRIVATE-TRAFFIC** [non-inference] Determine whether the dispatched A3B two-column vector attention kernel's 144 B private frame creates material runtime scratch traffic before designing a replacement.
+      · done when: the 33-hit four-request window is matched to its code object and dynamic scratch contribution or an explicit measurement limit; compare the later zero-hit window and retain the total-kernel 5.76 ms ceiling separately from scratch cost
+      · gate: none        · inputs: `research/deep-dives/fattn-private-segment-20261127/README.md` and `research/deep-dives/mi210-matmul-census-20261127/requests.json`
 
 ### Done
 
@@ -1372,9 +1386,21 @@ Line references are at `98ff8a4` (C21, `llama.cpp-experimental-c21-20261124`).
       · done when: the compile log and verdict (lowers to gfx90a code object, or the first failing pass) are filed; a pass reopens a FlyDSL arm proposal, a fail closes it with evidence
       · gate: none
       · ✅ 2026-11-21 flydsl 0.5.1 compile-only vector-add for gfx90a PASS (needs a torch CPU import, undeclared); full pipeline to amdgcn gfx90a ISA (global_load_dwordx4, v_pk_add_f32, global_store_dwordx4). Log and ISA in /mnt/raid0/llm/tmp/flydsl-gfx90a-20261121/. No launch; execution and the ROCm-6.2 runtime untested. [no-belief: compile-only check]
+- [x] **F32-ROUTER-DISPATCH-CAPTURE** [inference] Capture an MI210 A3B router prefill and decode trace on frozen v10 for the F32 split-K census, with a separate held-out request. ✅ 2026-11-27 [belief: cc] CENSUS_CAPTURED. Six frozen-v10 A3B request panels filed with the matched trace, request-round denominators and runtime HIP residency. [Census and replay](../../research/deep-dives/mi210-matmul-census-20261127/README.md)
+      · model: Qwen3.6-35B-A3B-MTP-Q8_0 on MI210, greedy, four slots, F16 KV and MTP draft maximum two
+      · build: production GPU store v10 ffc1bac82, private server with matched HIP library
+      · metric: eligible ms per served round (lower is better), with actual F32 dispatches and workgroups
+      · rule: compare the maximal removable time with the owner's served gate; use an observed route or mark the cell unresolved
+      · est: provisional        · pilot: n=1 request validates model, residency, route and timestamps
+      · stop rule: stop on missing runtime proof or after the 256- and 1024-token prefill and single- and four-request decode captures include the held-out windows
+      · done when: persisted traces link both request windows to the served recipe, executed symbols and timing denominator, or identify the precise missing witness
+      · gate: none        · inputs: `data/ak-short-row-census/README.md` and `handoffs/active/briefs/F32-ROUTER-SPLITK-CENSUS.md`
 - [ ] **F32-ROUTER-SPLITK-CENSUS** [non-inference] Join actual ffn_gate_inp and skinny F32 dispatches to shape, backend, duration and CU count; bound saved served time against current rocBLAS. If material, compare fixed-order two-pass slice reduction with unsplit reference and repeat identical inputs bitwise.
       · done when: Reuse retained A3B router traces at decode and prefill. Baseline is the resolved Tensile solution; keep a later request window. Record M/N/K, workgroups, slices and all partial-buffer writes. The upstream half-CU test bounds unsplit tile count, not slices. Stop if even eliminating targeted time would miss the owner’s served gate. Test CPU splitting only for underoccupied cores after NPS4-local partitioning.
       · gate: none        · inputs: `research/deep-dives/intake-nov27-kernel-systems/stage3-plan.md` `research/deep-dives/intake-nov27-kernel-systems/intake-3008.md`
+
+The operator parked the standalone two-pass experiment on 2026-11-27 and assigned the next MI210 window to AP-W66-PAIR. The one-row F32 projection (K=2048) used 0.339–0.342 ms per C21 verify forward. A 1.01× served speedup leaves approximately 2.4 µs per replacement gate call including reduction, requiring about 3.5× speedup on the gate. The width-12 1.082× served gain belongs to the existing chunked implementation. Reopening requires a C22 trace with a larger share on the target workload or a design that fuses following operations and removes launches. The measured MMVF and Tensile GSU5 controls remain recorded. [Trace and opportunity bounds](../../research/deep-dives/mi210-matmul-census-20261127/README.md) [belief: cc]
+
 
 ### Agentic ROCm Kernel Authoring — MI210 Verify+Profile Harness
 

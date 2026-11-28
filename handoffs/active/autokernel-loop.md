@@ -5333,7 +5333,7 @@ PARKED 2026-11-22: tree verify on MI210 loses at every tested config (T12 0.92�
 - [ ] **AK-CHAIN-ABT-FUTILITY** [non-inference] Pass the AK-EVAL-FUT futility rule into the akloop ab-timing stage comparison (research loop stage_bodies.py bench.compare called without futility=), so chain ab-timing rows stop at an interim futility look
       · done when: research test asserts a chain ab-timing stage on a losing synthetic arm stops with stop_reason futility at k=2, and akloop/chain.py custom_reason for ab-timing no longer says NO interim look
       · gate: none
-- [ ] **AK-SHORT-ROW-CENSUS** [non-inference] Count eligible fused small-K MMVQ calls in retained 27B and A3B traces at widths one through four.
+- [x] **AK-SHORT-ROW-CENSUS** [non-inference] Count eligible fused small-K MMVQ calls in retained 27B and A3B traces at widths one through four. ✅ 2026-11-27 [belief: cc] Retained width-one forced and naturally small-K Q8 routes are distinguished. In the fresh A3B single-request panels the eligible fused expert gate/up rows used 0.064 and 0.038 ms per API round. Cells lacking a runtime shape witness retain an explicit reason. [Width and model records](../../research/deep-dives/mi210-matmul-census-20261127/AK-SHORT-ROW-CENSUS.json)
       · done when: AK-SHORT-ROW-CENSUS.json contains quant_type, K, output_rows, fused, ncols, eligible_calls. All requested model/width cells have a count or an explicit unresolved reason.
       · gate: none        · inputs: `handoffs/active/autokernel-loop.md`
 - [ ] **AK-LOOP-BLOAT-TRIM** [non-inference] Shrink the AutoKernel loop/ code (guard 130,181 of 130,183) by deleting proven zero-caller code and consolidating duplicates, in small tranches with the full loop suite identical before and after and a Fable audit per tranche
@@ -5343,6 +5343,9 @@ PARKED 2026-11-22: tree verify on MI210 loses at every tested config (T12 0.92�
 - [ ] **VERIFY-F32-GEMV-CENSUS** [non-inference] Classify retained verify calls by input type, rows, K, verify columns and selected kernel. Bound F32 time that a weight-sharing GEMV could recover against served dispatch. Stop at zero eligible share or an immaterial upper bound.
       · done when: Freeze verify traces from both dense and MoE, train/test split by request. Report all rows and F32-eligible rows by width, M and K. Preserve actual dispatch including width one and wide M; compare incumbent GEMV versus tiled GEMM for surviving bins. On CPU compare blocked GEMV to existing GEMM with NUMA-local weights; never import Adreno subgroups or the numeric threshold.
       · gate: none        · inputs: `research/deep-dives/intake-nov27-kernel-systems/stage3-plan.md` `research/deep-dives/intake-nov27-kernel-systems/intake-3010.md`
+
+MI210 census complete. Dense 27B emitted no F32 weight matmul across 74 and 82 verify forwards in two request windows. A3B C21 already reused weights on its narrow F32 MMVF route. The wide frozen-v10 router hotspot has a served-tested chunked comparator. [Census and replay](../../research/deep-dives/mi210-matmul-census-20261127/README.md) The cross-device brief retains its EPYC blocked-GEMV versus NUMA-local GEMM comparison. [belief: cc]
+
 
 
 ### Done

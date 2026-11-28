@@ -1,0 +1,7 @@
+rc=0 time=2026-11-28T10:20:21Z reason=direct-run
+job_id=codex-ap-w66-budget-gpu-20261128
+owner=codex-ni-main
+step=job-run
+estimated_wall_s=780
+started=2026-11-28T10:10:45Z
+regions=mi210_0,88-95,184-191

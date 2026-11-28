@@ -1,0 +1,958 @@
+[
+  {
+    "panel": "prefill256",
+    "requests": [
+      {
+        "end_ns": 1664639098844142,
+        "input_token_count": 256,
+        "input_token_sha256": "7dd072619e7cf1f66e9d96a27276b2b85c81db8c4e200c7afbfded159d3d658c",
+        "start_ns": 1664638901544988,
+        "timings": {
+          "cache_n": 0,
+          "predicted_ms": 0.001,
+          "predicted_n": 1,
+          "predicted_per_second": 1000000.0,
+          "predicted_per_token_ms": 0.001,
+          "prompt_ms": 195.978,
+          "prompt_n": 256,
+          "prompt_per_second": 1306.2690710181755,
+          "prompt_per_token_ms": 0.7655390625
+        }
+      }
+    ],
+    "residency": [
+      {
+        "at_ns": 1664638901743071,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39633719296
+      },
+      {
+        "at_ns": 1664639002889330,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39679750144
+      }
+    ],
+    "wall_s": 1.2023366689682007
+  },
+  {
+    "panel": "prefill1024",
+    "requests": [
+      {
+        "end_ns": 1664640502235511,
+        "input_token_count": 1024,
+        "input_token_sha256": "d69af6d5e6093d6fd577ebedfd21e44ba99c9b03a6040701fe4d37cec875a0a1",
+        "start_ns": 1664640104021548,
+        "timings": {
+          "cache_n": 0,
+          "predicted_ms": 0.001,
+          "predicted_n": 1,
+          "predicted_per_second": 1000000.0,
+          "predicted_per_token_ms": 0.001,
+          "prompt_ms": 396.533,
+          "prompt_n": 1024,
+          "prompt_per_second": 2582.3828029445217,
+          "prompt_per_token_ms": 0.3872392578125
+        }
+      }
+    ],
+    "residency": [
+      {
+        "at_ns": 1664640103945747,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39742664704
+      },
+      {
+        "at_ns": 1664640204747788,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39759441920
+      },
+      {
+        "at_ns": 1664640305318965,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39759441920
+      },
+      {
+        "at_ns": 1664640405630718,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39759441920
+      }
+    ],
+    "wall_s": 1.4020936249289662
+  },
+  {
+    "panel": "decode_np1",
+    "requests": [
+      {
+        "end_ns": 1664642385174234,
+        "input_token_count": 500,
+        "input_token_sha256": "64c74913dca110b09cb8019527c95a4cf50255cd499119b65261a9cd0807753c",
+        "start_ns": 1664641506443716,
+        "timings": {
+          "cache_n": 0,
+          "draft_n": 54,
+          "draft_n_accepted": 35,
+          "predicted_ms": 608.476,
+          "predicted_n": 64,
+          "predicted_per_second": 105.1808123902997,
+          "predicted_per_token_ms": 9.5074375,
+          "prompt_ms": 249.605,
+          "prompt_n": 500,
+          "prompt_per_second": 2003.1650007011076,
+          "prompt_per_token_ms": 0.49921
+        }
+      }
+    ],
+    "residency": [
+      {
+        "at_ns": 1664641506404745,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39759441920
+      },
+      {
+        "at_ns": 1664641607295737,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39759441920
+      },
+      {
+        "at_ns": 1664641707911034,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39759441920
+      },
+      {
+        "at_ns": 1664641808211444,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39759441920
+      },
+      {
+        "at_ns": 1664641908863471,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39759441920
+      },
+      {
+        "at_ns": 1664642009502527,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39759441920
+      },
+      {
+        "at_ns": 1664642110036162,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39759441920
+      },
+      {
+        "at_ns": 1664642210458174,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39759441920
+      },
+      {
+        "at_ns": 1664642310856966,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39759441920
+      }
+    ],
+    "wall_s": 1.904938651015982
+  },
+  {
+    "panel": "decode_np4",
+    "requests": [
+      {
+        "end_ns": 1664645753598077,
+        "input_token_count": 512,
+        "input_token_sha256": "4efa4b5e61fa07a1082f33c05657ec9cea7bc667207d555f659d214935cb644c",
+        "start_ns": 1664643411903409,
+        "timings": {
+          "cache_n": 0,
+          "draft_n": 46,
+          "draft_n_accepted": 40,
+          "predicted_ms": 1507.068,
+          "predicted_n": 64,
+          "predicted_per_second": 42.4665642160805,
+          "predicted_per_token_ms": 23.5479375,
+          "prompt_ms": 815.682,
+          "prompt_n": 512,
+          "prompt_per_second": 627.6955970586577,
+          "prompt_per_token_ms": 1.59312890625
+        }
+      },
+      {
+        "end_ns": 1664645777675172,
+        "input_token_count": 512,
+        "input_token_sha256": "ccdb1f6bf147271847b6158ee9166c45a1f8ea4c82cc5825981dcb18c81a22cd",
+        "start_ns": 1664643412152704,
+        "timings": {
+          "cache_n": 0,
+          "draft_n": 47,
+          "draft_n_accepted": 39,
+          "predicted_ms": 1531.088,
+          "predicted_n": 64,
+          "predicted_per_second": 41.800340672776485,
+          "predicted_per_token_ms": 23.92325,
+          "prompt_ms": 815.462,
+          "prompt_n": 512,
+          "prompt_per_second": 627.8649403650936,
+          "prompt_per_token_ms": 1.59269921875
+        }
+      },
+      {
+        "end_ns": 1664645752694090,
+        "input_token_count": 512,
+        "input_token_sha256": "1186882bb114e495da406336a00a8d380219c8145097328a1e2137438a70fb94",
+        "start_ns": 1664643412487490,
+        "timings": {
+          "cache_n": 0,
+          "draft_n": 45,
+          "draft_n_accepted": 40,
+          "predicted_ms": 1506.722,
+          "predicted_n": 64,
+          "predicted_per_second": 42.47631613529238,
+          "predicted_per_token_ms": 23.54253125,
+          "prompt_ms": 814.916,
+          "prompt_n": 512,
+          "prompt_per_second": 628.2856147136637,
+          "prompt_per_token_ms": 1.5916328125
+        }
+      },
+      {
+        "end_ns": 1664645691457396,
+        "input_token_count": 512,
+        "input_token_sha256": "fae449d07a92e49cfeb4a729f83cbfe34a743e8e93eb0e10fdf91f1f418bac6f",
+        "start_ns": 1664643412691904,
+        "timings": {
+          "cache_n": 0,
+          "draft_n": 43,
+          "draft_n_accepted": 41,
+          "predicted_ms": 1445.075,
+          "predicted_n": 64,
+          "predicted_per_second": 44.288358735705756,
+          "predicted_per_token_ms": 22.579296875,
+          "prompt_ms": 815.237,
+          "prompt_n": 512,
+          "prompt_per_second": 628.0382269205152,
+          "prompt_per_token_ms": 1.592259765625
+        }
+      }
+    ],
+    "residency": [
+      {
+        "at_ns": 1664643412784866,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39759441920
+      },
+      {
+        "at_ns": 1664643513608255,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39896879104
+      },
+      {
+        "at_ns": 1664643614234470,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39896879104
+      },
+      {
+        "at_ns": 1664643714511688,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39896879104
+      },
+      {
+        "at_ns": 1664643814772405,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39896879104
+      },
+      {
+        "at_ns": 1664643915040263,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39896879104
+      },
+      {
+        "at_ns": 1664644015294971,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39896879104
+      },
+      {
+        "at_ns": 1664644115569549,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39896879104
+      },
+      {
+        "at_ns": 1664644215852947,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39969243136
+      },
+      {
+        "at_ns": 1664644316516212,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39970230272
+      },
+      {
+        "at_ns": 1664644417168056,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39970230272
+      },
+      {
+        "at_ns": 1664644517847712,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39970230272
+      },
+      {
+        "at_ns": 1664644618635909,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39970230272
+      },
+      {
+        "at_ns": 1664644719315264,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39970230272
+      },
+      {
+        "at_ns": 1664644819980058,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39970230272
+      },
+      {
+        "at_ns": 1664644920643642,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39970230272
+      },
+      {
+        "at_ns": 1664645021325257,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39970230272
+      },
+      {
+        "at_ns": 1664645122027562,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39970230272
+      },
+      {
+        "at_ns": 1664645222666036,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39970230272
+      },
+      {
+        "at_ns": 1664645323337030,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39970230272
+      },
+      {
+        "at_ns": 1664645423967143,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39970230272
+      },
+      {
+        "at_ns": 1664645524641248,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39970230272
+      },
+      {
+        "at_ns": 1664645627424510,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39970230272
+      },
+      {
+        "at_ns": 1664645728078794,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39971622912
+      }
+    ],
+    "wall_s": 3.417063851142302
+  },
+  {
+    "panel": "later_np1",
+    "requests": [
+      {
+        "end_ns": 1664647647437301,
+        "input_token_count": 384,
+        "input_token_sha256": "17bbc77d687c998725bd7f9d8ca253535723b5359d906b52557347e6c272a30a",
+        "start_ns": 1664646829463148,
+        "timings": {
+          "cache_n": 0,
+          "draft_n": 42,
+          "draft_n_accepted": 42,
+          "predicted_ms": 525.14,
+          "predicted_n": 64,
+          "predicted_per_second": 121.87226263472598,
+          "predicted_per_token_ms": 8.2053125,
+          "prompt_ms": 221.039,
+          "prompt_n": 384,
+          "prompt_per_second": 1737.2499875587569,
+          "prompt_per_token_ms": 0.5756223958333333
+        }
+      }
+    ],
+    "residency": [
+      {
+        "at_ns": 1664646829412938,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39971622912
+      },
+      {
+        "at_ns": 1664646930259783,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39971622912
+      },
+      {
+        "at_ns": 1664647030903365,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39971622912
+      },
+      {
+        "at_ns": 1664647131205251,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39971622912
+      },
+      {
+        "at_ns": 1664647231854353,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39971622912
+      },
+      {
+        "at_ns": 1664647332447884,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39971622912
+      },
+      {
+        "at_ns": 1664647432885562,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39971622912
+      },
+      {
+        "at_ns": 1664647533301510,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39971622912
+      },
+      {
+        "at_ns": 1664647645292882,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39971622912
+      }
+    ],
+    "wall_s": 1.9163265489041805
+  },
+  {
+    "panel": "later_np4",
+    "requests": [
+      {
+        "end_ns": 1664651481775082,
+        "input_token_count": 768,
+        "input_token_sha256": "5b7ee6a0cae3bef7f1efbed22699e82084a2d405ce757e21abf3127a9106315d",
+        "start_ns": 1664648746350261,
+        "timings": {
+          "cache_n": 0,
+          "draft_n": 44,
+          "draft_n_accepted": 41,
+          "predicted_ms": 1413.263,
+          "predicted_n": 64,
+          "predicted_per_second": 45.2852724510583,
+          "predicted_per_token_ms": 22.082234375,
+          "prompt_ms": 1317.951,
+          "prompt_n": 768,
+          "prompt_per_second": 582.7227264139563,
+          "prompt_per_token_ms": 1.71608203125
+        }
+      },
+      {
+        "end_ns": 1664651520184032,
+        "input_token_count": 768,
+        "input_token_sha256": "c60e97ebc72537c61c1daaf50538c602e1abceaef703ee7406b32c625a06637d",
+        "start_ns": 1664648746527294,
+        "timings": {
+          "cache_n": 0,
+          "draft_n": 46,
+          "draft_n_accepted": 40,
+          "predicted_ms": 1453.622,
+          "predicted_n": 64,
+          "predicted_per_second": 44.027952246182295,
+          "predicted_per_token_ms": 22.71284375,
+          "prompt_ms": 1318.339,
+          "prompt_n": 768,
+          "prompt_per_second": 582.5512254435316,
+          "prompt_per_token_ms": 1.7165872395833333
+        }
+      },
+      {
+        "end_ns": 1664651519726773,
+        "input_token_count": 768,
+        "input_token_sha256": "641ae96781ea03595f7d744d13527169c013bdad4cab30a729596795cf0c92cb",
+        "start_ns": 1664648746683937,
+        "timings": {
+          "cache_n": 0,
+          "draft_n": 42,
+          "draft_n_accepted": 41,
+          "predicted_ms": 1345.805,
+          "predicted_n": 64,
+          "predicted_per_second": 47.55518072826301,
+          "predicted_per_token_ms": 21.028203125,
+          "prompt_ms": 1423.957,
+          "prompt_n": 768,
+          "prompt_per_second": 539.3421290109181,
+          "prompt_per_token_ms": 1.8541106770833335
+        }
+      },
+      {
+        "end_ns": 1664651481561599,
+        "input_token_count": 768,
+        "input_token_sha256": "eac4848d2f4ed160b3ff4467ad873f6ab8ec927bcd1fb8cba51cff07bcb352e5",
+        "start_ns": 1664648746791649,
+        "timings": {
+          "cache_n": 0,
+          "draft_n": 42,
+          "draft_n_accepted": 42,
+          "predicted_ms": 1306.799,
+          "predicted_n": 64,
+          "predicted_per_second": 48.97463190590137,
+          "predicted_per_token_ms": 20.418734375,
+          "prompt_ms": 614.546,
+          "prompt_n": 768,
+          "prompt_per_second": 1249.7030328079588,
+          "prompt_per_token_ms": 0.8001901041666667
+        }
+      }
+    ],
+    "residency": [
+      {
+        "at_ns": 1664648746296140,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39971622912
+      },
+      {
+        "at_ns": 1664648847417288,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39971622912
+      },
+      {
+        "at_ns": 1664648947861975,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39971622912
+      },
+      {
+        "at_ns": 1664649048133148,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39971622912
+      },
+      {
+        "at_ns": 1664649148388091,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39971622912
+      },
+      {
+        "at_ns": 1664649248642914,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39971622912
+      },
+      {
+        "at_ns": 1664649348899297,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39971622912
+      },
+      {
+        "at_ns": 1664649449172070,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39971622912
+      },
+      {
+        "at_ns": 1664649549469524,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39971622912
+      },
+      {
+        "at_ns": 1664649650150414,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39971622912
+      },
+      {
+        "at_ns": 1664649750760033,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39971622912
+      },
+      {
+        "at_ns": 1664649851039246,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39971622912
+      },
+      {
+        "at_ns": 1664649951299968,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39971622912
+      },
+      {
+        "at_ns": 1664650051552570,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39971622912
+      },
+      {
+        "at_ns": 1664650151834822,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39972536320
+      },
+      {
+        "at_ns": 1664650252485611,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39972536320
+      },
+      {
+        "at_ns": 1664650353151841,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39972536320
+      },
+      {
+        "at_ns": 1664650453784090,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39972536320
+      },
+      {
+        "at_ns": 1664650554454330,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39972536320
+      },
+      {
+        "at_ns": 1664650655126149,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39972536320
+      },
+      {
+        "at_ns": 1664650755777548,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39972536320
+      },
+      {
+        "at_ns": 1664650856457207,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39972536320
+      },
+      {
+        "at_ns": 1664650957079734,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39972536320
+      },
+      {
+        "at_ns": 1664651057741663,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39972536320
+      },
+      {
+        "at_ns": 1664651158479823,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39972536320
+      },
+      {
+        "at_ns": 1664651259148422,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39972536320
+      },
+      {
+        "at_ns": 1664651359798690,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39972536320
+      },
+      {
+        "at_ns": 1664651460508510,
+        "hip_store_mapped": true,
+        "kfd_pids": [
+          843016
+        ],
+        "pid": 843016,
+        "vram_b": 39972536320
+      }
+    ],
+    "wall_s": 3.8149404001887888
+  }
+]

@@ -1,0 +1,126 @@
+{
+  "0": {
+    "off": {
+      "instruction_counts": {
+        "buffer_load_dwordx4": 20,
+        "ds_read2_b32": 4,
+        "ds_read_b128": 8,
+        "ds_read_b32": 12,
+        "ds_read_b64": 12,
+        "ds_read_u16": 8,
+        "ds_write2st64_b32": 4,
+        "ds_write_b128": 10,
+        "s_barrier": 6,
+        "v_accvgpr_read_b32": 0,
+        "v_accvgpr_write_b32": 0,
+        "v_cvt_f32_i32_e32": 32,
+        "v_mfma_i32_16x16x16i8": 16,
+        "v_pk_add_f32": 0,
+        "v_pk_fma_f32": 16,
+        "v_pk_mul_f32": 16
+      },
+      "metadata": {
+        "agpr": 0,
+        "lds_bytes": 15360,
+        "occupancy": 4,
+        "scratch_bytes": 0,
+        "sgpr": 55,
+        "vgpr": 118
+      },
+      "symbol": "_ZL13q8mf6_mul_matILi2ELi0ELb0EEvPKcjS1_jiiiiPfl"
+    },
+    "off_equals_historical_instruction_bytes": 5184,
+    "off_text_sha256": "59d99023cfa539a51f825468209dbfea9d43a265528d24cf3e4d2e827e4374e3",
+    "on": {
+      "instruction_counts": {
+        "buffer_load_dwordx4": 20,
+        "ds_read2_b32": 4,
+        "ds_read_b128": 8,
+        "ds_read_b32": 12,
+        "ds_read_b64": 12,
+        "ds_read_u16": 8,
+        "ds_write2st64_b32": 4,
+        "ds_write_b128": 10,
+        "s_barrier": 6,
+        "v_accvgpr_read_b32": 0,
+        "v_accvgpr_write_b32": 0,
+        "v_cvt_f32_i32_e32": 0,
+        "v_mfma_i32_16x16x16i8": 16,
+        "v_pk_add_f32": 16,
+        "v_pk_fma_f32": 16,
+        "v_pk_mul_f32": 16
+      },
+      "metadata": {
+        "agpr": 0,
+        "lds_bytes": 15360,
+        "occupancy": 4,
+        "scratch_bytes": 0,
+        "sgpr": 54,
+        "vgpr": 126
+      },
+      "symbol": "_ZL13q8mf6_mul_matILi2ELi0ELb1EEvPKcjS1_jiiiiPfl"
+    }
+  },
+  "2": {
+    "off": {
+      "instruction_counts": {
+        "buffer_load_dwordx4": 20,
+        "ds_read2_b32": 4,
+        "ds_read_b128": 8,
+        "ds_read_b32": 12,
+        "ds_read_b64": 12,
+        "ds_read_u16": 8,
+        "ds_write2st64_b32": 4,
+        "ds_write_b128": 10,
+        "s_barrier": 6,
+        "v_accvgpr_read_b32": 0,
+        "v_accvgpr_write_b32": 0,
+        "v_cvt_f32_i32_e32": 32,
+        "v_mfma_i32_16x16x16i8": 16,
+        "v_pk_add_f32": 0,
+        "v_pk_fma_f32": 16,
+        "v_pk_mul_f32": 16
+      },
+      "metadata": {
+        "agpr": 0,
+        "lds_bytes": 15360,
+        "occupancy": 4,
+        "scratch_bytes": 0,
+        "sgpr": 55,
+        "vgpr": 118
+      },
+      "symbol": "_ZL13q8mf6_mul_matILi2ELi2ELb0EEvPKcjS1_jiiiiPfl"
+    },
+    "off_equals_historical_instruction_bytes": 5184,
+    "off_text_sha256": "62a9267aca1923209bbbae7105cd2405e45293db3756bc57e60ae40a7f51d7e8",
+    "on": {
+      "instruction_counts": {
+        "buffer_load_dwordx4": 20,
+        "ds_read2_b32": 4,
+        "ds_read_b128": 8,
+        "ds_read_b32": 12,
+        "ds_read_b64": 12,
+        "ds_read_u16": 8,
+        "ds_write2st64_b32": 4,
+        "ds_write_b128": 10,
+        "s_barrier": 6,
+        "v_accvgpr_read_b32": 0,
+        "v_accvgpr_write_b32": 0,
+        "v_cvt_f32_i32_e32": 0,
+        "v_mfma_i32_16x16x16i8": 16,
+        "v_pk_add_f32": 16,
+        "v_pk_fma_f32": 16,
+        "v_pk_mul_f32": 16
+      },
+      "metadata": {
+        "agpr": 0,
+        "lds_bytes": 15360,
+        "occupancy": 4,
+        "scratch_bytes": 0,
+        "sgpr": 54,
+        "vgpr": 126
+      },
+      "symbol": "_ZL13q8mf6_mul_matILi2ELi2ELb1EEvPKcjS1_jiiiiPfl"
+    }
+  }
+}

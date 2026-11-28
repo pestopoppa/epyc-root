@@ -1,0 +1,2 @@
+cases,max_abs_q8_q15_block,full_signed_pair_exact,dpwssd_wrap,dpwssds_sat
+4098,134213632,2147483648,-2147483648,2147483647

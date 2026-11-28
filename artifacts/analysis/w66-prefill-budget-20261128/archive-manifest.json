@@ -1,0 +1,14 @@
+{
+  "format": "owner-only directory with SHA256SUMS and sealed prior snapshot links",
+  "manifest_sha256": "46b63d6232c50110bbfb555ca72ceb750abb0d03cdd4a05f5fb5ed67344c173c",
+  "pinned_restore_links": 14,
+  "prior_archive_manifest_sha256": "854eaac531c8a6f129a6e6b2a422c295c80037084136d85b0d97e8a372cdd3c7",
+  "public_summary_sha256": "5ef12aecdd66bc79e5fe5f7e2ab78210d53fda31132e57d71c33e6af36e034dd",
+  "raw_result_sha256": "6bfb497b3d213095cd6a7a2e7fe547f10804cbd9d61906311bd78a0bd205869a",
+  "regular_bytes": 202314915,
+  "regular_files": 116,
+  "root": "/mnt/raid0/llm/archive/compute-evidence/w66-prefill-budget-20261128",
+  "rowflow_row": "codex-ap-w66-budget-gpu-20261128",
+  "schema": "epyc.w66-prefill-budget-private-archive.v1",
+  "snapshot_links_sha256": "18974a112df25c3016794ede06404a30f0bc9a34b6e39d52de8e8dcd1355db13"
+}

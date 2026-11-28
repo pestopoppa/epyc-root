@@ -1,0 +1,7 @@
+rc=0 time=2026-11-27T15:43:59Z reason=direct-run
+job_id=q15-head-replay-cpu-20261127-r2
+owner=inference
+step=job-run
+estimated_wall_s=420
+started=2026-11-27T15:43:49Z
+regions=q0

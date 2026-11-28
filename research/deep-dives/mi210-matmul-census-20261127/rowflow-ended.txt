@@ -1,0 +1,7 @@
+rc=0 time=2026-11-27T15:40:55Z reason=direct-run
+job_id=codex-mi210-matmul-census-gpu-20261127
+owner=codex-ni-main
+step=job-run
+estimated_wall_s=720
+started=2026-11-27T15:40:14Z
+regions=mi210_0,184-191

@@ -95,11 +95,11 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 13 | 585 | 25 | 2026-11-07 |
+| inference-research | 13 | 581 | 25 | 2026-11-07 |
 | pipeline-integration | 1 | 2 | 0 | 2026-11-17 |
-| research-evaluation | 4 | 261 | 2 | 2026-11-20 |
+| research-evaluation | 4 | 263 | 2 | 2026-11-20 |
 | reviewer-control-plane | 1 | 19 | 8 | 2026-11-24 |
-| routing-and-optimization | 9 | 497 | 12 | 2026-11-05 |
+| routing-and-optimization | 9 | 496 | 12 | 2026-11-05 |
 | user-facing-harness | 2 | 112 | 1 | 2026-10-03 |
 <!-- END GENERATED index_state -->
 

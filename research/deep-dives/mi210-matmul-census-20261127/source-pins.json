@@ -1,0 +1,19 @@
+{
+  "/mnt/raid0/llm/tmp/ak-27b-served-decode-profile-gpu-20261125/ak_row_harness.py": "e6724337984071091808c6540f7ac448eb6b42692551cf7c9468f698b9c3e757",
+  "/mnt/raid0/llm/tmp/ak-27b-served-decode-profile-gpu-20261125/job.py": "45f1055d203ec090bdc2ea94fdbe71008c49005f3f311cccdf5bf23c82526660",
+  "/mnt/raid0/llm/tmp/ak-27b-served-decode-profile-gpu-20261125/out/RESULT.json": "d0a5a9e7e2d02797b031fb90b5ee87e71c7157215410c6303fc3a29bb20f600c",
+  "/mnt/raid0/llm/tmp/ak-27b-served-decode-profile-gpu-20261125/out/prof/t-off/OFF_kernel_trace.csv": "b43fbf6599a2d1d4151aa2c80e9e1996366d5ce677cd142d8d648720e0f23eb1",
+  "/mnt/raid0/llm/tmp/ak-27b-verify-kernel-roofline-census-gpu-20261124-r2/fixtures/r1-ctx1024-w1-T_kernel_trace.csv": "1819091ed458708a96b72f4217c44cd07595cfc8919826f44d50a26faeed9029",
+  "/mnt/raid0/llm/tmp/ak-27b-verify-kernel-roofline-census-gpu-20261124-r2/job.py": "de1543df819718b4ce1cf093d49569488c08244462433571cc84a9f090a04c5c",
+  "/mnt/raid0/llm/tmp/ak-c21-census-refresh-gpu-20261124/out/results.jsonl": "fa7d53dba469631ca6c70b0e532b34e60bc64ceb083ddc698f7025df6ecee9ef",
+  "/mnt/raid0/llm/tmp/ak-c21-census-refresh-gpu-20261124/out/tra-OFF-r0.window.csv.gz": "41a0bd14c5cf16bf5b64787a911cb6ff994931423decb424308592fa5169f55a",
+  "/mnt/raid0/llm/tmp/ak-c21-census-refresh-gpu-20261124/out/tra-OFF-r1.window.csv.gz": "8c52b6e29c1477eaebc5755abf04942fdca74dd309ef60ce2263345e52992af5",
+  "/mnt/raid0/llm/tmp/ak-gap-1-trace-gpu-20261119/out/RESULT.json": "efd57ecbcaba96fde2fbaecdf58253f7dd752b8601c566adb25ba894f0092896",
+  "/mnt/raid0/llm/tmp/ak-gap-1-trace-gpu-20261119/out/trace/27B-decode.window.csv.gz": "657e98e84aca20b4e265179d2bcbdd39f6b498a50d395e673c3d4ce29c3d39e7",
+  "/mnt/raid0/llm/tmp/codex-mi210-matmul-census-20261127/out/native/a3b-v10_agent_info.csv": "c0ab0a4b292919218f8d748024af16fc8edebf3879b51c52f4740913c50a786b",
+  "/mnt/raid0/llm/tmp/codex-mi210-matmul-census-20261127/out/native/a3b-v10_kernel_trace.csv": "562a3675cce00639f3a5b817ecf65427ca2d2239a757b04caf2c4d288da576e6",
+  "/mnt/raid0/llm/tmp/codex-mi210-matmul-census-20261127/out/native/linkage.txt": "85b5e1fc3d2811770fb449a46a67adc4cd21658d72943c6bd910fd7fb7c9b064",
+  "/mnt/raid0/llm/tmp/codex-mi210-matmul-census-20261127/out/native/requests.json": "252733966e4a9303b2f566db7e8dd9d90b0b6e85bb0438ba82d6be66e979567d",
+  "/mnt/raid0/llm/tmp/codex-mi210-matmul-census-20261127/out/native/run.json": "a39b86fda72fb62fd051782208270bf0c1e0a203ff87994180e390240a813e97",
+  "/mnt/raid0/llm/tmp/codex-mi210-matmul-census-20261127/out/native/server.log": "359f4e6af8071aaead50b8e9f3f85125dfdf5b9cf0f2ca9b8940c14b25bfa365"
+}

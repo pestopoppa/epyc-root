@@ -1,0 +1,117 @@
+{
+  "ids_sha256_encoding": "SHA-256 of compact JSON integer array with no trailing newline",
+  "labels": {
+    "OFF52": {
+      "chat_input_spans": 286,
+      "control_spellings_in_input": 0,
+      "expected_target_fresh": 512,
+      "input_archive_sha256": "3a9331e6e9fea3875087afaf0c1993b32db5d945f633e817133071c312c516d3",
+      "label": "OFF52",
+      "off56_preserve_treatment": false,
+      "plain_matches_native_ids": true,
+      "prefix_count": 108476,
+      "prefix_ids_sha256": "9c87fd7f7bc78de008a2f4c285fb01810a641880aea5c7e5f769a9653ad974a0",
+      "prompt_bytes": 402000,
+      "prompt_count": 108988,
+      "prompt_ids_sha256": "7825816e4959c2295704ce9fae07f7c7f9010a26a43706761965659b96edb17a",
+      "slot": 2
+    },
+    "OFF56": {
+      "chat_input_spans": 311,
+      "control_spellings_in_input": 0,
+      "expected_target_fresh": 107912,
+      "input_archive_sha256": "c490f72255257b1d322ef9c259d905d9377a717c78be72041c0e586f99ef5bd1",
+      "label": "OFF56",
+      "off56_preserve_treatment": false,
+      "plain_matches_native_ids": true,
+      "prefix_count": 4334,
+      "prefix_ids_sha256": "8861b8a2bc13334d1c6dcbd9786b50ca95e68f7d7deec9aaa54d356eaeb0ced3",
+      "prompt_bytes": 414986,
+      "prompt_count": 112246,
+      "prompt_ids_sha256": "2baeea276d1e8cd665c31c3db5cdddc8e589f6e848ba4c5229373867cdd59ebc",
+      "slot": 2
+    },
+    "OFF56-preserve": {
+      "chat_input_spans": 311,
+      "control_spellings_in_input": 0,
+      "expected_target_fresh": 1701,
+      "input_archive_sha256": "c490f72255257b1d322ef9c259d905d9377a717c78be72041c0e586f99ef5bd1",
+      "label": "OFF56-preserve",
+      "off56_preserve_treatment": true,
+      "plain_matches_native_ids": true,
+      "prefix_count": 110761,
+      "prefix_ids_sha256": "9f59deaa7cd11da835435ad4660457d88d3f207b8bd0c67dcd3987b99274347b",
+      "prompt_bytes": 416012,
+      "prompt_count": 112462,
+      "prompt_ids_sha256": "12537e252f3c3618560523b503967890f9fe8d3206a306e2d0f65de29b5a0640",
+      "slot": 2
+    },
+    "ON27": {
+      "chat_input_spans": 168,
+      "control_spellings_in_input": 0,
+      "expected_target_fresh": 1431,
+      "input_archive_sha256": "9745ad9ddf70ef1e4674cb92ef94592ced6af8c6b8ba3e87f126d4a6e48ecfe0",
+      "label": "ON27",
+      "off56_preserve_treatment": false,
+      "plain_matches_native_ids": true,
+      "prefix_count": 71652,
+      "prefix_ids_sha256": "9f23c8dee2572a7bdcd79588c6f69187c8a46cea4d9ae55d40d0b6ba014c17a7",
+      "prompt_bytes": 264329,
+      "prompt_count": 73083,
+      "prompt_ids_sha256": "0c1591adea1f89cc15562dde62eeab402ce4a5e8e3a2a902d7b57a52f0d2239b",
+      "slot": 1
+    },
+    "ON28": {
+      "chat_input_spans": 176,
+      "control_spellings_in_input": 0,
+      "expected_target_fresh": 38,
+      "input_archive_sha256": "ea351db553537505b3742bbb18ae0f6e22e38679d4b3a440ffd5931846ee7474",
+      "label": "ON28",
+      "off56_preserve_treatment": false,
+      "plain_matches_native_ids": true,
+      "prefix_count": 75077,
+      "prefix_ids_sha256": "7b6bb0ebacd437aece645b2323ef38c5dad5107f0ded82056d73fa3bfdb4567b",
+      "prompt_bytes": 273147,
+      "prompt_count": 75115,
+      "prompt_ids_sha256": "49b7336454e1c84575bd22733b15b00c4e936af0a99721bb9f7f09c08b41925c",
+      "slot": 1
+    },
+    "ON29": {
+      "chat_input_spans": 184,
+      "control_spellings_in_input": 0,
+      "expected_target_fresh": 38,
+      "input_archive_sha256": "c246dd45def2dc9ac528f2f6e4998cc905946b7d1b17236ae98d70cf5b5bfac1",
+      "label": "ON29",
+      "off56_preserve_treatment": false,
+      "plain_matches_native_ids": true,
+      "prefix_count": 76143,
+      "prefix_ids_sha256": "26e5253efccca1ad6689e34644264c08d6339769acbe0f865540e42825f4659f",
+      "prompt_bytes": 277445,
+      "prompt_count": 76181,
+      "prompt_ids_sha256": "d3365c4090c40b9d26c2122d412ff1d436388496ec9a8bc36364e1e78fe0759d",
+      "slot": 1
+    }
+  },
+  "model_registry_sha256": "c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131",
+  "model_stat": [
+    37801097504,
+    96242023
+  ],
+  "private_token_payload_sha256": "d387b46340e2f82c23008681facbf83b9cc15698aad65e790c11fa4fb03fcb0d",
+  "probe": {
+    "binary_sha256": "d1e23f5bff37c6f2799e58f940acfa3eca98ef476232af8a6ab8681067a7080d",
+    "libraries_sha256": {
+      "libggml-base.so": "f7b8a1dc7e18ecdf503f4652a92b7cadaf9f501db104ed49edd800d3b1ab09bb",
+      "libggml.so": "224253708e939dfb79cee44da8a9ce37bfe6a34631d06a1d7c84726c73733694",
+      "libllama-common.so": "454355fa1dee5dc22d90f1277673c098a016c5c9d8e4daec598481426bb52f76",
+      "libllama-server-impl.so": "06c92442c44573714b12ee73f08d3c194619d64e97118afd0e524fc2b93a971d",
+      "libllama.so": "78f765bdda32dfbc6e481d8404229000c311916c863e91dea133d451919a2907"
+    },
+    "server_common_header_sha256": "58795ff92265c42d56f4455575460f8922bb19c03d5a18d99f55afec8aa56c6f",
+    "source_path": "artifacts/analysis/ap-w66-pair-states/native-prefix-ids.cpp",
+    "source_sha256": "053c0ab3ec76e9f9f675f63717075f551192b94588fd26993e94feb403e733b6"
+  },
+  "schema": "epyc.ap-w66.native-prefix-ids.v1",
+  "scope": "Uses C22 OAI parser and chat-input spans tokenizer, as generation does. No inference context or model weight allocation. Original dictionary insertion order is preserved. The raw completion preload still requires observed fresh/cached validation on target.",
+  "source_sha": "ce6fcbbde1ee58f165283fbfe74910f47bb2efba"
+}

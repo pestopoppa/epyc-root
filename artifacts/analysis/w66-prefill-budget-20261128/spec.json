@@ -1,0 +1,47 @@
+{
+  "schema": "epyc.row.v3",
+  "kind": "compute",
+  "lane": "gpu",
+  "owner": "codex-ni-main",
+  "id": "codex-ap-w66-budget-gpu-20261128",
+  "handoff_task": "autopilot-program.md:AP-W66-BUDGET",
+  "regions": "mi210_0,88-95,184-191",
+  "claim_cpus": "88-95",
+  "declared_threads": 8,
+  "launcher": "/mnt/raid0/llm/tmp/w66-prefill-budget-20261128/launch.sh",
+  "workdir": "/mnt/raid0/llm/tmp/w66-prefill-budget-20261128",
+  "scratch_root": "/mnt/raid0/llm/tmp/w66-prefill-budget-20261128",
+  "result_path": "/mnt/raid0/llm/tmp/w66-prefill-budget-20261128/out/run/RESULT.json",
+  "result_format": "json",
+  "stop_file": "/mnt/raid0/llm/tmp/w66-prefill-budget-20261128/STOP",
+  "estimate_s": 780,
+  "min_window_s": 240,
+  "priority_rank": 1,
+  "estimate_basis": {
+    "provisional": true,
+    "units": 6,
+    "rebook_from": "/mnt/raid0/llm/tmp/w66-prefill-budget-20261128/out/smoke/smoke_measure.json",
+    "reason": "Up to six fresh C22 visits; up to 100 s per measured arm plus 10\u201315 s load/restore per visit and overhead."
+  },
+  "ports": [
+    28690
+  ],
+  "scratch_gb": 1,
+  "first_progress_s": 120,
+  "model": "Qwen3.6-35B-A3B-MTP Q8_0, unchanged C22 ce6fcbbde, four split 131072-token slots, f16 KV and MTP D2",
+  "decision_rule": "Compare ON28 decode, OFF56 delivered TTFT, both-finish wall and mixed iteration p99 under 0/0 and 256/900. Lower is better. Compare two reversed pairs, consider 1.30 TTFT ratio and 900 ms p99, and stop once measured effects exceed same-arm repeat range or the TTFT futility tradeoff is reproduced. Maximum three matched pairs. Stop on runtime, identity, cache or residency failure.",
+  "futility": {
+    "rule": "After two reversed pairs, stop if both exceed the peer TTFT ratio ceiling and each TTFT penalty exceeds repeat variation."
+  },
+  "verdict_by": "agent",
+  "requires_quiet_host": false,
+  "resumable": false,
+  "smoke_predicate": "/usr/bin/grep -q '\"ok\": true' /mnt/raid0/llm/tmp/w66-prefill-budget-20261128/out/TERMINAL-smoke.json && [ \"$(stat -c %Y /mnt/raid0/llm/tmp/w66-prefill-budget-20261128/out/TERMINAL-smoke.json)\" -ge \"${FILLER_SMOKE_T0:?}\" ]",
+  "expects_created": [
+    "/mnt/raid0/llm/tmp/w66-prefill-budget-20261128/out/TERMINAL-smoke.json"
+  ],
+  "keep": [
+    "out",
+    "SOURCE.sha256"
+  ]
+}

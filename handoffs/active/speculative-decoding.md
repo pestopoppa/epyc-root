@@ -1510,7 +1510,7 @@ Goal: make 12-16-token verify on the MI210 cheap enough that tree drafting beats
 - [ ] **DF2-TARGET-KV-CONTRACT** [non-inference] Compare the released DFly2 target and drafter mappings with the local full-attention KV layout, sparse-index epoch and rollback semantics.
       · done when: DF2-TARGET-KV-CONTRACT.json contains layer_map, kv_stride, selection_epoch, rollback_owner, missing_artifacts. Each requested architecture has an ABI verdict for accept, reject and slot reuse.
       · gate: none        · inputs: `handoffs/active/speculative-decoding.md`
-- [ ] **SPEC-FILTER-TIES** [non-inference] Extend the frozen-logit sampler fixture to record retained support, drawn token and full versus post-filter probabilities at boundary ties.
+- [x] **SPEC-FILTER-TIES** [non-inference] Extend the frozen-logit sampler fixture to record retained support, drawn token and full versus post-filter probabilities at boundary ties. ✅ 2026-11-27 [belief: cc] Native support differed from whole-tie retention in 14 of 48 cases. On the original equal-logit row top-p=0.5 retained IDs 1 and 3. Seed 3 drew 1 with probability 1/2 on that support and 1/4 on the full row. [Native replay](../../data/spec-filter-ties-20261127/README.md)
       · done when: SPEC-FILTER-TIES.json contains fixture_sha, row, key, filter_order, support, token, full_logprob, retained_logprob. All frozen and held-out cases match their declared reference semantics or record the first discrepancy.
       · gate: none        · inputs: `handoffs/active/speculative-decoding.md`
 

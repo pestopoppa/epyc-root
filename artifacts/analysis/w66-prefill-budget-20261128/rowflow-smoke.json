@@ -1,0 +1,33 @@
+{
+ "dryrun_log": "/mnt/raid0/llm/tmp/compute-flags/dryrun/codex-ap-w66-budget-gpu-20261128/launcher.out",
+ "elapsed_s": 16,
+ "ended": "rc=75 time=2026-11-28T10:10:34Z reason=partial-native-incomplete",
+ "engine_sha256": "b1d8feafc1fe3ea374a555c02342e069991efa8a2b8b82a144303b92eea8c922",
+ "first_progress": "smoke_predicate exited 0",
+ "first_progress_s": 120,
+ "first_unit_at": "2026-11-28T10:10:32Z",
+ "id": "codex-ap-w66-budget-gpu-20261128",
+ "launcher_sha256": "761b007b70979d54afd03835aac57d9806606615f8ab74370093aa3a393bb7c2",
+ "measured_busy_fraction": 0.0,
+ "measured_claimed_cpus": 8,
+ "measured_threads": 0.0,
+ "passed_at": "2026-11-28T10:10:37Z",
+ "progress_rule": "smoke_predicate",
+ "regions": "mi210_0,88-95,184-191",
+ "residency_evidence": {
+  "kfd_pids": [
+   1502845
+  ]
+ },
+ "result_format": "json",
+ "result_path": "/mnt/raid0/llm/tmp/w66-prefill-budget-20261128/out/run/RESULT.json",
+ "smoke_identity": {
+  "job_sha256": "f5be1cc24b9bd212f7cf8e41cc4e6a9ef6a344318ddc920917e857cd01eddaac",
+  "spec_sha256": "b6b0fa3f3c737f16e16d32f0789deb3f420ad82e3c6b6094292d04d325146450"
+ },
+ "smoke_measure": "/mnt/raid0/llm/tmp/w66-prefill-budget-20261128/out/smoke/smoke_measure.json",
+ "smoke_measure_sha256": "69fbf32d5eeef7da03769a02b2733e59f1620462cfa1b64e9b06501070924be7",
+ "units": 0,
+ "vram_used_max_bytes": 52406214656,
+ "warning": null
+}

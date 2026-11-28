@@ -1,0 +1,37 @@
+{
+  "checked_unix": 1795799266.982256,
+  "gpu_busy_pct_when_verified": 0,
+  "kfd_pids_when_verified": [],
+  "owned": {
+    "captured_at_unix": 1795798975.6090243,
+    "pids": [
+      2463754,
+      2463756,
+      2463759,
+      2463874
+    ],
+    "supervisor_pid": 2463754,
+    "tree": [
+      "2463754   50687 Ss   python3",
+      "2463756 2463754 S    python3",
+      "2463759 2463756 Sl   python3",
+      "2463874 2463759 Rl   llama-server"
+    ]
+  },
+  "process_present_after": {
+    "2463754": false,
+    "2463756": false,
+    "2463759": false,
+    "2463874": false
+  },
+  "server_cleanup": {
+    "driver_pid": 2463759,
+    "ended_unix": 1795799098.1371615,
+    "exists_after": false,
+    "kfd_after": false,
+    "kfd_present_at_wait_exit": false,
+    "kfd_retirement_wait_s": 0.00016746087931096554,
+    "owned_server_pid": 2463874,
+    "server_rc": 0
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "complete": true,
+  "ok": true,
+  "panels": [
+    "prefill256",
+    "prefill1024",
+    "decode_np1",
+    "decode_np4",
+    "later_np1",
+    "later_np4"
+  ],
+  "row": "codex-mi210-matmul-census-gpu-20261127",
+  "trace": "/mnt/raid0/llm/tmp/codex-mi210-matmul-census-20261127/out/native/a3b-v10_kernel_trace.csv",
+  "trace_sha256": "562a3675cce00639f3a5b817ecf65427ca2d2239a757b04caf2c4d288da576e6",
+  "verdict": "CENSUS_CAPTURED"
+}

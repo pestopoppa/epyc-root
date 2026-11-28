@@ -1,0 +1,17 @@
+{
+  "bytes_logical": 15036163424,
+  "files": 309,
+  "format": "private directory, SHA256SUMS",
+  "freshly_hashed_bytes": 625150980,
+  "manifest_sha256": "854eaac531c8a6f129a6e6b2a422c295c80037084136d85b0d97e8a372cdd3c7",
+  "permissions": "0700",
+  "public_summary_sha256": "aa565f22b428d8ff9d3a87df8f0935bb10ac1d040cef25c547f9283653851340",
+  "quality_custody_sha256": "27347b279a4a83182a1039042246d325b0a0355a69f315f395ebeaaa4f8923ef",
+  "quality_judgments_sha256": "ea7dce3edc56c98e4a9595bbc846ce319636b8e47c808037fb25a4a054d1b4b9",
+  "root": "/mnt/raid0/llm/archive/compute-evidence/ap-w66-pair-20261127-r2",
+  "rowflow_row": "codex-ap-w66-pair-gpu-20261127-r2",
+  "runner_sha256": "de726115ef8ef36a6791e07855413389a1be2cce14f63031892cf617732d8cd2",
+  "schema": "epyc.ap-w66-pair-private-archive.v1",
+  "snapshot_verification": "Reused the SHA-256 recorded at snapshot creation and checked before restores. Confirmed same inode and byte size in the archive.",
+  "verified_snapshot_links": 6
+}

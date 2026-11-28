@@ -4,32 +4,27 @@
     "handoff-active": 31,
     "handoff-blocked": 1,
     "handoff-completed": 382,
-    "progress": 1519,
+    "progress": 1520,
     "research": 612
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-11-23T10:09:00Z",
   "last_touch": {
     "advanced": {
-      "added": 26,
+      "added": 1,
       "changed": 0,
       "removed": 0
     },
-    "at": "2026-11-27T16:43:08Z",
+    "at": "2026-11-27T17:07:55Z",
     "scope_paths": [
-      "docs/reports/autopilot-w66-cpu-prefix-q012.md",
-      "docs/reports/autopilot-w66-replay-plan.md",
-      "docs/reports/autopilot-w66-trace.md",
-      "progress/2026-11/2026-11-27-intake-kernel-systems.md",
-      "research/deep-dives/intake-digests/2026-11-27-ids-3006-3024.md",
-      "research/deep-dives/intake-nov27-kernel-systems"
+      "progress/2026-11/2026-11-27-codex-q8-wrap.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-11-27T16:43:08Z",
+  "scan_time": "2026-11-27T17:07:55Z",
   "schema_version": 1,
-  "source_set_hash": "678e4e9ad5c3ed39444bcdec3da5ce24feb09b3600456c6c3686e5d147542827",
+  "source_set_hash": "0f2a06efda7bedd135e823c68e0df67017fc9fbf31c72df77a83ed35298a4f09",
   "sources": [
     {
       "content_hash": "759a5b77353ec899937277e53f857f60e1b9d687be3fc40a9b107cc9af003233",
@@ -20232,6 +20227,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "4b05a9502bb08b5b71d04702d7bb0cd20a5a1e04910abf8eb351673a4ae6f763",
+      "modified": "2026-11-27T16:19:55Z",
+      "path": "progress/2026-11/2026-11-27-codex-q8-wrap.md",
+      "size": 3486,
+      "title": "Q8 kernel redesign and follow-up measurements",
+      "type": "progress"
+    },
+    {
       "content_hash": "78188fdd07fda20c15ff7f233653b41628b50a2859a30dbc5b5832ad7df77800",
       "modified": "2026-11-27T16:40:56Z",
       "path": "progress/2026-11/2026-11-27-intake-kernel-systems.md",
@@ -25192,7 +25195,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 3145,
+  "total_new": 3146,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
