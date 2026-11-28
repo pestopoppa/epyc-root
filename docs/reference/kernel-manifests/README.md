@@ -12,6 +12,8 @@ A manifest is the running ledger of one next-production kernel set: one table, o
 
 ## Champion serving config (operator directive 2026-11-24)
 
+The [v11 A3B candidate evidence and worker gates](../../reports/v11-performance-closeout.md) track model-specific trials before the promotion package binds a serving role.
+
 From C22 on, each champion ships a serving-config artifact next to its manifest, at
 `docs/reference/kernel-manifests/serving-configs/<champion>.serving-config.json`. For each served model and
 role it carries:
