@@ -19,12 +19,16 @@ approach: 'Choose two fresh tasks using the routing evidence, with trusted check
   historical main-only results. Run in an authorized compute window, preserving q0-q2 and excluding GPU/q3 until that resource
   scope changes. Check after each completed task and stop after two tasks or earlier on a clear failure of the policy or acceptance
   controls. Report inconclusive results explicitly. Live autonomous-loop launch continues to follow its existing operator
-  hold.
+  hold. Operator priority 2026-11-28 is paid-token reduction and privacy with reasonable task deadlines. Account for all paid
+  attempts and fallback. Prefer deterministic local repair feedback before paid help. Keep private source local and export
+  a minimal diagnostic packet only when useful within existing privacy boundaries. Treat end-to-end elapsed time as a deadline/operational
+  constraint. A successful pilot can take longer than historical main-only work. Include actual packet contents/byte counts
+  and source sensitivity, and preserve unknown costs instead of assuming zero.
 
   '
-acceptance: two fresh constrained tasks have quality-qualified outcomes, actual delivered guidance, remaining budgets, native
-  phase receipts, failed attempts and total paid effort through fallback; the report states whether guidance or preservation
-  helped within the observed scope.
+acceptance: two constrained tasks retain quality-qualified outcomes, actual guidance, paid input/cache/output and exported-context
+  scope through fallback; accepted work meets declared deadlines and the report assesses paid-token savings and privacy with
+  elapsed time as reference.
 non_goals: []
 tier: local
 grounded:

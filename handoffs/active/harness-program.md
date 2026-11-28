@@ -4055,5 +4055,5 @@ These are inference-gated. Materialise a task only when the stated condition fir
 ### Backlog
 
 - [ ] **HS-LOCAL-CANARY-INTEGRATE** [non-inference] Integrate the qualified local OpenCode harness through its canonical Taskflow entry point and retain the observed sandbox fixes.
-      · done when: normal Taskflow dispatch and same-session timeout controls use the integrated profile, default tools and deterministic execution-error feedback work, grep thread headroom and all interrupt acknowledgement shapes pass, old callers remain compatible, and source/build/session provenance is captured.
+      · done when: normal Taskflow dispatch uses the qualified tool and preservation defaults, deterministic local checks precede paid escalation, minimal sanitized escalation packets preserve privacy boundaries, timeout/grep controls pass, and old callers remain compatible.
       · gate: none

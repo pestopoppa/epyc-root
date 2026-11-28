@@ -632,7 +632,7 @@ def reviewer_for(endpoint: str, model: str, max_tokens: int | None = None):
         body = {"model": model, "messages": [{"role": "user", "content": msg}],
                 "max_tokens": cap, "temperature": 0,
                 "cache_prompt": True, "response_format": {"type": "json_object"},
-                "chat_template_kwargs": {"enable_thinking": False}}
+                "chat_template_kwargs": local_llm.chat_template_kwargs(model)}
         req = urllib.request.Request(endpoint.rstrip("/") + "/chat/completions", json.dumps(body).encode(),
                                      {"content-type": "application/json", REVIEWER_ROLE_HEADER: "reviewer"})
         with urllib.request.urlopen(req, timeout=300) as r:

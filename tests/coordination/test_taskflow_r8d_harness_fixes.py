@@ -122,10 +122,11 @@ def test_reviewer_disables_thinking_and_retries_once(monkeypatch):
         return R({"choices": [{"message": replies[len(sent) - 1], "finish_reason": "stop"}], "usage": {}})
 
     monkeypatch.setattr(dispatch.urllib.request, "urlopen", fake_open)
-    v = dispatch.reviewer_for("http://x/v1", "m", max_tokens=1024)({"goal": "g"}, "diff")
+    v = dispatch.reviewer_for("http://x/v1", dispatch.local_llm.model_for("terra"), max_tokens=1024)({"goal": "g"}, "diff")
     assert v["verdict"] == "done" and v["retried"]["template_echo"]
     assert [b["max_tokens"] for b, _ in sent] == [1024, 2048]
-    assert all(b["chat_template_kwargs"]["enable_thinking"] is False for b, _ in sent)
+    assert all(b["chat_template_kwargs"] == {"enable_thinking": False, "preserve_thinking": True}
+               for b, _ in sent)
     assert all(h.get("X-taskflow-role") == "reviewer" for _, h in sent)
 
 

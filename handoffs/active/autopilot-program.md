@@ -5260,7 +5260,7 @@ Operator-approved 2026-10-20 via research intake (plan sha256 1dc83054706ca0bae0
 ### Backlog
 
 - [ ] **AP-LOCAL-DRIVING-PILOT** [inference] Run a bounded fresh-task pilot of artifact-aware guidance and escalation with successful-artifact preservation checks.
-      · done when: two fresh constrained tasks have quality-qualified outcomes, actual delivered guidance, remaining budgets, native phase receipts, failed attempts and total paid effort through fallback; the report states whether guidance or preservation helped within the observed scope.
+      · done when: two constrained tasks retain quality-qualified outcomes, actual guidance, paid input/cache/output and exported-context scope through fallback; accepted work meets declared deadlines and the report assesses paid-token savings and privacy with elapsed time as reference.
       · gate: HS-LOCAL-CANARY-INTEGRATE,RTG-LOCAL-CANARY-POLICY
-      · model: route-qualified local model · build: C22 ce6fcbbde · harness: integrated OpenCode-derived candidate · metric: accepted tasks per hour (higher), paid effort and elapsed time (lower) · region: q0-q2 only under current resource scope · est: bounded two-task pilot
+      · model: route-qualified local model · build: C22 ce6fcbbde · harness: integrated OpenCode-derived candidate · metric: paid input/output and private-context export (lower), accepted quality and deadline compliance (required), throughput (reference) · region: q0-q2 only under current resource scope · est: bounded two-task pilot
       · stop rule: check after each task, stop on policy or acceptance-control failure or after two tasks.

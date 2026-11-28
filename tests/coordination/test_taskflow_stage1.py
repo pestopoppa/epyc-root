@@ -78,9 +78,13 @@ def test_verify_reviewer_and_tests(tmp_path):
 def test_opencode_config_stable_prefix(tmp_path, monkeypatch):
     monkeypatch.setattr(local_llm, "POLICY_DIR", tmp_path / "pol")
     t = {"budget": dict(schema.DEFAULT_BUDGET), "test_cmds": ["pytest tests/a.py"]}
-    p1 = local_llm.write_config(tmp_path / "r1", "http://x/v1", "m", t)
-    p2 = local_llm.write_config(tmp_path / "r2", "http://x/v1", "m", dict(t, test_cmds=[]))
+    model = local_llm.model_for("terra")
+    p1 = local_llm.write_config(tmp_path / "r1", "http://x/v1", model, t)
+    p2 = local_llm.write_config(tmp_path / "r2", "http://x/v1", model, dict(t, test_cmds=[]))
     c1, c2 = json.loads(p1.read_text()), json.loads(p2.read_text())
+    assert c1["provider"][local_llm.PROVIDER]["models"][model]["options"]["chat_template_kwargs"] == {
+        "enable_thinking": False, "preserve_thinking": True,
+    }
     assert c1["snapshot"] is False and c1["agent"][local_llm.AGENT]["permission"]["task"] == "deny"
     assert c1["agent"][local_llm.AGENT]["permission"]["bash"]["pytest tests/a.py"] == "allow"
     assert c1["instructions"] == c2["instructions"]                                            # cacheable prefix
@@ -113,7 +117,9 @@ def test_prefix_cache_fixes_h1_h3(tmp_path, monkeypatch):
     assert bash["*"] == "deny" and bash["head *"] == "allow"            # H1: output bounded by tool_output (r8: cat allowed)
     assert c["tool_output"] == {"max_lines": local_llm.TOOL_MAX_LINES, "max_bytes": local_llm.TOOL_MAX_BYTES}
     assert c["tool_output"] == {"max_lines": local_llm.TOOL_MAX_LINES, "max_bytes": local_llm.TOOL_MAX_BYTES}
-    assert c["provider"][local_llm.PROVIDER]["models"]["m"]["limit"]["context"] == 65536       # H1 ctx 64k
+    model = c["provider"][local_llm.PROVIDER]["models"]["m"]
+    assert model["limit"]["context"] == 65536       # H1 ctx 64k
+    assert model["options"]["chat_template_kwargs"] == {"enable_thinking": False}
     assert c["agent"]["title"] == {"disable": True}                                            # H2 no title call
     c2 = json.loads(local_llm.write_config(tmp_path / "b", "http://x/v1", "m", t).read_text())
     assert c["instructions"] == c2["instructions"] and "POLICY-" in c["instructions"][0]      # H3 one shared path

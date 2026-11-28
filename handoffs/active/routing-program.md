@@ -4214,5 +4214,5 @@ Source batch: 12 entries ingested 2026-11-06 (t3code, Foundry Local, HarnessMM +
 ### Backlog
 
 - [ ] **RTG-LOCAL-CANARY-POLICY** [non-inference] Project the three-model canary into task- and guidance-aware routing evidence and exercise proposed routes in shadow.
-      · done when: the normal descriptor/report consumer distinguishes observed success, censoring, guidance, reviewer and owner outcomes; held-out controls preserve unknown cost and quality; proposed routes name evidence and uncertainty without automatically changing production routing.
+      · done when: the actual descriptor/report consumer prioritizes paid input/output reduction and minimal private-context export subject to accepted results and declared deadlines, preserves unknown costs and censored outcomes, and exercises the proposed policy in shadow.
       · gate: none

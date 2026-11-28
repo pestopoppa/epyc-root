@@ -17,12 +17,19 @@ approach: 'Bind each observation to task, brief specificity, model, thinking mod
   fired establishes no warning effect. Replay the real descriptor and planner/report path with successful, incorrect and censored
   examples. Include all fallback and paid input/cache/output costs, worker wall and accepted-work rate, preserving missing
   values. Reuse the existing main-only baseline. Do not infer a device comparison or intrinsic capability ranking from unmatched
-  studies.
+  studies. Operator priority 2026-11-28 is minimizing paid tokens and private-context export while delivering accepted work
+  within reasonable declared task deadlines. Slower local completion is an acceptable tradeoff. Keep cached input, uncached
+  input and paid output separately visible. Elapsed time and accepted-work throughput are reference measures within those
+  task deadlines. Start with constrained tasks and deterministic local acceptance. Paid help receives the smallest useful
+  diagnostic packet, with failure text, expected invariant and symbol signatures, and only necessary source snippets under
+  existing privacy boundaries. Full private transcripts and repositories remain local by default. A retained paid-model budget
+  should be spent on targeted diagnosis or review that adds value. Historical main-only results provide cost context for fresh
+  tasks; any matched claim still needs matched task/acceptance scope.
 
   '
-acceptance: the normal descriptor/report consumer distinguishes observed success, censoring, guidance, reviewer and owner
-  outcomes; held-out controls preserve unknown cost and quality; proposed routes name evidence and uncertainty without automatically
-  changing production routing.
+acceptance: the actual descriptor/report consumer prioritizes paid input/output reduction and minimal private-context export
+  subject to accepted results and declared deadlines, preserves unknown costs and censored outcomes, and exercises the proposed
+  policy in shadow.
 non_goals: []
 tier: local
 grounded:

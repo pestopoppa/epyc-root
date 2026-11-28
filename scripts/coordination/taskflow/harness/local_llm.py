@@ -334,6 +334,14 @@ def model_for(tier: str | None, family: str = "local") -> str:
     return m.get(tier or "terra", m["terra"])
 
 
+def chat_template_kwargs(model_id: str) -> dict[str, bool]:
+    kwargs = {"enable_thinking": False}
+    if model_id == TIER_MODELS["local"]["terra"]:
+        # Keep earlier assistant reasoning in the rendered prefix, even with generation off.
+        kwargs["preserve_thinking"] = True
+    return kwargs
+
+
 BRIEF_RESULT = "TASKFLOW-BRIEF"
 
 
@@ -575,7 +583,7 @@ def write_config(run_dir: Path, base_url: str, model_id: str, task: dict, ctx: i
             "models": {model_id: {
                 "name": model_id, "tool_call": True,
                 "limit": {"context": ctx, "output": out_tokens},
-                "options": {"chat_template_kwargs": {"enable_thinking": False}, "cache_prompt": True},
+                "options": {"chat_template_kwargs": chat_template_kwargs(model_id), "cache_prompt": True},
             }},
         }},
         # H2: no title side-request (r1: ~6% of computed tokens, evicts the np1 slot); r3: an uncapped side request
