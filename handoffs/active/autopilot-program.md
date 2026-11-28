@@ -5266,3 +5266,14 @@ Operator-approved 2026-10-20 via research intake (plan sha256 1dc83054706ca0bae0
 - [x] **AP-W66-RECOVERY** [non-inference] Replay successful late edits, inspection loops and partial artifacts through a proposed artifact-aware retry policy. ✅ 2026-11-27 [belief: cc] 49 saved attempts replayed. The primary rule flagged one of seven accepted trajectories and caught two of five inspection-heavy expiry proxies. [Recovery report](../../docs/reports/autopilot-w66-recovery-replay.md).
       · done when: an offline report records false interventions on accepted traces, missed loops, actionable corrections, remaining budgets and a bounded fresh-task pilot plan with acceptance, paid-cost and wall-time endpoints.
       · gate: none
+
+## Track: local-model-canary-followthrough
+<!-- gate: none -->
+
+### Backlog
+
+- [ ] **AP-LOCAL-DRIVING-PILOT** [inference] Run a bounded fresh-task pilot of artifact-aware guidance and escalation with successful-artifact preservation checks.
+      · done when: two fresh constrained tasks have quality-qualified outcomes, actual delivered guidance, remaining budgets, native phase receipts, failed attempts and total paid effort through fallback; the report states whether guidance or preservation helped within the observed scope.
+      · gate: HS-LOCAL-CANARY-INTEGRATE,RTG-LOCAL-CANARY-POLICY
+      · model: route-qualified local model · build: C22 ce6fcbbde · harness: integrated OpenCode-derived candidate · metric: accepted tasks per hour (higher), paid effort and elapsed time (lower) · region: q0-q2 only under current resource scope · est: bounded two-task pilot
+      · stop rule: check after each task, stop on policy or acceptance-control failure or after two tasks.

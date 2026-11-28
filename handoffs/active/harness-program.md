@@ -4048,3 +4048,12 @@ These are inference-gated. Materialise a task only when the stated condition fir
 
 - **ACP registry posture (intake-2654#record).** The published registry is an agent catalog, not a capability catalog: only 1 of 5 client questions is answerable from it, quarantine is invisible to clients, and 7 of 22 binary manifests ship no sha256. Do not consume it as a runtime trust source; borrow the pin-source discipline (archive + sha256 + platform keys, refuse entries without sha256) and the nightly launch-and-probe capability-diff pattern.
 - **Stored-call default (intake-2658#record).** Stored and replayed calls are exact-pinned until an effect contract exists for that tool; the measured cost of exact pinning is re-formation, not failure, and our calls are cheap to re-form on a local model.
+
+## Track: local-model-canary-followthrough
+<!-- gate: none -->
+
+### Backlog
+
+- [ ] **HS-LOCAL-CANARY-INTEGRATE** [non-inference] Integrate the qualified local OpenCode harness through its canonical Taskflow entry point and retain the observed sandbox fixes.
+      · done when: normal Taskflow dispatch and same-session timeout controls use the integrated profile, default tools and deterministic execution-error feedback work, grep thread headroom and all interrupt acknowledgement shapes pass, old callers remain compatible, and source/build/session provenance is captured.
+      · gate: none
