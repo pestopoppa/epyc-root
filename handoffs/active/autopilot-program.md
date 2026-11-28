@@ -5248,6 +5248,18 @@ Operator-approved 2026-10-20 via research intake (plan sha256 1dc83054706ca0bae0
       · Real W66 CPU continuation 2026-11-27: identical first-request messages/tools with preservation OFF/ON gave 410.05/6.22 s delivered TTFT. OFF produced no edit and ON a failed partial within equal 600 s windows. Both independent grades remain unaccepted. [Quality report](../../docs/reports/autopilot-w66-cpu-quality-q012.md).
       · model: Qwen3.6-35B-A3B-MTP-Q8_0 · build: C22 ce6fcbbde · harness: pinned streaming request replay · metric: accepted work per hour (higher), request and phase latency (lower) · region: MI210 and recorded host affinity · est: ON 28 alone historically spent 165 s decoding, excluding warmup
       · stop rule: check after each pair, reverse order for noise, stop on stable attribution above repeat variation or after three matched pairs per target.
+- [ ] **AP-W66-BUDGET** [inference] Compare C22's recorded prefill-budget control with 256 prompt tokens / 900 ms on the pinned ON28 and OFF56 pair, keeping preservation fixed.
+      · done when: reversed pairs bind identical rendered inputs, independently restored cache, fixed 256-token outputs and peer trigger to ON28 decode, OFF56 delivered TTFT, both-finish wall and native mixed-iteration timings, with repeat noise and unresolved tradeoffs explicit
+      · gate: AP-W66-PAIR
+      · model: Qwen3.6-35B-A3B-MTP-Q8_0, four split slots at 131072 each, f16 KV and MTP D2
+      · build: unchanged C22 ce6fcbbde, recorded recipe; budget control 0/0 and comparison 256/900
+      · metric: ON28 decode, OFF56 TTFT and both-finish elapsed seconds lower is better; mixed-iteration p99 lower is better
+      · region: MI210 and CPUs 88-95 with sibling reservation        · est: provisional, 780 s
+      · pilot: n=1 full-recipe qualification checks slot restore, flags and runtime identity
+      · rule: diagnose recovery above same-arm repeat noise, report peer TTFT ratio against 1.30 and mixed p99 against the transferred approximate 900-ms target; fixed timing supplies timing evidence
+      · stop rule: two reversed pairs, then a third only for unresolved attribution; stop on input/runtime/cache/residency failure; preserve both requests' completion and stop at three pairs
+      · inputs: `docs/reports/autopilot-w66-pair.md` and `handoffs/active/briefs/AP-W66-BUDGET.md`
+
 - [x] **AP-W66-LOOP** [non-inference] Project the phase evidence into the existing eval report and exercise the planner's shadow decision on a held-out trace. ✅ 2026-11-27 [belief: cc] Orchestrator main 03e002c9 records optional phase evidence. Held-out prefix, decode and unknown controls produced five advisory journal events. [Replay](../../artifacts/analysis/ap-w66-loop/README.md).
       · done when: the actual report and journal entry point distinguish prefill, decode and insufficient evidence with source receipts, pass legacy/missing-counter controls, and preserve quality-qualified goodput.
       · gate: AP-W66-TRACE
