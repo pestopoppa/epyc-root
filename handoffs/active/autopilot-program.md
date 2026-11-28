@@ -5259,6 +5259,12 @@ Operator-approved 2026-10-20 via research intake (plan sha256 1dc83054706ca0bae0
       · rule: diagnose recovery above same-arm repeat noise, report peer TTFT ratio against 1.30 and mixed p99 against the transferred approximate 900-ms target; fixed timing supplies timing evidence
       · stop rule: two reversed pairs, then a third only for unresolved attribution; stop on input/runtime/cache/residency failure; preserve both requests' completion and stop at three pairs
       · inputs: `docs/reports/autopilot-w66-pair.md` and `handoffs/active/briefs/AP-W66-BUDGET.md`
+- [ ] **AP-W66-PRESERVE-QUALITY** [inference] Grade natural A3B continuations under matched preserved and original history before selecting the v11 model recipe.
+      · done when: A model-keyed report records independently accepted artifacts, strict summary-format results, native prompt time, and paired wall time for both settings, with a scoped recipe recommendation or an inconclusive verdict.
+      · gate: AP-W66-PAIR
+      · model: Qwen3.6-35B-A3B-MTP-Q8_0 · build: C22 ce6fcbbde · harness: matched natural worker continuations and independent graders · region: MI210 on the recorded q3 affinity
+      · stop rule: use two cases in opposite orders, reverse each unresolved case at most once, stop for a reproducible correctness regression or a failed grader control, and report inconclusive when neither arm yields accepted work.
+      · inputs: [v11 decision and paired worker protocol](../../docs/reports/v11-performance-closeout.md), [quality controls](../../docs/reports/autopilot-w66-cpu-quality-q012.md)
 
 - [x] **AP-W66-LOOP** [non-inference] Project the phase evidence into the existing eval report and exercise the planner's shadow decision on a held-out trace. ✅ 2026-11-27 [belief: cc] Orchestrator main 03e002c9 records optional phase evidence. Held-out prefix, decode and unknown controls produced five advisory journal events. [Replay](../../artifacts/analysis/ap-w66-loop/README.md).
       · done when: the actual report and journal entry point distinguish prefill, decode and insufficient evidence with source receipts, pass legacy/missing-counter controls, and preserve quality-qualified goodput.
