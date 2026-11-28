@@ -714,7 +714,7 @@
       "weight": 6
     }
   ],
-  "generated_at": "2026-11-28T10:25:38Z",
+  "generated_at": "2026-11-28T16:00:21Z",
   "nodes": [
     {
       "age_days": 2,
@@ -2008,7 +2008,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 1998,
+          "line": 1999,
           "name": "fable5-window2-findings-03-portfolio-and-master-queue",
           "open": 0,
           "readiness": "no_open"
@@ -2017,7 +2017,7 @@
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 2126,
+          "line": 2127,
           "name": "cpu-fused-decoder-blocks",
           "open": 1,
           "readiness": "ready"
@@ -2026,7 +2026,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2459,
+          "line": 2460,
           "name": "laguna-s21-cpu-port",
           "open": 0,
           "readiness": "no_open"
@@ -2035,7 +2035,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 2560,
+          "line": 2561,
           "name": "moe-spec-cpu-spec-dec-integration",
           "open": 0,
           "readiness": "no_open"
@@ -2044,7 +2044,7 @@
           "blocked_by": [],
           "dispatchable": 0,
           "gates": [],
-          "line": 3114,
+          "line": 3115,
           "name": "v9-kernel-per-request-speculative-params",
           "open": 0,
           "readiness": "no_open"
@@ -2056,7 +2056,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3252,
+          "line": 3253,
           "name": "autokernel-all-devices-all-dimensions",
           "open": 0,
           "readiness": "no_open"
@@ -2068,7 +2068,7 @@
           ],
           "dispatchable": 0,
           "gates": null,
-          "line": 3259,
+          "line": 3260,
           "name": "autokernel-cross-workload-keep-gate",
           "open": 0,
           "readiness": "no_open"
@@ -2657,14 +2657,14 @@
       "blocked": 1,
       "blocked_by": [],
       "closed": 310,
-      "dispatchable": 86,
+      "dispatchable": 87,
       "domain": "routing-and-optimization",
       "guarded": 0,
       "handoff": "autopilot-program.md",
       "id": "RTG-02",
       "last_advanced": "2026-11-28",
       "next_action": "Run AP-POSTREBOOT-LH-RIGOR (R1-R5 accept for the Life-Harness run); smoke after reboot; hold-lift review last",
-      "open": 87,
+      "open": 88,
       "priority": 0.6763,
       "priority_basis": {
         "basis": "T6 inference-ready best open item (I): AP-29b \u2014 Compare correctness-first LEXICOGRAPHIC selection against the scalarized cost-awa",
@@ -2883,18 +2883,18 @@
         },
         {
           "blocked_by": [],
-          "dispatchable": 0,
+          "dispatchable": 1,
           "gates": [],
           "line": 5234,
           "name": "W66 serving attribution and local worker recovery",
-          "open": 0,
-          "readiness": "no_open"
+          "open": 1,
+          "readiness": "ready"
         },
         {
           "blocked_by": [],
           "dispatchable": 1,
           "gates": [],
-          "line": 5270,
+          "line": 5276,
           "name": "local-model-canary-followthrough",
           "open": 1,
           "readiness": "ready"
