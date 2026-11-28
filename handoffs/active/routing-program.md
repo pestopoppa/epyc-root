@@ -4207,3 +4207,12 @@ Source batch: 12 entries ingested 2026-11-06 (t3code, Foundry Local, HarnessMM +
       the right reading; rewriting it would silently redefine a historical field. **The genuinely
       broken sibling was `update_count`** — see below — which DOES feed a live gate. Retained as
       context; original text follows.
+
+## Track: local-model-canary-followthrough
+<!-- gate: none -->
+
+### Backlog
+
+- [ ] **RTG-LOCAL-CANARY-POLICY** [non-inference] Project the three-model canary into task- and guidance-aware routing evidence and exercise proposed routes in shadow.
+      · done when: the normal descriptor/report consumer distinguishes observed success, censoring, guidance, reviewer and owner outcomes; held-out controls preserve unknown cost and quality; proposed routes name evidence and uncertainty without automatically changing production routing.
+      · gate: none
